@@ -1,0 +1,37 @@
+# For general information of how to configure prospector visit
+# https://prospector.landscape.io/en/master/profiles.html
+
+ignore-paths:
+  - templates
+  - build
+
+inherits:
+  - strictness_high
+
+pep257:
+  run: true
+  disable:
+    - D107
+    - D203
+    - D212
+    - D213
+    - D415
+    - D416
+
+pylint:
+  options:
+    max-attributes: 10
+    max-module-lines: 1500
+
+pycodestyle:
+  disable:
+    - E203
+    - W503
+  enable:
+    - W504
+
+pyroma:
+  run: true
+
+bandit:
+  run: true

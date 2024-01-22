@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using these metadata.
+title: ocdb
+abstract: >
+    Optical constants for elements and various materials in the EUV and VUV wavelengths
+authors:
+  - family-names: Biskup
+    given-names: Till
+    orcid: "https://orcid.org/0000-0003-2913-0004"
+  - family-names: Soltwisch
+    given-names:  Victor
+    orcid: "https://orcid.org/0000-0001-8469-8589"
+type: software
+license: GPL-3.0
+repository-code: "https://github.com/tillbiskup/ocdb"
+keywords:
+  - "optical constants"
+  - "EUV"
+  - "VUV"
+  - "reflectometry"
+# Highly recommended starting with the first release: DOI via Zenodo
+#identifiers:
+#  - description: "The concept DOI of the work."
+#    type: doi
+#    value: 10.5281/zenodo.########

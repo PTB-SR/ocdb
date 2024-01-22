@@ -1,0 +1,25 @@
+package:
+  name: 'ocdb'
+  author: 'Till Biskup, Victor Soltwisch'
+  author_email: 'till.biskup@ptb.de'
+  year: '2024'
+  description: 'Optical constants for elements and various materials in the EUV and VUV wavelengths'
+  urls:
+    main: 'https://www.ocdb.ptb.de/'
+    documentation: 'https://ocdb.docs.till-biskup.de/'
+    source: 'https://github.com/tillbiskup/ocdb'
+  keywords: ["optical constants", "EUV", "VUV", "reflectometry"]
+  install_requires: []
+  license: GPLv3
+documentation:
+  logo: ''
+  favicon: ''
+  language: en
+options:
+  logging: false
+  git: true
+  gui: false
+gui:
+  splash: true
+  organisation: ''
+  domain: ''
