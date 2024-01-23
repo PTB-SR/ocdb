@@ -10,5 +10,16 @@ For version 0.1
 
 * Design data structures and user interface
 
+* Decide upon a data format for the actual data
+
 * Initial Python package on GitHub and PyPI
+
+
+
+Todos
+=====
+
+A list of todos, extracted from the code and documentation itself, and only meant as convenience for the main developers. Ideally, this list will be empty at some point.
+
+.. todolist::
 
