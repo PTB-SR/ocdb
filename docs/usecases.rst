@@ -115,6 +115,8 @@ For each material/substance a database record is present in the OCDB, the ocdb p
 
     Provide data as complex float? Or *n* and *k* separately?
 
+    **Answer:** Both, *n* and *k* separately (and uncertainties with them), and a property ``refractive_index`` as complex float. Uncertainties need to be both, lower and upper boundary, as the distribution might not be strictly symmetric.
+
     Generally, the wavelength axis should be either a separate property or the first row/column in a matrix.
 
 
@@ -128,7 +130,25 @@ If no uncertainties are available, return simply ``None`` ("principle of least s
 
 .. todo::
 
+    How to deal with users asking for explicit wavelengths/energies values not in the data (*i.e.*, no exact match on the wavelength/energy axis)?
+
+    **Answer:** As long as the wavelength/energy is within the overall axis range, perform a *linear* interpolation (allow for other interpolation methods later?). Otherwise, do not provide an answer/return "NaN" or else.
+
+    Users should be able to provide both, energies and wavelengths. However, they will need to state which unit they ask for...
+
+    If the method call without argument returns the *n*/*k* values, that should be with a wavelength/energy axis. Data in OCDB currently have wavelengths, but converting should be trivial.
+
+
+.. todo::
+
     Decide upon a structure for the metadata. Currently, this information is contained in a somewhat human-readable (though not strictly machine-readable) form in the header of the data files.
+
+    Important metadata (VS):
+
+    * layer thickness
+    * substrate
+    * date of measurement
+    * sample preparation details (ideally eventually a DOI)
 
 
 Within the ocdb package, we could directly access the data, and we would not need to have an additional ``xray`` property as an intermediate level. Hence, there would be two ways to access all *n* values of an element/substance:
@@ -146,6 +166,8 @@ Note here that the values are not accessed as a property/attribute, but as a met
 .. todo::
 
     Are the data contained in the OCDB strictly X-ray data? If not (and at least VUV probably does not count as X-ray any more), summarising these values under ``xray`` may be misleading. Is there a better general name for this wavelength range?
+
+    **Answer** In a long run, there will be data all the way to the far IR. Hence, a much more general name needs to be found, such as "optical constants" or "fundamental parameters"
 
 
 Or alternatively, closer to the periodictable package:
@@ -212,12 +234,4 @@ We may want to parametrise the plot by specifying additional key--value pairs:
     ocdb.elements.Co.plot(values="both", uncertainties=True)
 
 This would plot both, *n* and *k* values and graphically depict their uncertainties (if available). If no uncertainties are available, a warning should be issued.
-
-
-Comparing values with other sources
-===================================
-
-It might be convenient to easily (graphically) compare values from the OCDB with other sources (*e.g.*, CXRO via periodictable package).
-
-One could think of providing a method "compare" returning values in tabular form for comparison and additionally of a method "plot_compare" or else creating a plot with values from both, OCDB and the other source.
 
