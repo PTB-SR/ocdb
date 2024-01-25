@@ -71,6 +71,8 @@ How about getting all information for both, elements and compositions, at once?
 
     Decide whether ``materials`` is the right name here, or whether we would rather like to go with ``substance``. In any case, the name should be general enough and intuitive enough to cover the concept that both, elements and compositions are covered.
 
+    **Answer:** ``materials`` is probably the better name in the given (local) context of the OCDB, where people deal with materials.
+
 
 Accessing a single element or composition
 =========================================
@@ -88,6 +90,8 @@ Following the user interface of the `periodictable package <https://pypi.org/pro
 .. todo::
 
     Decide whether to use capitalised names, as in the periodictable package, or to stick with PEP8 naming conventions. Probably, capitalised names are much more intuitive and easier to read.
+
+    **Answer:** Given the rather complicated names of the composites, capitalisation as used in the chemical formulae is most probably the only sensible choice, although this runs against PEP8 conventions in this particular case.
 
 
 Accessing *n* and *k* values
@@ -115,7 +119,7 @@ For each material/substance a database record is present in the OCDB, the ocdb p
 
     Provide data as complex float? Or *n* and *k* separately?
 
-    **Answer:** Both, *n* and *k* separately (and uncertainties with them), and a property ``refractive_index`` as complex float. Uncertainties need to be both, lower and upper boundary, as the distribution might not be strictly symmetric.
+    **Answer:** Both, *n* and *k* separately (and uncertainties with them), and a property ``index_of_refraction`` (note: ``refractive_index`` would be an alternative, though ``index_of_refraction`` would be compatible to ``periodictable``) as complex float. Uncertainties need to be both, lower and upper boundary, as the distribution might not be strictly symmetric.
 
     Generally, the wavelength axis should be either a separate property or the first row/column in a matrix.
 
@@ -126,17 +130,6 @@ For each material/substance a database record is present in the OCDB, the ocdb p
 
 
 If no uncertainties are available, return simply ``None`` ("principle of least surprise").
-
-
-.. todo::
-
-    How to deal with users asking for explicit wavelengths/energies values not in the data (*i.e.*, no exact match on the wavelength/energy axis)?
-
-    **Answer:** As long as the wavelength/energy is within the overall axis range, perform a *linear* interpolation (allow for other interpolation methods later?). Otherwise, do not provide an answer/return "NaN" or else.
-
-    Users should be able to provide both, energies and wavelengths. However, they will need to state which unit they ask for...
-
-    If the method call without argument returns the *n*/*k* values, that should be with a wavelength/energy axis. Data in OCDB currently have wavelengths, but converting should be trivial.
 
 
 .. todo::
@@ -160,24 +153,110 @@ Within the ocdb package, we could directly access the data, and we would not nee
     ocdb.elements.xray.n()
 
 
-Note here that the values are not accessed as a property/attribute, but as a method, and without any further parameters will return an array/list of all values.
+.. important::
+
+    The values are not accessed as a property/attribute, but as a method, and without any further parameters will return an array/list of all values (to be exact: they will return a list of numpy arrays: wavelength/energy and optical constant).
+
+    While using a method with a name that rather reflects a property (and besides that does not conform to PEP8 due to its short name) is unusual, it seems justified here, as it makes for an intuitive user interface.
 
 
 .. todo::
 
     Are the data contained in the OCDB strictly X-ray data? If not (and at least VUV probably does not count as X-ray any more), summarising these values under ``xray`` may be misleading. Is there a better general name for this wavelength range?
 
-    **Answer** In a long run, there will be data all the way to the far IR. Hence, a much more general name needs to be found, such as "optical constants" or "fundamental parameters"
+    **Answer** In a long run, there will be data all the way to the far IR. Hence, a much more general name needs to be found, such as "optical constants" or "fundamental parameters". For the time being, perhaps simply leave out this additional level.
 
 
-Or alternatively, closer to the periodictable package:
+Given the different ways of accessing the same information, following is a list of different method calls asking for the entire information (*i.e.*, returning a numpy array with two columns):
 
 .. code-block::
 
-    ocdb.elements.Co.index_of_refraction()
+    ocdb.elements.Co.n()  # [np.array(dtype=float), np.array(dtype=float)]
+
+    ocdb.elements.Co.k()  # [np.array(dtype=float), np.array(dtype=float)]
+
+    ocdb.elements.Co.index_of_refraction()  # [np.array(dtype=float), np.array(dtype=complex)]
 
 
-This would, however, return a complex value with both, *n* and *k* contained. And we need to define clearly which convention we follow regarding signs. ;-)
+All these will return the complete list of available values and provide wavelength values (in nm) in the first array (as this is currently the way the data are provided by the OCDB).
+
+
+.. important::
+
+    Calling ``index_of_refraction()`` returns a complex value with both, *n* and *k* contained. Hence, we need to clearly define which convention we follow regarding signs. ;-)
+
+
+Asking for explicit units
+-------------------------
+
+Although the primary data currently available from the OCDB provide a wavelength scale (in nm), users may want to get other units (such as eV) as well:
+
+
+.. code-block::
+
+    ocdb.elements.Co.n(unit="eV")
+
+
+Asking for uncertainties
+------------------------
+
+Users may want to get uncertainties together with the values for *n* or *k*. How about this?
+
+
+.. code-block::
+
+    ocdb.elements.Co.n(uncertainties=True)
+
+
+This would return a list of *three* numpy arrays, the first two one-dimensional, the third two-dimensional with lower and upper bound. How lower and upper bound are defined can be looked up in the metadata.
+
+And of course, this could be combined with asking for an explicit unit for the energy/wavelength axis:
+
+
+.. code-block::
+
+    ocdb.elements.Co.n(uncertainties=True, unit="eV")
+
+
+Asking for a specific value
+---------------------------
+
+If a user is interested in the value for a given wavelength/energy only, they may simply provide this value (hence the method call rather than accessing a property in the first place):
+
+
+.. code-block::
+
+    ocdb.elements.Co.n(10.0)
+
+
+And if users like energies (in eV) more than wavelengths (in nm):
+
+
+.. code-block::
+
+    ocdb.elements.Co.n(91.84, unit="eV")  # 91.84 ~= 13.5 nm
+
+
+.. note::
+
+    As long as the value is within the overall axis range of data available from the OCDB, this will perform a *linear* interpolation (allow for other interpolation methods later?). Otherwise, ``np.nan`` will be returned.
+
+
+Asking for a range of values
+----------------------------
+
+A single value or all available values for a material are nice, but how about a certain range of values (perhaps with a user-defined spacing)?
+
+
+.. code-block::
+
+    range_ = np.linspace(10, 12, 21)  # [10.0, 10.1, 10.2, ..., 12.0]
+    ocdb.elements.Co.n(range_)
+
+
+.. note::
+
+    As long as the range is within the overall axis range of data available from the OCDB, this will perform a *linear* interpolation (allow for other interpolation methods later?). Otherwise, ``np.nan`` will be returned.
 
 
 Reference for values
@@ -202,6 +281,38 @@ For more options, *e.g.* a full BibTeX record, see the `bibrecord package <https
 In case of no separate reference for a substance/material, a general reference to the OCDB should be returned, probably https://zenodo.org/doi/10.5281/zenodo.5602718.
 
 
+Accessing relevant metadata
+===========================
+
+A key aspect of the ocdb package and a strict requirement from a scientific point of view is access to relevant metadata. Those metadata include (but may not be limited to):
+
+* layer thickness
+* substrate
+* date of measurement
+* sample preparation details (ideally eventually a DOI)
+* information regarding the uncertainty values (such as ":math:`3\sigma`")
+
+For the time being, just providing a :class:`dict` with respective fields is probably the most sensible solution. However, this interface should be regarded as unstable and not for general use.
+
+It might be interesting though to provide a method displaying a summary of the available information in textual format:
+
+
+.. code-block::
+
+    ocdb.elements.Co.metadata.to_string()
+
+
+This would require ``metadata`` to be a class rather than a plain :class:`dict`. Alternatively, one could provide the same information by just using ``print`` on the metadata as such:
+
+
+.. code-block::
+
+    print(ocdb.elements.Co.metadata)
+
+
+Again, this requires ``metadata`` to be a class rather than a plain :class:`dict`.
+
+
 Plotting values
 ===============
 
@@ -216,9 +327,7 @@ Plotting values should be straight-forward, however it might be convenient to pr
 * plot of *n* or *k* vs. wavelength with uncertainties
 * plot of both, *n* and *k*, vs. wavelength with uncertainties in one plot
 
-All plots should automatically provide correct axis labels.
-
-Do we want to be able to plot either wavelengths in nm or energies in eV? (Simple conversion, might be convenient.)
+All plots should automatically provide correct axis labels and perhaps a title displaying the material the data are plotted for. In case of plotting both, *n* and *k* values, a legend would be nice to have as well.
 
 In the simplest form, plotting should be as easy as:
 
@@ -235,3 +344,10 @@ We may want to parametrise the plot by specifying additional key--value pairs:
 
 This would plot both, *n* and *k* values and graphically depict their uncertainties (if available). If no uncertainties are available, a warning should be issued.
 
+Similarly, we may want to provide a range and unit for the *x* axis:
+
+.. code-block::
+
+    ocdb.elements.Co.plot(range=[80, 124], unit="eV")
+
+    ocdb.elements.Co.plot(values="both", uncertainties=True, range=[80, 124], unit="eV")
