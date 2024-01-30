@@ -140,6 +140,7 @@ If no uncertainties are available, return simply ``None`` ("principle of least s
 
     * layer thickness
     * substrate
+    * layer stack
     * date of measurement
     * sample preparation details (ideally eventually a DOI)
 
@@ -150,7 +151,7 @@ Within the ocdb package, we could directly access the data, and we would not nee
 
     ocdb.elements.Co.n()
 
-    ocdb.elements.xray.n()
+    ocdb.elements.Co.xray.n()
 
 
 .. important::
@@ -286,8 +287,9 @@ Accessing relevant metadata
 
 A key aspect of the ocdb package and a strict requirement from a scientific point of view is access to relevant metadata. Those metadata include (but may not be limited to):
 
-* layer thickness
+* layer thickness (as actual number, probably with separate unit)
 * substrate
+* layer stack
 * date of measurement
 * sample preparation details (ideally eventually a DOI)
 * information regarding the uncertainty values (such as ":math:`3\sigma`")

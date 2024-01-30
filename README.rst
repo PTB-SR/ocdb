@@ -10,8 +10,6 @@ Welcome! This is ocdb, a Python package for easily accessing the X-ray/EUV/VUV s
 Features
 ========
 
-A list of features:
-
 A list of (planned) features:
 
 * Access to X-ray/EUV/VUV scattering and absorption coefficients (*n* and *k*)
