@@ -42,7 +42,10 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
         "Development Status :: 3 - Alpha",
     ],
-    install_requires=[],
+    install_requires=[
+        "bibrecord",
+        "numpy",
+    ],
     extras_require={
         "dev": [
             "prospector",
