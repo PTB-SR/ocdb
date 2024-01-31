@@ -1,8 +1,8 @@
-=======================
-Developer documentation
-=======================
+============
+Contributing
+============
 
-Welcome to the developer documentation of the ocdb package. Unlike the :doc:`API documentation <api/index>`, this part gives some general background information for developers who want to actively contribute to the project.
+You want to contribute to the ocdb package? Excellent! Here, you will get some important background information regarding the necessary and available tools, the code formatting and organisation, tests, static code analysis, and how to build the documentation.
 
 
 Virtual environment

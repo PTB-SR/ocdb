@@ -4,7 +4,7 @@ ocdb
 
 *Optical constants for elements and various materials in the EUV and VUV wavelengths.*
 
-Welcome! This is ocdb, a Python package for easily accessing the X-ray/EUV/VUV scattering and absorption data contained in the `Optical Constants Database (OCDB) <https://www.ocdb.ptb.de/>`_ provided by the German National Metrology Institute, the `Physikalisch-Technische Bundesanstalt, PTB <https://www.ptb.de/>`_.
+Welcome! This is ocdb, a **Python package** for easily accessing the X-ray/EUV/VUV **scattering and absorption data** contained in the `Optical Constants Database (OCDB) <https://www.ocdb.ptb.de/>`_ provided by the German National Metrology Institute, the `Physikalisch-Technische Bundesanstalt, PTB <https://www.ptb.de/>`_.
 
 
 Features
