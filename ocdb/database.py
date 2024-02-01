@@ -137,8 +137,12 @@ class Material:
         self.reference = bibrecord.record.Record()
         self.metadata = Metadata()
 
-        self._n = Data()
-        self._k = Data()
+        self.n_data = Data()
+        self.n_data.axes[1].quantity = "dispersion coefficient"
+        self.n_data.axes[1].symbol = "n"
+        self.k_data = Data()
+        self.k_data.axes[1].quantity = "extinction coefficient"
+        self.k_data.axes[1].symbol = "k"
 
     def n(self, uncertainties=False):  # pylint: disable=invalid-name
         """
@@ -158,16 +162,16 @@ class Material:
             lower and upper bound.
 
         """
-        wavelengths = self._n.axes[0].values
+        wavelengths = self.n_data.axes[0].values
         if uncertainties:
             output = (
                 wavelengths,
-                self._n.data,
-                self._n.lower_bounds,
-                self._n.upper_bounds,
+                self.n_data.data,
+                self.n_data.lower_bounds,
+                self.n_data.upper_bounds,
             )
         else:
-            output = (wavelengths, self._n.data)
+            output = (wavelengths, self.n_data.data)
         return output
 
     def k(self, uncertainties=False):
@@ -185,16 +189,16 @@ class Material:
             wavelength and *k* as :class:`numpy.ndarray`
 
         """
-        wavelengths = self._k.axes[0].values
+        wavelengths = self.k_data.axes[0].values
         if uncertainties:
             output = (
                 wavelengths,
-                self._k.data,
-                self._k.lower_bounds,
-                self._k.upper_bounds,
+                self.k_data.data,
+                self.k_data.lower_bounds,
+                self.k_data.upper_bounds,
             )
         else:
-            output = (wavelengths, self._k.data)
+            output = (wavelengths, self.k_data.data)
         return output
 
     def index_of_refraction(self, uncertainties=False):
@@ -209,19 +213,19 @@ class Material:
         Returns
         -------
         index_of_refraction : :class:`tuple`
-            wavelength and *n* + i\ *k* as :class:`numpy.ndarray`
+            wavelength and *n* - i\ *k* as :class:`numpy.ndarray`
 
         """
-        n_k = self._n.data + 1j * self._k.data
-        wavelengths = self._k.axes[0].values
+        n_k = self.n_data.data - 1j * self.k_data.data
+        wavelengths = self.k_data.axes[0].values
         if uncertainties:
             output = (
                 wavelengths,
                 n_k,
-                self._n.lower_bounds,
-                self._n.upper_bounds,
-                self._k.lower_bounds,
-                self._k.upper_bounds,
+                self.n_data.lower_bounds,
+                self.n_data.upper_bounds,
+                self.k_data.lower_bounds,
+                self.k_data.upper_bounds,
             )
         else:
             output = wavelengths, n_k

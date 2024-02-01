@@ -81,6 +81,22 @@ class TestMaterial(unittest.TestCase):
         self.assertIsInstance(nk[4], np.ndarray)
         self.assertIsInstance(nk[5], np.ndarray)
 
+    def test_n_has_correct_symbol_set_in_axis(self):
+        self.assertEqual("n", self.material.n_data.axes[1].symbol)
+
+    def test_k_has_correct_symbol_set_in_axis(self):
+        self.assertEqual("k", self.material.k_data.axes[1].symbol)
+
+    def test_n_has_correct_quantity_set_in_axis(self):
+        self.assertEqual(
+            "dispersion coefficient", self.material.n_data.axes[1].quantity
+        )
+
+    def test_k_has_correct_quantity_set_in_axis(self):
+        self.assertEqual(
+            "extinction coefficient", self.material.k_data.axes[1].quantity
+        )
+
 
 class TestData(unittest.TestCase):
     def setUp(self):
