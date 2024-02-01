@@ -13,4 +13,6 @@ An alphabetic list of the modules available within the ocdb package. The actual 
     :maxdepth: 1
 
     ocdb.database
+    ocdb.io
+
 
