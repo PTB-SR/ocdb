@@ -131,21 +131,14 @@ class Material:
 
     """
 
-    # pylint: disable=too-many-instance-attributes
     def __init__(self):
         self.name = ""
         self.symbol = ""
         self.reference = bibrecord.record.Record()
         self.metadata = Metadata()
 
-        # TODO: Shall at least n, k, and uncertainties be one matrix "data"?
-        self._wavelengths = np.ndarray(0)
-        self._n = np.ndarray(0)
-        self._n_lb = np.ndarray(0)
-        self._n_ub = np.ndarray(0)
-        self._k = np.ndarray(0)
-        self._k_lb = np.ndarray(0)
-        self._k_ub = np.ndarray(0)
+        self._n = Data()
+        self._k = Data()
 
     def n(self, uncertainties=False):  # pylint: disable=invalid-name
         """
@@ -165,10 +158,16 @@ class Material:
             lower and upper bound.
 
         """
+        wavelengths = self._n.axes[0].values
         if uncertainties:
-            output = (self._wavelengths, self._n, self._n_lb, self._n_ub)
+            output = (
+                wavelengths,
+                self._n.data,
+                self._n.lower_bounds,
+                self._n.upper_bounds,
+            )
         else:
-            output = (self._wavelengths, self._n)
+            output = (wavelengths, self._n.data)
         return output
 
     def k(self, uncertainties=False):
@@ -186,10 +185,16 @@ class Material:
             wavelength and *k* as :class:`numpy.ndarray`
 
         """
+        wavelengths = self._k.axes[0].values
         if uncertainties:
-            output = (self._wavelengths, self._k, self._k_lb, self._k_ub)
+            output = (
+                wavelengths,
+                self._k.data,
+                self._k.lower_bounds,
+                self._k.upper_bounds,
+            )
         else:
-            output = (self._wavelengths, self._k)
+            output = (wavelengths, self._k.data)
         return output
 
     def index_of_refraction(self, uncertainties=False):
@@ -207,20 +212,149 @@ class Material:
             wavelength and *n* + i\ *k* as :class:`numpy.ndarray`
 
         """
-        n_k = self._n + 1j * self._k
+        n_k = self._n.data + 1j * self._k.data
+        wavelengths = self._k.axes[0].values
         if uncertainties:
             output = (
-                self._wavelengths,
+                wavelengths,
                 n_k,
-                self._n_lb,
-                self._n_ub,
-                self._k_lb,
-                self._k_ub,
+                self._n.lower_bounds,
+                self._n.upper_bounds,
+                self._k.lower_bounds,
+                self._k.upper_bounds,
             )
         else:
-            output = self._wavelengths, n_k
+            output = wavelengths, n_k
 
         return output
+
+
+class Data:
+    """
+    Unit containing both, numeric data and corresponding axes.
+
+    Attributes
+    ----------
+    data : :class:`numpy.ndarray`
+        Actual numerical data.
+
+    axes : :class:`list`
+        List of :obj:`Axis` objects corresponding to the data.
+
+        Note that there are always two axes, one with the independent values,
+        the other without values, but with the relevant metadata to create
+        appropriate axis labels, *i.e.* at least measure/symbol.
+
+    lower_bounds : :class:`numpy.ndarray`
+        Lower bounds for uncertainty of the values stored in :attr:`data`.
+
+        Could be an empty array. Use :meth:`has_uncertainties` for a convenient
+        check.
+
+    upper_bounds : :class:`numpy.ndarray`
+        Upper bounds for uncertainty of the values stored in :attr:`data`.
+
+        Could be an empty array. Use :meth:`has_uncertainties` for a convenient
+        check.
+
+    """
+
+    def __init__(self):
+        self.data = np.ndarray(0)
+        self.axes = [Axis(), Axis()]
+        self.lower_bounds = np.ndarray(0)
+        self.upper_bounds = np.ndarray(0)
+
+    def has_uncertainties(self):
+        """
+        Indicate whether uncertainties are present.
+
+        Only in case of both, lower *and* upper boundary being present will
+        the answer be "True".
+
+        Returns
+        -------
+        answer : :class:`bool`
+            Whether data contain uncertainties
+
+        """
+        return self.lower_bounds.size and self.upper_bounds.size
+
+
+class Axis:
+    """
+    Data and metadata for an axis.
+
+    Data (stored in :class:`Data`) will always have at least two axes (except
+    single points). One axis contains both, values (the independent variable)
+    and metadata for the corresponding label, the second axis will only contain
+    the metadata.
+
+
+    Attributes
+    ----------
+    values : :class:`numpy.ndarray`
+        Values of the independent variable data are available for
+
+    quantity : :class:`str`
+        Textual description of the quantity of the axis
+
+        This will usually be a name. For the (mathematical) symbol, use
+        :attr:`symbol` (and see there).
+
+        Usually used as first part of an automatically generated axis label.
+        For automatically generated axis labels, see :meth:`get_label`.
+
+    symbol : :class:`str`
+        Symbol for the quantity of the numerical data.
+
+        Usually used as first part of an automatically generated axis label.
+        For automatically generated axis labels, see :meth:`get_label`.
+
+    unit : :class:`str`
+        unit of the numerical data
+
+        Usually used as second part of an automatically generated axis label,
+        separated with a slash from the quantity or symbol.
+        For automatically generated axis labels, see :meth:`get_label`.
+
+    """
+
+    def __init__(self):
+        self.values = np.ndarray(0)
+        self.quantity = ""
+        self.unit = ""
+        self.symbol = ""
+
+    def get_label(self):
+        """
+        Get axis label according to IUPAC conventions.
+
+        .. note::
+
+            There are three alternative ways of writing axis labels, one with
+            using the quantity name and the unit, one with using the quantity
+            symbol and the unit, and one using both, quantity name and symbol,
+            usually separated by comma. Quantity and unit shall always be
+            separated by a slash. Which way you prefer is a matter of personal
+            taste and given context.
+
+
+        Returns
+        -------
+        label : :class:`str`
+            Axis label that can be used for a plot.
+
+        """
+        if self.symbol:
+            measure = f"${self.symbol}$"
+        else:
+            measure = self.quantity
+        if self.unit:
+            label = f"{measure} / {self.unit}"
+        else:
+            label = measure
+        return label
 
 
 class Metadata:

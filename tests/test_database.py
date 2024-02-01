@@ -57,7 +57,7 @@ class TestMaterial(unittest.TestCase):
 
     def test_n_with_uncertainties_returns_four_numpy_arrays(self):
         n = self.material.n(uncertainties=True)
-        self.assertEquals(4, len(n))
+        self.assertEqual(4, len(n))
         self.assertIsInstance(n[0], np.ndarray)
         self.assertIsInstance(n[1], np.ndarray)
         self.assertIsInstance(n[2], np.ndarray)
@@ -65,7 +65,7 @@ class TestMaterial(unittest.TestCase):
 
     def test_k_with_uncertainties_returns_four_numpy_arrays(self):
         k = self.material.k(uncertainties=True)
-        self.assertEquals(4, len(k))
+        self.assertEqual(4, len(k))
         self.assertIsInstance(k[0], np.ndarray)
         self.assertIsInstance(k[1], np.ndarray)
         self.assertIsInstance(k[2], np.ndarray)
@@ -73,13 +73,92 @@ class TestMaterial(unittest.TestCase):
 
     def test_index_of_refr_with_uncertainties_returns_six_numpy_arrays(self):
         nk = self.material.index_of_refraction(uncertainties=True)
-        self.assertEquals(6, len(nk))
+        self.assertEqual(6, len(nk))
         self.assertIsInstance(nk[0], np.ndarray)
         self.assertIsInstance(nk[1], np.ndarray)
         self.assertIsInstance(nk[2], np.ndarray)
         self.assertIsInstance(nk[3], np.ndarray)
         self.assertIsInstance(nk[4], np.ndarray)
         self.assertIsInstance(nk[5], np.ndarray)
+
+
+class TestData(unittest.TestCase):
+    def setUp(self):
+        self.data = database.Data()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "data",
+            "axes",
+            "lower_bounds",
+            "upper_bounds",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.data, attribute))
+
+    def test_has_uncertainties_returns_true_if_lb_and_ub_present(self):
+        self.data.lower_bounds = np.zeros(10)
+        self.data.upper_bounds = np.ones(10)
+        self.assertTrue(self.data.has_uncertainties())
+
+    def test_has_uncertainties_returns_false_if_lb_is_missing(self):
+        self.data.upper_bounds = np.ones(10)
+        self.assertFalse(self.data.has_uncertainties())
+
+    def test_has_uncertainties_returns_false_if_ub_is_missing(self):
+        self.data.lower_bounds = np.zeros(10)
+        self.assertFalse(self.data.has_uncertainties())
+
+    def test_has_uncertainties_returns_false_if_lb_and_ub_are_missing(self):
+        self.assertFalse(self.data.has_uncertainties())
+
+
+class TestAxis(unittest.TestCase):
+    def setUp(self):
+        self.axis = database.Axis()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "values",
+            "quantity",
+            "unit",
+            "symbol",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.axis, attribute))
+
+    def test_get_label_returns_string(self):
+        self.assertIsInstance(self.axis.get_label(), str)
+
+    def test_get_label_with_quantity_only_returns_quantity(self):
+        self.axis.quantity = "foo"
+        self.assertEqual(self.axis.quantity, self.axis.get_label())
+
+    def test_get_label_with_quantity_and_unit_returns_both_with_slash(self):
+        self.axis.quantity = "foo"
+        self.axis.unit = "bar"
+        self.assertEqual(
+            f"{self.axis.quantity} / {self.axis.unit}", self.axis.get_label()
+        )
+
+    def test_get_label_with_symbol_and_quantity_returns_symbol(self):
+        self.axis.symbol = r"\delta"
+        self.axis.quantity = "foo"
+        self.assertEqual(f"${self.axis.symbol}$", self.axis.get_label())
+
+    def test_get_label_with_symbol_quantity_unit_returns_symbol_unit(self):
+        self.axis.symbol = r"\delta"
+        self.axis.quantity = "foo"
+        self.axis.unit = "bar"
+        self.assertEqual(
+            f"${self.axis.symbol}$ / {self.axis.unit}", self.axis.get_label()
+        )
 
 
 class TestMetadata(unittest.TestCase):
