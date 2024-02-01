@@ -131,31 +131,54 @@ class Material:
 
     """
 
+    # pylint: disable=too-many-instance-attributes
     def __init__(self):
         self.name = ""
         self.symbol = ""
         self.reference = bibrecord.record.Record()
         self.metadata = Metadata()
 
+        # TODO: Shall at least n, k, and uncertainties be one matrix "data"?
         self._wavelengths = np.ndarray(0)
         self._n = np.ndarray(0)
+        self._n_lb = np.ndarray(0)
+        self._n_ub = np.ndarray(0)
         self._k = np.ndarray(0)
+        self._k_lb = np.ndarray(0)
+        self._k_ub = np.ndarray(0)
 
-    def n(self):  # pylint: disable=invalid-name
+    def n(self, uncertainties=False):  # pylint: disable=invalid-name
         """
         Return real part *n* of the index of refraction.
+
+        Parameters
+        ----------
+        uncertainties : :class:`bool`
+            Whether to return uncertainties as separate arrays in output
 
         Returns
         -------
         n : :class:`tuple`
             wavelength and *n* as :class:`numpy.ndarray`
 
-        """
-        return self._wavelengths, self._n
+            In case of uncertainties set to True, two additional arrays with
+            lower and upper bound.
 
-    def k(self):
+        """
+        if uncertainties:
+            output = (self._wavelengths, self._n, self._n_lb, self._n_ub)
+        else:
+            output = (self._wavelengths, self._n)
+        return output
+
+    def k(self, uncertainties=False):
         """
         Return imaginary part *k* of the index of refraction.
+
+        Parameters
+        ----------
+        uncertainties : :class:`bool`
+            Whether to return uncertainties as separate arrays in output
 
         Returns
         -------
@@ -163,11 +186,20 @@ class Material:
             wavelength and *k* as :class:`numpy.ndarray`
 
         """
-        return self._wavelengths, self._k
+        if uncertainties:
+            output = (self._wavelengths, self._k, self._k_lb, self._k_ub)
+        else:
+            output = (self._wavelengths, self._k)
+        return output
 
-    def index_of_refraction(self):
+    def index_of_refraction(self, uncertainties=False):
         r"""
         Return complex index of refraction
+
+        Parameters
+        ----------
+        uncertainties : :class:`bool`
+            Whether to return uncertainties as separate arrays in output
 
         Returns
         -------
@@ -175,7 +207,20 @@ class Material:
             wavelength and *n* + i\ *k* as :class:`numpy.ndarray`
 
         """
-        return self._wavelengths, self._n + 1j * self._k
+        n_k = self._n + 1j * self._k
+        if uncertainties:
+            output = (
+                self._wavelengths,
+                n_k,
+                self._n_lb,
+                self._n_ub,
+                self._k_lb,
+                self._k_ub,
+            )
+        else:
+            output = self._wavelengths, n_k
+
+        return output
 
 
 class Metadata:

@@ -55,6 +55,32 @@ class TestMaterial(unittest.TestCase):
         self.assertIsInstance(nk[1], np.ndarray)
         self.assertTrue(all(np.iscomplex(nk[1])))
 
+    def test_n_with_uncertainties_returns_four_numpy_arrays(self):
+        n = self.material.n(uncertainties=True)
+        self.assertEquals(4, len(n))
+        self.assertIsInstance(n[0], np.ndarray)
+        self.assertIsInstance(n[1], np.ndarray)
+        self.assertIsInstance(n[2], np.ndarray)
+        self.assertIsInstance(n[3], np.ndarray)
+
+    def test_k_with_uncertainties_returns_four_numpy_arrays(self):
+        k = self.material.k(uncertainties=True)
+        self.assertEquals(4, len(k))
+        self.assertIsInstance(k[0], np.ndarray)
+        self.assertIsInstance(k[1], np.ndarray)
+        self.assertIsInstance(k[2], np.ndarray)
+        self.assertIsInstance(k[3], np.ndarray)
+
+    def test_index_of_refr_with_uncertainties_returns_six_numpy_arrays(self):
+        nk = self.material.index_of_refraction(uncertainties=True)
+        self.assertEquals(6, len(nk))
+        self.assertIsInstance(nk[0], np.ndarray)
+        self.assertIsInstance(nk[1], np.ndarray)
+        self.assertIsInstance(nk[2], np.ndarray)
+        self.assertIsInstance(nk[3], np.ndarray)
+        self.assertIsInstance(nk[4], np.ndarray)
+        self.assertIsInstance(nk[5], np.ndarray)
+
 
 class TestMetadata(unittest.TestCase):
     def setUp(self):
