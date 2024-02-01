@@ -45,7 +45,7 @@ setuptools.setup(
     install_requires=[
         "bibrecord",
         "numpy",
-        "PyYAML",
+        "oyaml",
     ],
     extras_require={
         "dev": [

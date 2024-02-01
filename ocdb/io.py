@@ -1,3 +1,4 @@
+# noqa: D405 D407
 """
 Interfaces to the persistence layer, *i.e.* importers and eventually exporters.
 
@@ -112,6 +113,12 @@ comment
     information in the comment.
 
 
+Rather than creating the metadata YAML files by hand, (data) contributors to
+the ocdb package should use the :func:`create_metadata_file` function. This
+function will always use the latest metadata scheme to write the template.
+See the :func:`create_metadata_file` documentation for further details.
+
+
 .. warning::
 
     The format/contents of the metadata file is/are currently still under
@@ -124,6 +131,16 @@ comment
     metadata in :meth:`DataImporter._import_metadata`.
 
 
+Note for developers
+===================
+
+The metadata schema for the metadata files is currently contained in the
+:attr:`METADATA` attribute of the :mod:`io` module (at the very top, straight
+after the import statements). This is the (only) place to change the version
+number of the format, and the function :func:`create_metadata_file` makes use
+of the :attr:`METADATA` attribute to populate the template file.
+
+
 Module documentation
 ====================
 
@@ -131,9 +148,41 @@ Module documentation
 import os.path
 
 import numpy as np
-import yaml
+import oyaml as yaml
 
 from ocdb import database
+
+
+METADATA = {
+    "format": {
+        "type": "OCDB metadata",
+        "version": "1.0.rc-1",
+    },
+    "filename": {
+        "name": "",
+        "format": "text",
+    },
+    "material": {
+        "name": "",
+        "symbol": "",
+    },
+    "sample": {
+        "thickness": "xx nm",
+        "substrate": "",
+        "layer_stack": "",
+        "morphology": "amorphous",
+    },
+    "measurement": {
+        "facility": "BESSY-II",
+        "beamline": "SX700",
+        "date": "2022-04-00",
+    },
+    "references": [""],
+    "versions": [
+        {"name": "", "format": ""},
+    ],
+    "comment": "",
+}
 
 
 class DataImporter:
@@ -310,7 +359,7 @@ class TxtDataImporter(DataImporter):
         data = np.loadtxt(self.data_filename)
         self.material.n_data.axes[0].values = data[:, 0]
         self.material.n_data.axes[0].quantity = "wavelength"
-        self.material.n_data.axes[0].symbol = "\lambda"
+        self.material.n_data.axes[0].symbol = r"\lambda"
         self.material.n_data.axes[0].unit = "nm"
         self.material.n_data.data = data[:, 1]
         self.material.k_data.axes[0] = self.material.n_data.axes[0]
@@ -320,3 +369,28 @@ class TxtDataImporter(DataImporter):
             self.material.n_data.upper_bounds = data[:, 4]
             self.material.k_data.lower_bounds = data[:, 5]
             self.material.k_data.upper_bounds = data[:, 6]
+
+
+def create_metadata_file(filename=""):
+    """
+    Create a metadata template file in YAML format.
+
+    The metadata accompanying the data of the OCDB in the ocdb package are
+    stored in metadata files in YAML format. To help (data) contributors to
+    create these metadata files, this function takes a metadata file name and
+    creates a YAML template file with the current metadata structure.
+
+    All that is left to do to the data contributors is to fill out the fields
+    of the metadata file and to submit both, metadata and data file to the ocdb
+    package maintainers.
+
+    Parameters
+    ----------
+    filename : :class:`str`
+        Name of the metadata file that should be created
+
+    """
+    if not filename:
+        raise ValueError("Missing filename")
+    with open(filename, "w+", encoding="utf8") as file:
+        file.write(yaml.dump(METADATA))

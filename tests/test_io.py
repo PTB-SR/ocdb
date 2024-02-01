@@ -197,3 +197,20 @@ class TestTxtDataImporter(unittest.TestCase):
         material = self.importer.import_data()
         self.assertFalse(material.n_data.has_uncertainties())
         self.assertFalse(material.k_data.has_uncertainties())
+
+
+class TestCreateMetadataFile(unittest.TestCase):
+    def setUp(self):
+        self.filename = "foo.yaml"
+
+    def tearDown(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+    def test_crate_metadata_file_creates_file(self):
+        io.create_metadata_file(filename=self.filename)
+        self.assertTrue(os.path.exists(self.filename))
+
+    def test_create_metadata_file_without_filename_raises(self):
+        with self.assertRaises(ValueError):
+            io.create_metadata_file()
