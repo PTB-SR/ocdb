@@ -53,8 +53,12 @@ needs nothing else than the name of an existing metadata file to start with.
     references:
       - saadeh-optik-273-170455
     versions:
-      - name: foo-1.txt
-        format: text
+      - identifier: Co_2018
+        description: Lorem ipsum...
+        metadata: foo-1.yaml
+        data:
+          name: foo-1.txt
+          format: text
     comment: >
       Lorem ipsum
 
@@ -97,12 +101,27 @@ references
     in the ``db/`` directory of the ocdb package.
 
 versions
-    List of name/format entries for additional datasets for the same material.
+    List of entries for additional datasets for the same material.
 
     Over time, different datasets will be available for the same material.
     Hence, it may be of interest to access the older datasets that are superset
     by a new one, at least get the information that there are some and where
     they are located in the ocdb.
+
+    To be able to sensibly address those additional datasets from within the
+    ocdb package, they need a (unique) identifier, a (short) description and
+    the information where to find the data and metadata.
+
+    .. todo::
+
+        How to discriminate between current and old/superseded versions? One
+        possibility would be to have only the metadata files of the most
+        current datasets in the ``metadata`` directory, and the metadata of the
+        superseded/alternative datasets in a separate (parallel) directory (or
+        simply the ``data`` directory). This "convention over configuration"
+        approach would allow the ocdb package to import all data from a given
+        location, without need to first check for each metadata file whether it
+        has been superseded or not.
 
 comment
     Textual description of whatever additional information.
@@ -129,6 +148,25 @@ See the :func:`create_metadata_file` documentation for further details.
 
     Complete format of the metadata file and implement the missing mapping of
     metadata in :meth:`DataImporter._import_metadata`.
+
+
+Data files
+----------
+
+Data files reside in a directory separate from the metadata. The reason of this
+"convention over configuration" approach is simply to allow the machinery
+importing all the data for the user to iterate over all files in a directory
+and import the accompanying (meta)data.
+
+As described above, for one material, there can (and will) be several datasets,
+each with their data (and metadata) files. Where the additional metadata files
+are stored is still under discussion, for details see the section on metadata
+above.
+
+Data files are, for the time being, simply text files as those currently
+available from the OCDB. Those data files can be read using the
+:class:`TxtDataImporter` class. Users typically do not care about data import,
+as the ocdb package handles all this transparently and automatically for them.
 
 
 Note for developers
@@ -179,7 +217,12 @@ METADATA = {
     },
     "references": [""],
     "versions": [
-        {"name": "", "format": ""},
+        {
+            "identifier": "",
+            "description": "",
+            "metadata": "",
+            "data": {"name": "", "format": ""},
+        },
     ],
     "comment": "",
 }
