@@ -315,6 +315,14 @@ class Axis:
         Usually used as first part of an automatically generated axis label.
         For automatically generated axis labels, see :meth:`get_label`.
 
+        Symbols are treated as mathematical variables, hence you can use at
+        least a standard subset of LaTeX math commands. If in doubt, havw a
+        look at the corresponding section of the `Matplotlib documentation
+        <https://matplotlib.org/stable/users/explain/text/mathtext.html>`_
+        what subset of LaTeX markup is supported without having to use a
+        full LaTeX engine. At the very least, greek letters and sub- and
+        superscript work as expected.
+
     unit : :class:`str`
         unit of the numerical data
 
