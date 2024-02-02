@@ -98,6 +98,34 @@ class TestMaterial(unittest.TestCase):
             "extinction coefficient", self.material.k_data.axes[1].quantity
         )
 
+    def test_has_plotter_factory(self):
+        self.assertIsInstance(
+            self.material.plotter_factory, database.AbstractPlotterFactory
+        )
+
+    def test_plot_returns_plotter(self):
+        self.assertIsInstance(self.material.plot(), database.AbstractPlotter)
+
+    def test_plot_calls_plotter(self):
+        class Plotter(database.AbstractPlotter):
+            def __init__(self):
+                self.called = False
+
+            def plot(self):
+                self.called = True
+
+        class PlotterFactory(database.AbstractPlotterFactory):
+            def get_plotter(self, **kwargs):
+                return Plotter()
+
+        self.material.plotter_factory = PlotterFactory()
+        plotter = self.material.plot()
+        self.assertTrue(plotter.called)
+
+    def test_plot_sets_dataset_in_plotter(self):
+        plotter = self.material.plot()
+        self.assertIs(plotter.dataset, self.material)
+
 
 class TestData(unittest.TestCase):
     def setUp(self):
@@ -224,22 +252,10 @@ class TestAbstractPlotter(unittest.TestCase):
 
     def test_has_attributes(self):
         attributes = [
-            "fig",
-            "figure",
-            "ax",
-            "axes",
             "dataset",
         ]
         for attribute in attributes:
             self.assertTrue(hasattr(self.plotter, attribute))
-
-    def test_figure_is_identical_with_fig(self):
-        self.plotter.figure = "Foo"
-        self.assertEqual(self.plotter.figure, self.plotter.fig)
-
-    def test_axes_is_identical_with_ax(self):
-        self.plotter.axes = "Foo"
-        self.assertEqual(self.plotter.axes, self.plotter.ax)
 
     def test_has_plot_method(self):
         self.assertTrue(hasattr(self.plotter, "plot"))

@@ -73,6 +73,19 @@ class Material:
         as well as sensible use of the data requires access to all relevant
         metadata.
 
+    plotter_factory : :class:`AbstractPlotterFactory`
+        Factory for creating plotter objects on request.
+
+        Concrete Plotter are descendants of the :class:`AbstractPlotter`
+        class and reside in the :mod:`plotting` module. The :meth:`plot`
+        method of this class first calls the plotter factory to obtain the
+        appropriate plotter, and afterwards calls the
+        :meth:`AbstractPlotter.plot` method on this plotter object.
+
+        In case you wonder: in all practical cases, the actual plotter is a
+        descendant of the :class:`AbstractPlotter` class. See the
+        :mod:`plotting` module for details.)
+
 
     Examples
     --------
@@ -136,6 +149,8 @@ class Material:
         self.symbol = ""
         self.reference = bibrecord.record.Record()
         self.metadata = Metadata()
+
+        self.plotter_factory = AbstractPlotterFactory()
 
         self.n_data = Data()
         self.n_data.axes[1].quantity = "dispersion coefficient"
@@ -231,6 +246,46 @@ class Material:
             output = wavelengths, n_k
 
         return output
+
+    def plot(self):
+        """
+        Plot data.
+
+        Although not the primary concern of the ocdb package, getting an
+        overview of the data contained in the database is always a good
+        idea. Hence, for convenience, graphical representations of the
+        optical constants for a material are quite helpful.
+
+        Examples
+        --------
+        Plotting is rather straight-forward. Assuming an object of class
+        :class:`Material` and named ``stuff``, plotting the optical data
+        of "stuff" is as simple as:
+
+        .. code-block::
+
+            stuff.plot()
+
+        All the magic happens inside the plot method. For those interested
+        in more details: a plotter factory stored in
+        :attr:`plotter_factory` is asked for the appropriate plotter
+        object, and afterwards first the current :obj:`Material` object
+        whose :meth:`plot` method is called is set to the
+        :attr:`AbstractPlotter.dataset` property and after that the
+        :meth:`AbstractPlotter.plot` method of this plotter is called. As
+        you may be interested in the plotter object itself, it is returned
+        upon request.
+
+        Returns
+        -------
+        plotter : :class:`AbstractPlotter`
+            Plotter used for plotting the data.
+
+        """
+        plotter = self.plotter_factory.get_plotter()
+        plotter.dataset = self
+        plotter.plot()
+        return plotter
 
 
 class Data:
@@ -552,48 +607,13 @@ class AbstractPlotter:
 
     Attributes
     ----------
-    figure : :class:`matplotlib.figure.Figure`
-        Matplotlib figure containing the actual plot
-
-        For convenience, the shorthand :attr:`fig` does also work.
-
-    axes : :class:`matplotlib.axes.Axes`
-        Matplotlib axes containing the actual plot
-
-        For convenience, the shorthand :attr:`ax` does also work.
+    dataset : :class:`Material`
+        Source of data to plot.
 
     """
 
     def __init__(self):
-        self.figure = None
-        self.axes = None
         self.dataset = None
-
-    @property
-    def fig(self):
-        """
-        Convenience shorthand for the :attr:`figure` attribute.
-
-        Returns
-        -------
-        figure : :class:`matplotlib.figure.Figure`
-            Matplotlib figure containing the actual plot
-
-        """
-        return self.figure
-
-    @property
-    def ax(self):  # pylint: disable=invalid-name
-        """
-        Convenience shorthand for the :attr:`axes` attribute.
-
-        Returns
-        -------
-        figure : :class:`matplotlib.axes.Axes`
-            Matplotlib axes containing the actual plot
-
-        """
-        return self.axes
 
     def plot(self):
         """Perform the actual plotting."""
