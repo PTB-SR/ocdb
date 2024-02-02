@@ -508,6 +508,18 @@ class Collection:
         appear as attribute of the object. As this is dynamic, however, no
         concrete attributes can be described here.
 
+
+    .. todo::
+
+        May a collection eventually have some more attributes controlling,
+        *e.g.*, the type of interpolation used? May be sensible to
+        implement/store on this level and passed down to the individual
+        materials. Probably we need the information on the materials
+        level, but from the users perspective, usually interacting with
+        collections, additionally having the attribute here and pass it
+        down may make some sense.
+
+
     Examples
     --------
     Given a collection with items, here termed ``collection``, we may be
