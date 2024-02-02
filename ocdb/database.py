@@ -320,7 +320,7 @@ class Axis:
         look at the corresponding section of the `Matplotlib documentation
         <https://matplotlib.org/stable/users/explain/text/mathtext.html>`_
         what subset of LaTeX markup is supported without having to use a
-        full LaTeX engine. At the very least, greek letters and sub- and
+        full LaTeX engine. At the very least, Greek letters and sub- and
         superscript work as expected.
 
     unit : :class:`str`
@@ -515,3 +515,163 @@ class Collection:
 
         """
         setattr(self, item.symbol, item)
+
+
+class AbstractPlotter:
+    """
+    Abstract base class for plotters.
+
+    Although not the primary concern of the ocdb package, getting an overview
+    of the data contained in the database is always a good idea. Hence, for
+    convenience, graphical representations of the optical constants for a
+    material are quite helpful.
+
+    Plotting as such is provided in the :mod:`plotting` module, but the
+    abstract plotter class resides here, according to the dependency
+    inversion principle. To not have the hard dependency of the ocdb
+    package from the Matplotlib stack (as this will require a lot of other
+    packages to be present as well), no direct dependency on Matplotlib
+    exists at this stage.
+
+    .. important::
+
+        In order to access the plotting capabilities, you do need to have
+        Matplotlib installed, although it is not a hard requirement of
+        the ocdb package, to keep things clean and simple. The convenient
+        way to install the necessary requirements would be to use pip with
+        the optional requirements, such as:
+
+         .. code-block:: bash
+
+             pip install ocdb[presentation]
+
+        This will install all necessary dependencies for you. Note that
+        this step is only necessary if you ever want to access the
+        plotting capabilities. Using the ocdb package without Matplotlib
+        is entirely possible.
+
+    Attributes
+    ----------
+    figure : :class:`matplotlib.figure.Figure`
+        Matplotlib figure containing the actual plot
+
+        For convenience, the shorthand :attr:`fig` does also work.
+
+    axes : :class:`matplotlib.axes.Axes`
+        Matplotlib axes containing the actual plot
+
+        For convenience, the shorthand :attr:`ax` does also work.
+
+    """
+
+    def __init__(self):
+        self.figure = None
+        self.axes = None
+        self.dataset = None
+
+    @property
+    def fig(self):
+        """
+        Convenience shorthand for the :attr:`figure` attribute.
+
+        Returns
+        -------
+        figure : :class:`matplotlib.figure.Figure`
+            Matplotlib figure containing the actual plot
+
+        """
+        return self.figure
+
+    @property
+    def ax(self):  # pylint: disable=invalid-name
+        """
+        Convenience shorthand for the :attr:`axes` attribute.
+
+        Returns
+        -------
+        figure : :class:`matplotlib.axes.Axes`
+            Matplotlib axes containing the actual plot
+
+        """
+        return self.axes
+
+    def plot(self):
+        """Perform the actual plotting."""
+
+
+class AbstractPlotterFactory:
+    """
+    Abstract factory for plotter.
+
+    Different types of data and different situations require different
+    types of plotters. A simple example: Plotting either *n* or *k* is
+    usually a very simple line plot. Plotting both, *n* and *k* in one
+    axes requires two different axes left and right due to the
+    dramatically different ranges of the values (for *n* close to 1,
+    for *k* close to zero). Plotting values together with their
+    uncertainties is yet a different matter.
+
+    In any case, all the material wants and needs to know is that it
+    requires a plotter in order to get its data plotted. The abstract
+    interface of the plotter itself is described in the
+    :class:`AbstractPlotter` class, and the
+    :class:`AbstractPlotterFactory` is the one place to ask for the
+    correct plotter.
+
+    Concrete instances of both, :class:`AbstractPlotter` and
+    :class:`AbstractPlotterFactory` are implemented in the :mod:`plotting`
+    module. Only if you ever import this module would you need to have a
+    plotting framework (Matplotlib) installed.
+
+
+    Examples
+    --------
+    A factory usually has exactly one duty: Given a list of criteria,
+    return the object that fits these criteria. Hence, getting a plotter
+    from the factory is as simple as:
+
+    .. code-block::
+
+        plotter_factory = AbstractPlotterFactory()
+        plotter = plotter_factory.get_plotter()
+
+    The criteria for getting the *correct* plotter will be some key-value
+    pairs, hence the :meth:`get_plotter` method supports arbitrary
+    key-value pair (``**kwargs`` in Python speak):
+
+    .. code-block::
+
+        plotter_factory = AbstractPlotterFactory()
+        plotter = plotter_factory.get_plotter(uncertainties="True")
+
+    This may get you a plotter capable of plotting not only the values,
+    but the uncertainties as well. Details of the available plotters can
+    be found in the :mod:`plotting` documentation.
+
+    The actual users of the ocdb package will not see much of the factory,
+    as they will usually just call the :meth:`Materials.plot` method that
+    will take care of the rest.
+
+    """
+
+    # noinspection PyMethodMayBeStatic
+    # pylint: disable=unused-argument
+    def get_plotter(self, **kwargs):
+        """
+        Return plotter object given the criteria in the keyword arguments.
+
+        Parameters
+        ----------
+        kwargs
+            All parameters relevant to decide upon the correct plotter.
+
+            A list of key--value pairs, either as :class:`dict` or
+            separate, *i.e.* the Python ``**kwargs`` argument.
+
+        Returns
+        -------
+        plotter : :class:`AbstractPlotter`
+            Plotter that best fits the criteria provided by the parameters.
+
+        """
+        return AbstractPlotter()

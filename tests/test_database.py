@@ -1,4 +1,5 @@
 import bibrecord.record
+import matplotlib.figure
 import numpy as np
 import unittest
 
@@ -212,3 +213,50 @@ class TestCollection(unittest.TestCase):
         self.collection.add_item(self.item)
         for element in self.collection:
             self.assertIsInstance(element, database.Material)
+
+
+class TestAbstractPlotter(unittest.TestCase):
+    def setUp(self):
+        self.plotter = database.AbstractPlotter()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "fig",
+            "figure",
+            "ax",
+            "axes",
+            "dataset",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.plotter, attribute))
+
+    def test_figure_is_identical_with_fig(self):
+        self.plotter.figure = "Foo"
+        self.assertEqual(self.plotter.figure, self.plotter.fig)
+
+    def test_axes_is_identical_with_ax(self):
+        self.plotter.axes = "Foo"
+        self.assertEqual(self.plotter.axes, self.plotter.ax)
+
+    def test_has_plot_method(self):
+        self.assertTrue(hasattr(self.plotter, "plot"))
+        self.assertTrue(callable(self.plotter.plot))
+
+
+class TestAbstractPlotterFactory(unittest.TestCase):
+    def setUp(self):
+        self.factory = database.AbstractPlotterFactory()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_get_plotter_returns_plotter(self):
+        self.assertIsInstance(
+            self.factory.get_plotter(), database.AbstractPlotter
+        )
+
+    def test_get_plotter_accepts_keyword_arguments(self):
+        self.factory.get_plotter(foo=None, bar="foobar")

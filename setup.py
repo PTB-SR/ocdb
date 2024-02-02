@@ -48,6 +48,9 @@ setuptools.setup(
         "oyaml",
     ],
     extras_require={
+        "presentation": [
+            "matplotlib",
+        ],
         "dev": [
             "prospector",
             "pyroma",
