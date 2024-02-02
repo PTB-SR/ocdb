@@ -76,6 +76,12 @@ plotter object based on the criteria provided when calling
     actual :obj:`odcb.database.Material` objects, we would have to have
     Matplotlib at hand...
 
+    One idea would be to check for the availability of the matplotlib package
+    when creating all the :obj:`odcb.database.Material` objects and only
+    in case it is available to load the plotting module and replacing the
+    :obj:`ocdb.database.AbstractPlotterFactory` object with a
+    :obj:`PlotterFactory` object.
+
 
 Module documentation
 ====================
