@@ -33,26 +33,26 @@ that seem sensible:
 
 * :class:`SinglePlotter`
 
-    Plot either *n* or *k*. Basically a line plot.
+  Plot either *n* or *k*. Basically a line plot.
 
 * :class:`TwinPlotter`
 
-    Plot *n* and *k* together in one axes, with different scaling of the
-    left and right *y* axis due to the disjunctive values for *n* and *k*,
-    one close to 1 and the other close to 0.
+  Plot *n* and *k* together in one axes, with different scaling of the
+  left and right *y* axis due to the disjunctive values for *n* and *k*,
+  one close to 1 and the other close to 0.
 
 * :class:`SingleUncertaintiesPlotter`
 
-    Plot either *n* or *k* together with its uncertainties.
+  Plot either *n* or *k* together with its uncertainties.
 
-    Most probably a subclass of :class:`SinglePlotter`.
+  Most probably a subclass of :class:`SinglePlotter`.
 
 * :class:`TwinUncertaintiesPlotter`
 
-    Plot *n* and *k* together in one axes, with different scaling of the
-    left and right *y* axis, and both with their respective uncertainties.
+  Plot *n* and *k* together in one axes, with different scaling of the
+  left and right *y* axis, and both with their respective uncertainties.
 
-    Most probably a subclass of :class:`TwinPlotter`.
+  Most probably a subclass of :class:`TwinPlotter`.
 
 
 For developers
@@ -73,11 +73,11 @@ plotter object based on the criteria provided when calling
 
     How to deal with the dependency on Matplotlib, though? If we
     instantiate an object of :class:`PlotterFactory` upon creating the
-    actual :obj:`odcb.database.Material` objects, we would have to have
+    actual :obj:`ocdb.database.Material` objects, we would have to have
     Matplotlib at hand...
 
     One idea would be to check for the availability of the matplotlib package
-    when creating all the :obj:`odcb.database.Material` objects and only
+    when creating all the :obj:`ocdb.database.Material` objects and only
     in case it is available to load the plotting module and to replace the
     :obj:`ocdb.database.AbstractPlotterFactory` object with a
     :obj:`PlotterFactory` object. If Matplotlib is not available, probably
@@ -109,8 +109,8 @@ class PlotterFactory(database.AbstractPlotterFactory):
     Getting the appropriate plotter for the task at hand is the
     responsibility of this plotter factory.
 
-    In actual :obj:`database.Material` objects containing real data,
-    the :attr:`database.Material.plotter_factory` will be set to an
+    In actual :obj:`ocdb.database.Material` objects containing real data,
+    the :attr:`ocdb.database.Material.plotter_factory` will be set to an
     instance of this class.
 
     Examples
@@ -138,8 +138,8 @@ class PlotterFactory(database.AbstractPlotterFactory):
     be found in the :mod:`plotting` documentation.
 
     The actual users of the ocdb package will not see much of the factory,
-    as they will usually just call the :meth:`database.Materials.plot` method
-    that will take care of the rest.
+    as they will usually just call the :meth:`ocdb.database.Material.plot`
+    method that will take care of the rest.
 
     """
 
