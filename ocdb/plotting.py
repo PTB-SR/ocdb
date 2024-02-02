@@ -78,9 +78,10 @@ plotter object based on the criteria provided when calling
 
     One idea would be to check for the availability of the matplotlib package
     when creating all the :obj:`odcb.database.Material` objects and only
-    in case it is available to load the plotting module and replacing the
+    in case it is available to load the plotting module and to replace the
     :obj:`ocdb.database.AbstractPlotterFactory` object with a
-    :obj:`PlotterFactory` object.
+    :obj:`PlotterFactory` object. If Matplotlib is not available, probably
+    a warning should be issued that plotting is not possible.
 
 
 Module documentation
