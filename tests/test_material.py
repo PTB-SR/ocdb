@@ -213,13 +213,54 @@ class TestMetadata(unittest.TestCase):
 
     def test_has_attributes(self):
         attributes = [
-            "layer_thickness",
-            "substrate",
-            "layer_stack",
-            "date_of_measurement",
+            "sample",
+            "measurement",
+            "comment",
         ]
         for attribute in attributes:
             self.assertTrue(hasattr(self.metadata, attribute))
+
+    def test_sample_is_correct_class(self):
+        self.assertIsInstance(self.metadata.sample, material.Sample)
+
+    def test_measurement_is_correct_class(self):
+        self.assertIsInstance(self.metadata.measurement, material.Measurement)
+
+
+class TestSample(unittest.TestCase):
+    def setUp(self):
+        self.sample = material.Sample()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "thickness",
+            "substrate",
+            "layer_stack",
+            "morphology",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.sample, attribute))
+
+
+class TestMeasurement(unittest.TestCase):
+    def setUp(self):
+        self.measurement = material.Measurement()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "type",
+            "facility",
+            "beamline",
+            "date",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.measurement, attribute))
 
 
 class TestCollection(unittest.TestCase):

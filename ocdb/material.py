@@ -441,14 +441,52 @@ class Metadata:
 
     Attributes
     ----------
-    layer_thickness : :class:`None`
+    sample : :class:`Sample`
+        Metadata regarding the sample used to obtain the optical constants.
+
+    measurement : :class:`Measurement`
+        Metadata regarding the actual measurement.
+
+    comment : :class:`str`
+        Any relevant information that does not (yet) fit into anywhere else.
+
+        There is nearly always the need to store some information that
+        just does not fit into any of the fields. However, use with care
+        and expand the data structure if you realise that you repeatedly
+        store the same (kind of) information in the comment.
+
+    """
+
+    def __init__(self):
+        self.sample = Sample()
+        self.measurement = Measurement()
+        self.comment = ""
+
+
+class Sample:
+    """
+    Relevant metadata of the sample measured to get its optical constants.
+
+    Data are only as good as their accompanying metadata. Hence, metadata
+    are a prerequisite for both, reproducibility and correct use of the data.
+
+    This class provides a structure and hence access to the relevant metadata
+    regarding the sample that was measured to obtain the optical constants
+    of a given material. These metadata should be as machine-actionable as
+    possible, allowing for automatic processing of information wherever
+    sensible.
+
+
+    Attributes
+    ----------
+    thickness : :class:`None`
         Thickness of the layer of the actual material of interest.
 
         The materials whose optical constants are contained in the OCDB have
-        been measured on thin films in reflection, not as free-standing thin
-        films in transmission. Therefore, the material of interest is a (thin)
-        film supported by a substrate and in many cases a more complex stack of
-        different layers.
+        usually been measured on thin films in reflection, not as
+        free-standing thin films in transmission. Therefore, the material
+        of interest is a (thin) film supported by a substrate and in many
+        cases a more complex stack of different layers.
 
         .. todo::
             Decide upon the type of this attribute.
@@ -457,34 +495,69 @@ class Metadata:
     substrate : :class:`str`
         Name of the substrate supporting the actual material of interest.
 
-        Note that the substrate is typically different from the (more complex)
-        layer stack. For the latter, see the :attr:`layer_stack` attribute.
+        Note that the substrate is typically different from the (more
+        complex) layer stack. For the latter, see the :attr:`layer_stack`
+        attribute.
 
     layer_stack : :class:`str`
         Description of the (complex) layer stack of the sample.
 
         The materials whose optical constants are contained in the OCDB have
         been measured on thin films in reflection, not as free-standing thin
-        films in transmission. Therefore, the material of interest is a (thin)
-        film supported by a substrate and in many cases a more complex stack of
-        different layers.
+        films in transmission. Therefore, the material of interest is a
+        (thin) film supported by a substrate and in many cases a more
+        complex stack of different layers.
 
-        A brief description of this layer stack, *e.g.* "Si (C/ Co/ Ru/ Si)",
+        A brief description of this layer stack, *e.g.* "C/Co/Ru@Si",
         should be provided here.
 
-    date_of_measurement : :class:`None`
-        Date of the measurement.
-
-        .. todo::
-            Decide upon the type of this attribute. Python date object?
+    morphology : :class:`str`
+        Morphology of the sample.
 
     """
 
     def __init__(self):
-        self.layer_thickness = None
+        self.thickness = None
         self.substrate = ""
         self.layer_stack = ""
-        self.date_of_measurement = None
+        self.morphology = ""
+
+
+class Measurement:
+    """
+    Metadata regarding the actual measurement.
+
+    The data contained in the optical constants database are usually
+    recorded at a synchrotron and in reflection mode. Basic metadata
+    describing the setup used and the measurement performed are stored in
+    this class in a machine-actioable form.
+
+
+    Attributes
+    ----------
+    type : :class:`str`
+        Type of measurement.
+
+        There are two types of measurements usually performed: reflection
+        or transmission. Currently, all data contained in the OCDB are
+        obtained using reflection-type measurements.
+
+    facility : :class:`str`
+        Name of the facility the measurement was carried out at.
+
+    beamline : :class:`str`
+        Name of the beamline the measurement was performed at.
+
+    date : :class:`datetime.date`
+        Date of the measurement.
+
+    """
+
+    def __init__(self):
+        self.type = ""
+        self.facility = ""
+        self.beamline = ""
+        self.date = None
 
 
 class Collection:
