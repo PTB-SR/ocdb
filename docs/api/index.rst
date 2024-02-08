@@ -12,7 +12,7 @@ An alphabetic list of the modules available within the ocdb package. The actual 
 .. toctree::
     :maxdepth: 1
 
-    ocdb.database
+    ocdb.material
     ocdb.io
     ocdb.plotting
 

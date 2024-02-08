@@ -2,7 +2,7 @@ import matplotlib.figure
 import matplotlib.axes
 import unittest
 
-from ocdb import database, plotting
+from ocdb import material, plotting
 
 
 class TestPlotterFactory(unittest.TestCase):
@@ -13,7 +13,7 @@ class TestPlotterFactory(unittest.TestCase):
         pass
 
     def test_is_abstract_plotter_factory(self):
-        self.assertIsInstance(self.factory, database.AbstractPlotterFactory)
+        self.assertIsInstance(self.factory, material.AbstractPlotterFactory)
 
     def test_get_plotter_returns_plotter(self):
         self.assertIsInstance(
@@ -29,7 +29,7 @@ class TestBasePlotter(unittest.TestCase):
         pass
 
     def test_is_abstract_plotter(self):
-        self.assertIsInstance(self.plotter, database.AbstractPlotter)
+        self.assertIsInstance(self.plotter, material.AbstractPlotter)
 
     def test_has_attributes(self):
         attributes = [

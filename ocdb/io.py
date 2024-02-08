@@ -211,7 +211,7 @@ See the :func:`create_metadata_file` documentation for further details.
 
     The format/contents of the metadata file is/are currently still under
     development. Furthermore, the automatic mapping of metadata to the
-    :obj:`ocdb.database.Material` is not complete.
+    :obj:`ocdb.material.Material` is not complete.
 
 .. todo::
 
@@ -257,7 +257,7 @@ import os.path
 import numpy as np
 import oyaml as yaml
 
-from ocdb import database
+from ocdb import material
 
 
 METADATA = {
@@ -306,7 +306,7 @@ class DataImporter:
 
     The structure and contents of the metadata file are described above, and
     this class takes care of both, importing the metadata file and mapping the
-    contents to the :obj:`ocdb.database.Material` object eventually returned.
+    contents to the :obj:`ocdb.material.Material` object eventually returned.
 
     .. important::
 
@@ -330,9 +330,9 @@ class DataImporter:
         Metadata as read from the metadata file.
 
         These metadata are automatically mapped to the resulting
-        :obj:`ocdb.database.Material` object.
+        :obj:`ocdb.material.Material` object.
 
-    material : :class:`ocdb.database.Material`
+    material : :class:`ocdb.material.Material`
         Optical constants and relevant metadata for a single material.
 
         The object data and metadata are imported into upon calling
@@ -351,7 +351,7 @@ class DataImporter:
         material = importer.import_data()
 
     As you can see from the example, the :meth:`import_data` method will return
-    the actual material, an object of class :class:`ocdb.database.Material`.
+    the actual material, an object of class :class:`ocdb.material.Material`.
 
     For convenience, you can set the metadata filename upon instantiating the
     importer object:
@@ -380,13 +380,13 @@ class DataImporter:
         self.data_filename = ""
         self.metadata_filename = metadata
         self.metadata = None
-        self.material = database.Material()
+        self.material = material.Material()
 
     def import_data(self):
         """
         Import data from given data and metadata files.
 
-        The material, an object of class :class:`ocdb.database.Material`,
+        The material, an object of class :class:`ocdb.material.Material`,
         is directly returned by the method, but accessible as well via the
         :attr:`material` attribute of the importer.
 
@@ -398,11 +398,11 @@ class DataImporter:
             method.
 
             The :class:`DataImporter` class takes care of the metadata and
-            their mapping to the :obj:`ocdb.database.Material` object.
+            their mapping to the :obj:`ocdb.material.Material` object.
 
         Returns
         -------
-        material : :class:`ocdb.database.Material`
+        material : :class:`ocdb.material.Material`
             Optical constants and relevant metadata for a single material.
 
         """

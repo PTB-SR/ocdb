@@ -59,27 +59,27 @@ For developers
 ==============
 
 How does plotting actually work? The user interface for plotting values of
-:obj:`ocdb.database.Material` objects is the
-:meth:`ocdb.database.Material.plot` method. For all the magic contained
-therein to work, the :obj:`ocdb.database.Material` object needs to contain an
+:obj:`ocdb.material.Material` objects is the
+:meth:`ocdb.material.Material.plot` method. For all the magic contained
+therein to work, the :obj:`ocdb.material.Material` object needs to contain an
 instance of :class:`PlotterFactory` (rather than
-:class:`ocdb.database.AbstractPlotterFactory`) in its
-:attr:`ocdb.database.Material.plotter_factory` attribute. This
+:class:`ocdb.material.AbstractPlotterFactory`) in its
+:attr:`ocdb.material.Material.plotter_factory` attribute. This
 :obj:`PlotterFactory` object will take care of creating the correct
 plotter object based on the criteria provided when calling
-:meth:`ocdb.database.Material.plot`.
+:meth:`ocdb.material.Material.plot`.
 
 .. todo::
 
     How to deal with the dependency on Matplotlib, though? If we
     instantiate an object of :class:`PlotterFactory` upon creating the
-    actual :obj:`ocdb.database.Material` objects, we would have to have
+    actual :obj:`ocdb.material.Material` objects, we would have to have
     Matplotlib at hand...
 
     One idea would be to check for the availability of the matplotlib package
-    when creating all the :obj:`ocdb.database.Material` objects and only
+    when creating all the :obj:`ocdb.material.Material` objects and only
     in case it is available to load the plotting module and to replace the
-    :obj:`ocdb.database.AbstractPlotterFactory` object with a
+    :obj:`ocdb.material.AbstractPlotterFactory` object with a
     :obj:`PlotterFactory` object. If Matplotlib is not available, probably
     a warning should be issued that plotting is not possible.
 
@@ -91,10 +91,10 @@ Module documentation
 
 import matplotlib.pyplot as plt
 
-from ocdb import database
+from ocdb import material
 
 
-class PlotterFactory(database.AbstractPlotterFactory):
+class PlotterFactory(material.AbstractPlotterFactory):
     """
     Factory for plotter.
 
@@ -109,8 +109,8 @@ class PlotterFactory(database.AbstractPlotterFactory):
     Getting the appropriate plotter for the task at hand is the
     responsibility of this plotter factory.
 
-    In actual :obj:`ocdb.database.Material` objects containing real data,
-    the :attr:`ocdb.database.Material.plotter_factory` will be set to an
+    In actual :obj:`ocdb.material.Material` objects containing real data,
+    the :attr:`ocdb.material.Material.plotter_factory` will be set to an
     instance of this class.
 
     Examples
@@ -138,7 +138,7 @@ class PlotterFactory(database.AbstractPlotterFactory):
     be found in the :mod:`plotting` documentation.
 
     The actual users of the ocdb package will not see much of the factory,
-    as they will usually just call the :meth:`ocdb.database.Material.plot`
+    as they will usually just call the :meth:`ocdb.material.Material.plot`
     method that will take care of the rest.
 
     """
@@ -164,7 +164,7 @@ class PlotterFactory(database.AbstractPlotterFactory):
         return BasePlotter()
 
 
-class BasePlotter(database.AbstractPlotter):
+class BasePlotter(material.AbstractPlotter):
     """
     Base class for all concrete plotters of the ocdb package.
 
@@ -177,7 +177,7 @@ class BasePlotter(database.AbstractPlotter):
     Real plots will always be performed by a descendant of this class.
     Which plotter to actually use is in the realm of the
     :class:`PlotterFactory` that itself descends from the
-    :class:`ocdb.database.AbstractPlotterFactory`.
+    :class:`ocdb.material.AbstractPlotterFactory`.
 
     Attributes
     ----------
@@ -197,18 +197,18 @@ class BasePlotter(database.AbstractPlotter):
     Actual plotting will always be performed using descendants of this
     :class:`BasePlotter` class, and the normal user of the ocdb package
     will not instantiate plotter objects directly, but rather call
-    :meth:`ocdb.database.Material.plot`. Nevertheless, you can do the
+    :meth:`ocdb.material.Material.plot`. Nevertheless, you can do the
     whole work manually:
 
     .. code-block::
 
-        material = ocdb.database.Material()
+        material = ocdb.material.Material()
         plotter = BasePlotter()
         plotter.dataset = material
         plotter.plot()
 
     For the typical use case, see the documentaiton of the
-    :meth:`ocdb.database.Material.plot` method.
+    :meth:`ocdb.material.Material.plot` method.
 
     """
 

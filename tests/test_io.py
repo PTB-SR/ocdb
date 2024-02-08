@@ -2,7 +2,7 @@ import os
 import unittest
 import yaml
 
-from ocdb import io, database
+from ocdb import io, material
 
 
 class TestDataImporter(unittest.TestCase):
@@ -50,7 +50,7 @@ class TestDataImporter(unittest.TestCase):
     def test_import_data_returns_material(self):
         self.create_files()
         self.importer.metadata_filename = self.metadata_filename
-        self.assertIsInstance(self.importer.import_data(), database.Material)
+        self.assertIsInstance(self.importer.import_data(), material.Material)
 
     def test_import_with_nonexisting_data_file_raises(self):
         self.importer.metadata_filename = self.metadata_filename

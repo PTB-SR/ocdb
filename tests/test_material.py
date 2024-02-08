@@ -3,12 +3,12 @@ import matplotlib.figure
 import numpy as np
 import unittest
 
-from ocdb import database
+from ocdb import material
 
 
 class TestMaterial(unittest.TestCase):
     def setUp(self):
-        self.material = database.Material()
+        self.material = material.Material()
 
     def test_instantiate_class(self):
         pass
@@ -33,7 +33,7 @@ class TestMaterial(unittest.TestCase):
         self.assertIsInstance(self.material.references, list)
 
     def test_metadata_is_metadata(self):
-        self.assertIsInstance(self.material.metadata, database.Metadata)
+        self.assertIsInstance(self.material.metadata, material.Metadata)
 
     def test_n_returns_two_numpy_arrays(self):
         n = self.material.n()
@@ -98,21 +98,21 @@ class TestMaterial(unittest.TestCase):
 
     def test_has_plotter_factory(self):
         self.assertIsInstance(
-            self.material.plotter_factory, database.AbstractPlotterFactory
+            self.material.plotter_factory, material.AbstractPlotterFactory
         )
 
     def test_plot_returns_plotter(self):
-        self.assertIsInstance(self.material.plot(), database.AbstractPlotter)
+        self.assertIsInstance(self.material.plot(), material.AbstractPlotter)
 
     def test_plot_calls_plotter(self):
-        class Plotter(database.AbstractPlotter):
+        class Plotter(material.AbstractPlotter):
             def __init__(self):
                 self.called = False
 
             def plot(self):
                 self.called = True
 
-        class PlotterFactory(database.AbstractPlotterFactory):
+        class PlotterFactory(material.AbstractPlotterFactory):
             def get_plotter(self, **kwargs):
                 return Plotter()
 
@@ -127,7 +127,7 @@ class TestMaterial(unittest.TestCase):
 
 class TestData(unittest.TestCase):
     def setUp(self):
-        self.data = database.Data()
+        self.data = material.Data()
 
     def test_instantiate_class(self):
         pass
@@ -161,7 +161,7 @@ class TestData(unittest.TestCase):
 
 class TestAxis(unittest.TestCase):
     def setUp(self):
-        self.axis = database.Axis()
+        self.axis = material.Axis()
 
     def test_instantiate_class(self):
         pass
@@ -206,7 +206,7 @@ class TestAxis(unittest.TestCase):
 
 class TestMetadata(unittest.TestCase):
     def setUp(self):
-        self.metadata = database.Metadata()
+        self.metadata = material.Metadata()
 
     def test_instantiate_class(self):
         pass
@@ -224,8 +224,8 @@ class TestMetadata(unittest.TestCase):
 
 class TestCollection(unittest.TestCase):
     def setUp(self):
-        self.collection = database.Collection()
-        self.item = database.Material
+        self.collection = material.Collection()
+        self.item = material.Material
         self.item.symbol = "Co"
 
     def test_instantiate_class(self):
@@ -238,12 +238,12 @@ class TestCollection(unittest.TestCase):
     def test_iterate_over_collection_yields_material(self):
         self.collection.add_item(self.item)
         for element in self.collection:
-            self.assertIsInstance(element, database.Material)
+            self.assertIsInstance(element, material.Material)
 
 
 class TestAbstractPlotter(unittest.TestCase):
     def setUp(self):
-        self.plotter = database.AbstractPlotter()
+        self.plotter = material.AbstractPlotter()
 
     def test_instantiate_class(self):
         pass
@@ -262,14 +262,14 @@ class TestAbstractPlotter(unittest.TestCase):
 
 class TestAbstractPlotterFactory(unittest.TestCase):
     def setUp(self):
-        self.factory = database.AbstractPlotterFactory()
+        self.factory = material.AbstractPlotterFactory()
 
     def test_instantiate_class(self):
         pass
 
     def test_get_plotter_returns_plotter(self):
         self.assertIsInstance(
-            self.factory.get_plotter(), database.AbstractPlotter
+            self.factory.get_plotter(), material.AbstractPlotter
         )
 
     def test_get_plotter_accepts_keyword_arguments(self):

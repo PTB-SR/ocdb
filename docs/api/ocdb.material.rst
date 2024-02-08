@@ -1,7 +1,7 @@
-ocdb.database module
+ocdb.material module
 ====================
 
-.. automodule:: ocdb.database
+.. automodule:: ocdb.material
     :members:
     :inherited-members:
     :undoc-members:

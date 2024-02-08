@@ -1,10 +1,11 @@
 """
 Core entities of the ocdb package forming a database of optical constants.
 
-From a software architecture perspective, the classes in the database module of
-the ocdb package are part of the core domain. That does not imply by any means
-that users of the ocdb package will instantiate these classes by themselves.
-Nevertheless, they will directly interact with instances of the core classes.
+From a software architecture perspective, the classes in the material
+module of the ocdb package are part of the core domain. That does not
+imply by any means that users of the ocdb package will instantiate these
+classes by themselves. Nevertheless, they will directly interact with
+instances of the core classes.
 
 
 Core entities
@@ -26,7 +27,6 @@ Module documentation
 
 """
 
-import bibrecord.record
 import numpy as np
 
 
@@ -37,7 +37,7 @@ class Material:
     This is a base class for materials of all kinds, be it elements or
     compositions, and it is at the core of the ocdb package and architecture.
     Key aspects are data *and* metadata in a single unit, the latter including
-    a full bibliographic record for proper citation.
+    full bibliographic records for proper citation.
 
 
     Attributes
