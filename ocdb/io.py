@@ -47,6 +47,7 @@ needs nothing else than the name of an existing metadata file to start with.
       layer_stack: C/Co/Ru@Si
       morphology: amorphous
     measurement:
+      type: reflection
       facility: BESSY-II
       beamline: SX700
       date: 2022-04-01
@@ -120,22 +121,27 @@ sample
     morphology
         Morphology of the sample.
 
-        Ideally this should be a controlled vocabulary. Possible entries would
-        be "amorphous", "crystalline", "microcrystalline", "polycrystalline",
-        "unknown".
+        Controlled vocabulary, currently with "amorphous", "crystalline",
+        "microcrystalline", "polycrystalline", "unknown" as entries.
 
 measurement
     Basic information on the measurement, such as facility used and date the
     data were obtained.
 
+    type
+        Type of measurement.
+
+        Controlled vocabulary, currently with "reflection", "transmission" as
+        entries.
+
     facility
-        The name of the facility the data were recorded at.
+        Name of the facility the data were recorded at.
 
     beamline
-        The name of the actual beamline used to record the data.
+        Name of the actual beamline used to record the data.
 
     date
-        The date (in YYYY-MM-DD format) the data were recorded at.
+        Date (in YYYY-MM-DD format) the data were recorded at.
 
 references
     BibTeX keys of citable reference(s) for the data.
@@ -274,6 +280,7 @@ METADATA = {
         "morphology": "amorphous",
     },
     "measurement": {
+        "type": "reflection",
         "facility": "BESSY-II",
         "beamline": "SX700",
         "date": "2022-04-01",
