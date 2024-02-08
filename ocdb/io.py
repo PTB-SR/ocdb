@@ -49,16 +49,13 @@ needs nothing else than the name of an existing metadata file to start with.
     measurement:
       facility: BESSY-II
       beamline: SX700
-      date: 2022-04-00
+      date: 2022-04-01
     references:
       - saadeh-optik-273-170455
     versions:
       - identifier: Co_2018
         description: Lorem ipsum...
         metadata: foo-1.yaml
-        data:
-          name: foo-1.txt
-          format: text
     comment: >
       Lorem ipsum
 
@@ -80,9 +77,19 @@ file
     and return.
 
 material
-    Basic information on the material: name is the full name, symbol the common
-    abbreviation, in case of elements the generic IUPAC element symbol. For
-    compositions, typically the molecular formula.
+    Basic information on the material.
+
+    name
+        Full name of the material.
+
+    symbol
+        Common abbreviation, in case of elements the generic IUPAC element
+        symbol. For compositions, typically the molecular formula.
+
+        .. important::
+            This string is used to access the data from within the ocdb
+            package. Hence, it should be short and needs to be a valid Python
+            variable name.
 
 sample
     Crucial information concerning the sample, such as (layer) thickness,
@@ -90,9 +97,42 @@ sample
 
     More information may be added here in the future.
 
+    thickness
+        Thickness of the sample (the actual layer of the material of interest),
+        most probably in nanometres. Nevertheless, the unit should be
+        explicitly given, with (numerical) value and unit separated by a space.
+
+    substrate
+        The substrate used as basis. Typically a single material, such as Si.
+
+        This is different from the layer stack.
+
+    layer_stack
+        The full layer stack, including the substrate and the material of
+        interest.
+
+        .. todo::
+            Most probably, we need an agreement and a convention here how to
+            write the information of the layer stack.
+
+    morphology
+        Morphology of the sample.
+
+        Ideally this should be a controlled vocabulary. Possible entries would
+        be "amorphous", "crystalline", "microcrystalline" -- what else?
+
 measurement
     Basic information on the measurement, such as facility used and date the
     data were obtained.
+
+    facility
+        The name of the facility the data were recorded at.
+
+    beamline
+        The name of the actual beamline used to record the data.
+
+    date
+        The date (in YYYY-MM-DD format) the data were recorded at.
 
 references
     BibTeX keys of citable reference(s) for the data.
@@ -111,6 +151,26 @@ versions
     To be able to sensibly address those additional datasets from within the
     ocdb package, they need a (unique) identifier, a (short) description and
     the information where to find the data and metadata.
+
+    identifier
+        Unique identifier for the dataset.
+
+        The identifier behaves similar to the field symbol (in ``material``)
+        above. In particular, it needs to be a valid Python variable name.
+
+    description
+        A concise description of the characteristics of this version.
+
+        Please *do not* simply state "old data" or "data from 20xx", as this
+        does not help the users of the package at all, but describe/mention the
+        *characteristics* of this version. This may be the wavelength range or
+        a different layer stack or else.
+
+    metadata
+        The filename of the metadata file (without path).
+
+        The logic of the ocdb package requires only the name of a metadata file
+        to figure out by itself where the data are located.
 
     .. todo::
 
@@ -213,7 +273,7 @@ METADATA = {
     "measurement": {
         "facility": "BESSY-II",
         "beamline": "SX700",
-        "date": "2022-04-00",
+        "date": "2022-04-01",
     },
     "references": [""],
     "versions": [
@@ -221,7 +281,6 @@ METADATA = {
             "identifier": "",
             "description": "",
             "metadata": "",
-            "data": {"name": "", "format": ""},
         },
     ],
     "comment": "",
