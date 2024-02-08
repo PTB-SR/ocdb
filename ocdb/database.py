@@ -58,13 +58,15 @@ class Material:
         package and the :class:`Collection` class. Hence, the symbol needs to
         be *unique* within the ocdb package.
 
-    reference : :class:`bibrecord.record.Record`
-        Bibliographic record for the data of the optical constants.
+    references : :class:`list`
+        Bibliographic records for the data of the optical constants.
 
         One central idea of the ocdb package is to provide not only data, but
         the relevant metadata as well. Hence, the reference of the dataset, be
         it an actual dataset or a publication describing the underlying
         measurements, is fairly essential.
+
+        Each entry of the list is a :obj:`bibrecord.record.Record` object.
 
     metadata : :class:`Metadata`
         Relevant metadata for the data of the optical constants.
@@ -147,7 +149,7 @@ class Material:
     def __init__(self):
         self.name = ""
         self.symbol = ""
-        self.reference = bibrecord.record.Record()
+        self.references = []
         self.metadata = Metadata()
 
         self.plotter_factory = AbstractPlotterFactory()

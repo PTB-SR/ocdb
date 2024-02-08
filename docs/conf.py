@@ -233,6 +233,7 @@ intersphinx_mapping = {
     "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
+    "bibrecord": ("https://bibrecord.docs.till-biskup.de/", None),
 }
 
 # -- Options for todo extension ----------------------------------------------

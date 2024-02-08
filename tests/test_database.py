@@ -17,7 +17,7 @@ class TestMaterial(unittest.TestCase):
         attributes = [
             "name",
             "symbol",
-            "reference",
+            "references",
             "metadata",
         ]
         for attribute in attributes:
@@ -29,10 +29,8 @@ class TestMaterial(unittest.TestCase):
     def test_symbol_is_string(self):
         self.assertIsInstance(self.material.symbol, str)
 
-    def test_reference_is_bibrecord_record(self):
-        self.assertIsInstance(
-            self.material.reference, bibrecord.record.Record
-        )
+    def test_references_is_list(self):
+        self.assertIsInstance(self.material.references, list)
 
     def test_metadata_is_metadata(self):
         self.assertIsInstance(self.material.metadata, database.Metadata)
