@@ -116,7 +116,7 @@ sample
         way to the substrate. Layer stack and substrate are separated by an
         ``@`` sign.
 
-        Example: C/Co/Ru@Si
+        Example: ``C/Co/Ru@Si``
 
     morphology
         Morphology of the sample.
@@ -141,7 +141,7 @@ measurement
         Name of the actual beamline used to record the data.
 
     date
-        Date (in YYYY-MM-DD format) the data were recorded at.
+        Date (in ``YYYY-MM-DD`` format) the data were recorded at.
 
 references
     BibTeX keys of citable reference(s) for the data.
@@ -168,7 +168,7 @@ versions
         above. In particular, it needs to be a valid Python variable name.
 
     description
-        A concise description of the characteristics of this version.
+        Concise description of the characteristics of this version.
 
         Please *do not* simply state "old data" or "data from 20xx", as this
         does not help the users of the package at all, but describe/mention the
@@ -176,7 +176,7 @@ versions
         a different layer stack or else.
 
     metadata
-        The filename of the metadata file (without path).
+        Filename of the metadata file (without path).
 
         The logic of the ocdb package requires only the name of a metadata file
         to figure out by itself where the data are located.
