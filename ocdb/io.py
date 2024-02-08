@@ -44,7 +44,7 @@ needs nothing else than the name of an existing metadata file to start with.
     sample:
       thickness: 40 nm
       substrate: Si
-      layer_stack: Si (C/ Co/ Ru/ Si)
+      layer_stack: C/Co/Ru@Si
       morphology: amorphous
     measurement:
       facility: BESSY-II
@@ -111,15 +111,18 @@ sample
         The full layer stack, including the substrate and the material of
         interest.
 
-        .. todo::
-            Most probably, we need an agreement and a convention here how to
-            write the information of the layer stack.
+        Layer stacks always start with the surface layer and proceed all the
+        way to the substrate. Layer stack and substrate are separated by an
+        ``@`` sign.
+
+        Example: C/Co/Ru@Si
 
     morphology
         Morphology of the sample.
 
         Ideally this should be a controlled vocabulary. Possible entries would
-        be "amorphous", "crystalline", "microcrystalline" -- what else?
+        be "amorphous", "crystalline", "microcrystalline", "polycrystalline",
+        "unknown".
 
 measurement
     Basic information on the measurement, such as facility used and date the
