@@ -143,6 +143,24 @@ measurement
     date
         Date (in ``YYYY-MM-DD`` format) the data were recorded at.
 
+
+    .. todo::
+        How to deal with datasets spanning multiple wavelength ranges,
+        hence are measured at more than one beamline and possibly at more
+        than one facility (if we count BESSY-II and MLS as different
+        facilities, as would make sense to me)?
+
+        Two possibilities are immediately obvious: omit the fields
+        ``facility`` and ``beamline``, or make them lists (of strings).
+        A third possibility would be to make it a list of (implicit) objects
+        that have (at least) the two attributes ``facility`` and
+        ``beamline``. The last option would have the advantage that
+        facility and beamline are always explicitly together.
+
+        Would it eventually make sense to change the name ``beamline`` to
+        ``setup`` or ``instrument``? We may not always have beamlines at
+        synchrotrons...
+
 references
     BibTeX keys of citable reference(s) for the data.
 

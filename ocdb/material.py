@@ -490,7 +490,7 @@ class Sample:
 
         .. todo::
             Decide upon the type of this attribute.
-            PhysicalConstant with at least value and unit?
+            PhysicalQuantity with at least value and unit?
 
     substrate : :class:`str`
         Name of the substrate supporting the actual material of interest.
@@ -513,6 +513,9 @@ class Sample:
 
     morphology : :class:`str`
         Morphology of the sample.
+
+        Controlled vocabulary, currently with "amorphous", "crystalline",
+        "microcrystalline", "polycrystalline", "unknown" as entries.
 
     """
 
@@ -542,14 +545,44 @@ class Measurement:
         or transmission. Currently, all data contained in the OCDB are
         obtained using reflection-type measurements.
 
+        Controlled vocabulary, currently with "reflection", "transmission" as
+        entries.
+
     facility : :class:`str`
         Name of the facility the measurement was carried out at.
+
+        Typically, this will be the name the facility is known with. In
+        case of the data in the OCDB recorded by the PTB in Germany,
+        this will usually either be "BESSY-II" or "MLS".
 
     beamline : :class:`str`
         Name of the beamline the measurement was performed at.
 
+        The name of the beamline typically requires detailed knowledge
+        about the facility it is located at to make sense of the
+        information provided.
+
     date : :class:`datetime.date`
         Date of the measurement.
+
+
+    .. todo::
+        How to deal with datasets spanning multiple wavelength ranges,
+        hence are measured at more than one beamline and possibly at more
+        than one facility (if we count BESSY-II and MLS as different
+        facilities, as would make sense to me)?
+
+        Two possibilities are immediately obvious: omit the fields
+        ``facility`` and ``beamline``, or make them lists (of strings).
+        A third possibility would be to make it a list of :class:`Setup`
+        objects, where :class:`Setup` would have (at least) the two
+        attributes ``facility`` and ``beamline``. The last option would
+        have the advantage that facility and beamline are always
+        explicitly together.
+
+        Would it eventually make sense to change the name ``beamline`` to
+        ``setup`` or ``instrument``? We may not always have beamlines at
+        synchrotrons...
 
     """
 
