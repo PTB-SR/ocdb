@@ -112,6 +112,9 @@ class Material:
         descendant of the :class:`AbstractPlotter` class. See the
         :mod:`plotting` module for details.)
 
+    processing_step_factory : :class:`AbstractProcessingStepFactory`
+        Factory for creating processing step objects on request.
+
 
     Examples
     --------
@@ -177,6 +180,7 @@ class Material:
         self.metadata = Metadata()
 
         self.plotter_factory = AbstractPlotterFactory()
+        self.processing_step_factory = AbstractProcessingStepFactory()
 
         self.n_data = Data()
         self.n_data.axes[1].quantity = "dispersion coefficient"
@@ -858,7 +862,7 @@ class AbstractPlotterFactory:
     correct plotter.
 
     Concrete instances of both, :class:`AbstractPlotter` and
-    :class:`AbstractPlotterFactory` are implemented in the :mod:`plotting`
+    :class:`AbstractPlotterFactory` are implemented in the :mod:`ocdb.plotting`
     module. Only if you ever import this module would you need to have a
     plotting framework (Matplotlib) installed.
 
@@ -914,3 +918,105 @@ class AbstractPlotterFactory:
 
         """
         return AbstractPlotter()
+
+
+class AbstractProcessingStep:
+    """
+    Abstract base class for processing steps.
+
+    Often, data need to be processed before they are returned, be it the user
+    asking for an explicit value that needs to be interpolated, be it a unit
+    conversion.
+
+
+    Attributes
+    ----------
+    data : :class:`Data`
+        Data of a :class:`Material` that should be processed
+
+    """
+
+    def __init__(self):
+        self.data = Data()
+
+    def process(self):
+        """Perform the actual processing."""
+
+
+class AbstractProcessingStepFactory:
+    """
+    Abstract factory for processing steps.
+
+    Different types of data and different situations require different
+    types of processing steps. A simple example: Asking for a particular
+    value of *n* or *k*, *i.e.*, for a given wavelength, usually requires
+    interpolating this value, except of the lucky situation of the user
+    asking for a value that is an exact match.
+
+    In any case, all the material wants and needs to know is that it
+    requires a processing step in order to get its data processed. The abstract
+    interface of the processing step itself is described in the
+    :class:`AbstractProcessingStep` class, and the
+    :class:`AbstractProcessingStepFactory` is the one place to ask for the
+    correct processing step.
+
+    Concrete instances of both, :class:`AbstractProcessingStep` and
+    :class:`AbstractProcessingStepFactory` are implemented in the
+    :mod:`ocdb.processing` module.
+
+
+    Examples
+    --------
+    A factory usually has exactly one duty: Given a list of criteria,
+    return the object that fits these criteria. Hence, getting a processing
+    step from the factory is as simple as:
+
+    .. code-block::
+
+        processing_step_factory = AbstractProcessingStepFactory()
+        processing_step = processing_step_factory.get_processing_step()
+
+    The criteria for getting the *correct* processing step will be some
+    key-value pairs, hence the :meth:`get_processing_step` method supports
+    arbitrary key-value pair (``**kwargs`` in Python speak):
+
+    .. code-block::
+
+        processing_step_factory = AbstractProcessingStepFactory()
+        processing_step = processing_step_factory.get_processing_step(
+            values=13.5
+        )
+
+    This may get you a processing step extracting (and interpolating,
+    where necessary) the values for *n* and *k* for the given wavelength.
+    Details of the available processing steps can be found in the
+    :mod:`ocdb.processing` documentation.
+
+    The actual users of the ocdb package will not see much of the factory,
+    as they will usually just call the :meth:`Material.n`,
+    :meth:`Material.k`, or :meth:`Material.index_of_refraction` methods that
+    will take care of the rest.
+
+    """
+
+    # noinspection PyMethodMayBeStatic
+    # pylint: disable=unused-argument
+    def get_processing_step(self, **kwargs):
+        """
+        Return processing step given the criteria in the keyword arguments.
+
+        Parameters
+        ----------
+        kwargs
+            All parameters relevant to decide upon the correct processing step.
+
+            A list of key--value pairs, either as :class:`dict` or
+            separate, *i.e.* the Python ``**kwargs`` argument.
+
+        Returns
+        -------
+        processing_step : :class:`AbstractProcessingStep`
+            Processing step fitting to the criteria provided by the parameters.
+
+        """
+        return AbstractProcessingStep()

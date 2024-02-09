@@ -136,6 +136,12 @@ class TestMaterial(unittest.TestCase):
         self.material.plot(**kwargs)
         self.assertDictEqual(self.material.plotter_factory.kwargs, kwargs)
 
+    def test_has_processing_step_factory(self):
+        self.assertIsInstance(
+            self.material.processing_step_factory,
+            material.AbstractProcessingStepFactory,
+        )
+
 
 class TestData(unittest.TestCase):
     def setUp(self):
@@ -327,3 +333,39 @@ class TestAbstractPlotterFactory(unittest.TestCase):
 
     def test_get_plotter_accepts_keyword_arguments(self):
         self.factory.get_plotter(foo=None, bar="foobar")
+
+
+class TestAbstractProcessingStep(unittest.TestCase):
+    def setUp(self):
+        self.processing_step = material.AbstractProcessingStep()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "data",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.processing_step, attribute))
+
+    def test_has_process_method(self):
+        self.assertTrue(hasattr(self.processing_step, "process"))
+        self.assertTrue(callable(self.processing_step.process))
+
+
+class TestAbstractProcessingStepFactory(unittest.TestCase):
+    def setUp(self):
+        self.factory = material.AbstractProcessingStepFactory()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_get_processing_step_returns_processing_step(self):
+        self.assertIsInstance(
+            self.factory.get_processing_step(),
+            material.AbstractProcessingStep,
+        )
+
+    def test_get_processing_step_accepts_keyword_arguments(self):
+        self.factory.get_processing_step(foo=None, bar="foobar")
