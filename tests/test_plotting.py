@@ -23,6 +23,60 @@ class TestPlotterFactory(unittest.TestCase):
             self.factory.get_plotter(), plotting.BasePlotter
         )
 
+    def test_get_plotter_without_values_returns_single_plotter(self):
+        self.assertIsInstance(
+            self.factory.get_plotter(), plotting.SinglePlotter
+        )
+
+    def test_get_plotter_with_values_n_or_k_returns_single_plotter(self):
+        self.assertIsInstance(
+            self.factory.get_plotter(values="n"), plotting.SinglePlotter
+        )
+        self.assertIsInstance(
+            self.factory.get_plotter(values="k"), plotting.SinglePlotter
+        )
+
+    def test_get_plotter_with_values_n_sets_value_in_plotter(self):
+        plotter = self.factory.get_plotter(values="n")
+        self.assertEqual(plotter.parameters["values"], "n")
+
+    def test_get_plotter_with_values_k_sets_value_in_plotter(self):
+        plotter = self.factory.get_plotter(values="k")
+        self.assertEqual(plotter.parameters["values"], "k")
+
+    def test_get_plotter_with_values_both_returns_twin_plotter(self):
+        self.assertIsInstance(
+            self.factory.get_plotter(values="both"), plotting.TwinPlotter
+        )
+
+    def test_get_plotter_without_values_with_uncertainties(self):
+        self.assertIsInstance(
+            self.factory.get_plotter(uncertainties=True),
+            plotting.SingleUncertaintiesPlotter,
+        )
+
+    def test_get_plotter_with_values_n_with_uncertainties(self):
+        plotter = self.factory.get_plotter(values="n", uncertainties=True)
+        self.assertIsInstance(
+            plotter,
+            plotting.SingleUncertaintiesPlotter,
+        )
+        self.assertEqual(plotter.parameters["values"], "n")
+
+    def test_get_plotter_with_values_k_with_uncertainties(self):
+        plotter = self.factory.get_plotter(values="k", uncertainties=True)
+        self.assertIsInstance(
+            plotter,
+            plotting.SingleUncertaintiesPlotter,
+        )
+        self.assertEqual(plotter.parameters["values"], "k")
+
+    def test_get_plotter_with_values_both_with_uncertainties(self):
+        self.assertIsInstance(
+            self.factory.get_plotter(values="both", uncertainties=True),
+            plotting.TwinUncertaintiesPlotter,
+        )
+
 
 class TestBasePlotter(unittest.TestCase):
     def setUp(self):

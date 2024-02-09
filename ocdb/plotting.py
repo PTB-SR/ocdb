@@ -159,13 +159,41 @@ class PlotterFactory(material.AbstractPlotterFactory):
             A list of key--value pairs, either as :class:`dict` or
             separate, *i.e.* the Python ``**kwargs`` argument.
 
+            Currently, the following keys are understood:
+
+            values : :class:`str`
+                Values to plot: *n* or *k* or both.
+
+                Allowed values are: ``n``, ``k``, ``both``
+
+            uncertainties : :class:`bool`
+                Whether to plot uncertainties.
+
         Returns
         -------
         plotter : :class:`BasePlotter`
             Plotter that best fits the criteria provided by the parameters.
 
         """
-        return BasePlotter()
+        plotter = BasePlotter()
+        if "values" in kwargs:
+            if kwargs["values"] in ("n", "k"):
+                if "uncertainties" in kwargs and kwargs["uncertainties"]:
+                    plotter = SingleUncertaintiesPlotter()
+                else:
+                    plotter = SinglePlotter()
+                plotter.parameters["values"] = kwargs["values"]
+            elif kwargs["values"] == "both":
+                if "uncertainties" in kwargs and kwargs["uncertainties"]:
+                    plotter = TwinUncertaintiesPlotter()
+                else:
+                    plotter = TwinPlotter()
+        else:
+            if "uncertainties" in kwargs and kwargs["uncertainties"]:
+                plotter = SingleUncertaintiesPlotter()
+            else:
+                plotter = SinglePlotter()
+        return plotter
 
 
 class BasePlotter(material.AbstractPlotter):
