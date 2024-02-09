@@ -1,5 +1,3 @@
-import bibrecord.record
-import matplotlib.figure
 import numpy as np
 import unittest
 
