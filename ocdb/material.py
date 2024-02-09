@@ -27,6 +27,8 @@ Module documentation
 
 """
 
+import datetime
+
 import numpy as np
 
 
@@ -590,7 +592,7 @@ class Measurement:
         self.type = ""
         self.facility = ""
         self.beamline = ""
-        self.date = None
+        self.date = datetime.date.today()
 
 
 class Collection:
