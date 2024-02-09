@@ -60,6 +60,28 @@ class Material:
         package and the :class:`Collection` class. Hence, the symbol needs to
         be *unique* within the ocdb package.
 
+    n_data : :class:`Data`
+        Data for the real part (dispersion) of the refractive index.
+
+        To access the data, you will usually use the method :meth:`n`,
+        as this provides you with additional options, such as getting a
+        specific value or an (interpolated) range of values as well as
+        uncertainties (if available in the dataset).
+
+        To obtain *n* and *k* values simultaneously, use the
+        :meth:`index_of_refraction` method.
+
+    k_data : :class:`Data`
+        Data for the complex part (extinction) of the refractive index.
+
+        To access the data, you will usually use the method :meth:`k`,
+        as this provides you with additional options, such as getting a
+        specific value or an (interpolated) range of values as well as
+        uncertainties (if available in the dataset).
+
+        To obtain *n* and *k* values simultaneously, use the
+        :meth:`index_of_refraction` method.
+
     references : :class:`list`
         Bibliographic records for the data of the optical constants.
 

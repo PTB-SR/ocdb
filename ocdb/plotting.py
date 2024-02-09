@@ -43,16 +43,17 @@ that seem sensible:
 
 * :class:`SingleUncertaintiesPlotter`
 
-  Plot either *n* or *k* together with its uncertainties.
+  Plot either *n* or *k* together with its uncertainties as shaded area.
 
-  Most probably a subclass of :class:`SinglePlotter`.
+  A subclass of :class:`SinglePlotter`.
 
 * :class:`TwinUncertaintiesPlotter`
 
   Plot *n* and *k* together in one axes, with different scaling of the
-  left and right *y* axis, and both with their respective uncertainties.
+  left and right *y* axis, and both with their respective uncertainties as
+  shaded areas.
 
-  Most probably a subclass of :class:`TwinPlotter`.
+  A subclass of :class:`TwinPlotter`.
 
 
 For developers
@@ -89,7 +90,10 @@ Module documentation
 
 """
 
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 
 from ocdb import material
 
@@ -181,6 +185,9 @@ class BasePlotter(material.AbstractPlotter):
 
     Attributes
     ----------
+    dataset : :class:`Material`
+        Source of data to plot.
+
     figure : :class:`matplotlib.figure.Figure`
         Matplotlib figure containing the actual plot
 
@@ -190,6 +197,13 @@ class BasePlotter(material.AbstractPlotter):
         Matplotlib axes containing the actual plot
 
         For convenience, the shorthand :attr:`ax` does also work.
+
+    parameters : :class:`dict`
+        Parameters relevant for the plot.
+
+        Which parameters are actually understood by the respective subclass
+        may be different from case to case. See the documentation of the
+        plotter class used.
 
 
     Examples
@@ -207,7 +221,7 @@ class BasePlotter(material.AbstractPlotter):
         plotter.dataset = material
         plotter.plot()
 
-    For the typical use case, see the documentaiton of the
+    For the typical use case, see the documentation of the
     :meth:`ocdb.material.Material.plot` method.
 
     """
@@ -216,6 +230,7 @@ class BasePlotter(material.AbstractPlotter):
         super().__init__()
         self.figure = None
         self.axes = None
+        self.parameters = {}
 
     @property
     def fig(self):
@@ -249,5 +264,347 @@ class BasePlotter(material.AbstractPlotter):
 
         First of all, the :attr:`figure` and :attr:`axes` properties of the
         plotter are set.
+
+        The actual plotting is performed in the non-public method
+        :meth:`_create_plot`, such as not to interfere with the
+        necessary settings done by the base class.
         """
         self.figure, self.axes = plt.subplots()
+        self._create_plot()
+
+    def _create_plot(self):
+        pass
+
+
+class SinglePlotter(BasePlotter):
+    """
+    Graphical display of either *n* or *k* values.
+
+    In its simplest form, a line plotter plotting either *n* or *k* values vs.
+    wavelength. Which of the two to plot is a matter of the parameter
+    ``values``. For details, see below.
+
+    If you are interested in seeing both, *n* and *k* values in one plot,
+    have a look at :class:`TwinPlotter`. If you instead want to plot either
+    *n* or *k*, but with uncertainties, :class:`SingleUncertaintiesPlotter`
+    would be the plotter of your choosing.
+
+
+    Attributes
+    ----------
+    parameters : :class:`dict`
+        Parameters relevant for the plot.
+
+        The following keys are currently interpreted:
+
+        values : :class:`str`
+            Values to plot: either *n* or *k*.
+
+            Possible values are ``n`` and ``k``.
+
+            The default value is ``n``.
+
+    Examples
+    --------
+    The normal user of the ocdb package will not instantiate plotter objects
+    directly, but rather call :meth:`ocdb.material.Material.plot`.
+    Nevertheless, you can do the whole work manually:
+
+    .. code-block::
+
+        material = ocdb.material.Material()
+        plotter = SinglePlotter()
+        plotter.dataset = material
+        plotter.parameters["values"] = "n"
+        plotter.plot()
+
+    This would plot the *n* values of the given material. Generally,
+    you would achieve the same much easier by using directly the
+    :meth:`ocdb.material.Material.plot` method:
+
+    .. code-block::
+
+        ocdb.elements.Co.plot()
+
+    Note that the default is to always plot *n*. If you want to plot *k*
+    instead, you need to be explicit about it:
+
+    .. code-block::
+
+        ocdb.elements.Co.plot(values="k")
+
+    For the typical use case, see the documentation of the
+    :meth:`ocdb.material.Material.plot` method.
+
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.parameters["values"] = "n"
+
+    def _create_plot(self):
+        if self.parameters["values"] == "k":
+            data = self.dataset.k_data
+        else:
+            data = self.dataset.n_data
+        self.axes.plot(data.axes[0].values, data.data)
+        self.axes.set_xlabel(data.axes[0].get_label())
+        self.axes.set_ylabel(data.axes[1].get_label())
+
+
+class TwinPlotter(BasePlotter):
+    """
+    Graphical display of both, *n* and *k* values.
+
+    In its simplest form, a line plotter plotting both, *n* or *k* values vs.
+    wavelength.
+
+    Due to the values of *n* and *k* being on an entirely different scale,
+    two independent *y* axes are used and labelled appropriately. The *x*
+    axis, however, is obviously shared by both and typically the wavelength
+    in nm.
+
+    To optically assign the values to the respective axes, the plotted values
+    as well as the corresponding *y* axis appear with the same colour. The
+    colours used are the first and second colour of the currently set colour
+    cycle. See the Matplotlib documentation for further details.
+
+    If you are interested in seeing either *n* or *k* values in one plot,
+    have a look at :class:`SinglePlotter`. If you instead want to plot *n* and
+    *k* together with their respective uncertainties,
+    :class:`TwinUncertaintiesPlotter` would be the plotter of your choosing.
+
+
+    Attributes
+    ----------
+    axes2 : :class:`matplotlib.axes.Axes`
+        Matplotlib axes containing the actual plot for *k* values
+
+        For convenience, the shorthand :attr:`ax2` does also work.
+
+
+    Examples
+    --------
+    The normal user of the ocdb package will not instantiate plotter objects
+    directly, but rather call :meth:`ocdb.material.Material.plot`.
+    Nevertheless, you can do the whole work manually:
+
+    .. code-block::
+
+        material = ocdb.material.Material()
+        plotter = TwinPlotter()
+        plotter.dataset = material
+        plotter.plot()
+
+    This would plot both, *n* and *k* values of the given material. Generally,
+    you would achieve the same much easier by using directly the
+    :meth:`ocdb.material.Material.plot` method:
+
+    .. code-block::
+
+        ocdb.elements.Co.plot(values="both")
+
+    For the typical use case, see the documentation of the
+    :meth:`ocdb.material.Material.plot` method.
+
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.axes2 = None
+
+    @property
+    def ax2(self):
+        """
+        Convenience shorthand for the :attr:`axes2` attribute.
+
+        Returns
+        -------
+        figure : :class:`matplotlib.axes.Axes`
+            Matplotlib axes containing the actual plot for *k* values
+
+        """
+        return self.axes2
+
+    def _create_plot(self):
+        prop_cycle = plt.rcParams["axes.prop_cycle"]
+        colors = prop_cycle.by_key()["color"]
+
+        self.axes.plot(
+            self.dataset.n_data.axes[0].values,
+            self.dataset.n_data.data,
+            color=colors[0],
+        )
+        self.axes.set_xlabel(self.dataset.n_data.axes[0].get_label())
+        self.axes.set_ylabel(
+            self.dataset.n_data.axes[1].get_label(),
+            color=colors[0],
+        )
+        self.axes.tick_params(axis="y", labelcolor=colors[0])
+
+        self.axes2 = self.axes.twinx()
+        self.axes2.plot(
+            self.dataset.k_data.axes[0].values,
+            self.dataset.k_data.data,
+            color=colors[1],
+        )
+        self.axes2.set_ylabel(
+            self.dataset.k_data.axes[1].get_label(),
+            color=colors[1],
+        )
+        self.axes2.tick_params(axis="y", labelcolor=colors[1])
+
+
+class SingleUncertaintiesPlotter(SinglePlotter):
+    """
+    Graphical display of either *n* or *k* values together with uncertainties.
+
+    In its simplest form, a line plotter plotting either *n* or *k* values vs.
+    wavelength, but together with their uncertainties as shaded area. Which of
+    the two to plot is a matter of the parameter ``values``. For details,
+    see below.
+
+    If you are interested in seeing both, *n* and *k* values in one plot,
+    have a look at :class:`TwinUncertaintiesPlotter`. If you instead want to
+    plot either *n* or *k*, but without uncertainties, :class:`SinglePlotter`
+    would be the plotter of your choosing.
+
+
+    Attributes
+    ----------
+    parameters : :class:`dict`
+        Parameters relevant for the plot.
+
+        The following keys are currently interpreted:
+
+        values : :class:`str`
+            Values to plot: either *n* or *k*.
+
+            Possible values are ``n`` and ``k``.
+
+            The default value is ``n``.
+
+    Examples
+    --------
+    The normal user of the ocdb package will not instantiate plotter objects
+    directly, but rather call :meth:`ocdb.material.Material.plot`.
+    Nevertheless, you can do the whole work manually:
+
+    .. code-block::
+
+        material = ocdb.material.Material()
+        plotter = SingleUncertaintiesPlotter()
+        plotter.dataset = material
+        plotter.parameters["values"] = "n"
+        plotter.plot()
+
+    This would plot the *n* values of the given material together with the
+    uncertainties. Generally, you would achieve the same much easier by
+    using directly the :meth:`ocdb.material.Material.plot` method:
+
+    .. code-block::
+
+        ocdb.elements.Co.plot(uncertainties=True)
+
+    Note that the default is to always plot *n*. If you want to plot *k*
+    instead, together with their uncertainties, you need to be explicit
+    about it:
+
+    .. code-block::
+
+        ocdb.elements.Co.plot(values="k", uncertainties=True)
+
+    For the typical use case, see the documentation of the
+    :meth:`ocdb.material.Material.plot` method.
+
+    """
+
+    def _create_plot(self):
+        super()._create_plot()
+        if self.parameters["values"] == "k":
+            data = self.dataset.k_data
+        else:
+            data = self.dataset.n_data
+        self.axes.fill_between(
+            data.axes[0].values,
+            data.data - data.lower_bounds,
+            data.data + data.upper_bounds,
+            alpha=0.3,
+        )
+
+
+class TwinUncertaintiesPlotter(TwinPlotter):
+    """
+    Graphical display of both, *n* and *k* values with uncertainties.
+
+    In its simplest form, a line plotter plotting both, *n* or *k* values vs.
+    wavelength, but together with their uncertainties as shaded areas.
+
+    Due to the values of *n* and *k* being on an entirely different scale,
+    two independent *y* axes are used and labelled appropriately. The *x*
+    axis, however, is obviously shared by both and typically the wavelength
+    in nm.
+
+    To optically assign the values to the respective axes, the plotted values
+    as well as the corresponding *y* axis appear with the same colour. The
+    colours used are the first and second colour of the currently set colour
+    cycle. See the Matplotlib documentation for further details.
+
+    If you are interested in seeing either *n* or *k* values in one plot,
+    have a look at :class:`SingleUncertaintiesPlotter`. If you instead want to
+    plot *n* and *k*, but without their respective uncertainties,
+    :class:`TwinPlotter` would be the plotter of your choosing.
+
+
+    Attributes
+    ----------
+    axes2 : :class:`matplotlib.axes.Axes`
+        Matplotlib axes containing the actual plot for *k* values
+
+        For convenience, the shorthand :attr:`ax2` does also work.
+
+
+    Examples
+    --------
+    The normal user of the ocdb package will not instantiate plotter objects
+    directly, but rather call :meth:`ocdb.material.Material.plot`.
+    Nevertheless, you can do the whole work manually:
+
+    .. code-block::
+
+        material = ocdb.material.Material()
+        plotter = TwinUncertaintiesPlotter()
+        plotter.dataset = material
+        plotter.plot()
+
+    This would plot both, *n* and *k* values of the given material together
+    with their uncertainties. Generally, you would achieve the same much
+    easier by using directly the :meth:`ocdb.material.Material.plot` method:
+
+    .. code-block::
+
+        ocdb.elements.Co.plot(values="both", uncertainties=True)
+
+    For the typical use case, see the documentation of the
+    :meth:`ocdb.material.Material.plot` method.
+
+    """
+
+    def _create_plot(self):
+        super()._create_plot()
+        prop_cycle = plt.rcParams["axes.prop_cycle"]
+        colors = prop_cycle.by_key()["color"]
+        self.axes.fill_between(
+            self.dataset.n_data.axes[0].values,
+            self.dataset.n_data.data - self.dataset.n_data.lower_bounds,
+            self.dataset.n_data.data + self.dataset.n_data.upper_bounds,
+            alpha=0.3,
+            facecolor=colors[0],
+        )
+        self.axes2.fill_between(
+            self.dataset.k_data.axes[0].values,
+            self.dataset.k_data.data - self.dataset.k_data.lower_bounds,
+            self.dataset.k_data.data + self.dataset.k_data.upper_bounds,
+            alpha=0.3,
+            facecolor=colors[1],
+        )
