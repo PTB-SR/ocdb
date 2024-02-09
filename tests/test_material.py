@@ -122,6 +122,20 @@ class TestMaterial(unittest.TestCase):
         plotter = self.material.plot()
         self.assertIs(plotter.dataset, self.material)
 
+    def test_plot_calls_plotter_factory_with_kwargs(self):
+        class PlotterFactory(material.AbstractPlotterFactory):
+            def __init__(self):
+                self.kwargs = None
+
+            def get_plotter(self, **kwargs):
+                self.kwargs = kwargs
+                return super().get_plotter(**kwargs)
+
+        self.material.plotter_factory = PlotterFactory()
+        kwargs = {"values": "k", "uncertainties": True}
+        self.material.plot(**kwargs)
+        self.assertDictEqual(self.material.plotter_factory.kwargs, kwargs)
+
 
 class TestData(unittest.TestCase):
     def setUp(self):

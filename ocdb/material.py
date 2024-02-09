@@ -273,7 +273,7 @@ class Material:
 
         return output
 
-    def plot(self):
+    def plot(self, **kwargs):
         """
         Plot data.
 
@@ -281,6 +281,48 @@ class Material:
         overview of the data contained in the database is always a good
         idea. Hence, for convenience, graphical representations of the
         optical constants for a material are quite helpful.
+
+
+        .. important::
+
+            In order to access the plotting capabilities, you do need to have
+            Matplotlib installed, although it is not a hard requirement of
+            the ocdb package, to keep things clean and simple. The convenient
+            way to install the necessary requirements would be to use pip with
+            the optional requirements, such as:
+
+             .. code-block:: bash
+
+                 pip install ocdb[presentation]
+
+            This will install all necessary dependencies for you. Note that
+            this step is only necessary if you ever want to access the
+            plotting capabilities. Using the ocdb package without Matplotlib
+            is entirely possible.
+
+
+        Parameters
+        ----------
+        kwargs
+            Parameters controlling the type of resulting plot.
+
+            A list of key--value pairs, either as :class:`dict` or
+            separate, *i.e.* the Python ``**kwargs`` argument.
+
+            Currently, the following keys are understood:
+
+            values : :class:`str`
+                Values to plot: *n* or *k* or both.
+
+                Allowed values are: ``n``, ``k``, ``both``
+
+            uncertainties : :class:`bool`
+                Whether to plot uncertainties.
+
+            For the most up-to-date list of possible parameters, have a look
+            at the :meth:`ocdb.plotting.PlotterFactory.get_plotter` method
+            as well.
+
 
         Examples
         --------
@@ -291,6 +333,39 @@ class Material:
         .. code-block::
 
             stuff.plot()
+
+        This would plot only the *n* values for the given material. If you
+        are instead interested in the *k* values, you would need to be
+        explicit about this:
+
+        .. code-block::
+
+            stuff.plot(values="k")
+
+        If you want to see both values, *n* and *k*, in one graph, and for
+        obvious reasons with two independent axes left and right, this is
+        possible as well:
+
+        .. code-block::
+
+            stuff.plot(values="both")
+
+        How about uncertainties? These can be plotted as well, and you can
+        combine all of the above with uncertainties: only *n* with
+        uncertainties, only *k* with uncertainties, or both, *n* and *k*
+        with their respective uncertainties:
+
+        .. code-block::
+
+            # The following two lines are equivalent
+            stuff.plot(uncertainties=True)
+            stuff.plot(values="n", uncertainties=True)
+
+            # Plotting k instead of n
+            stuff.plot(values="k", uncertainties=True)
+
+            # Plotting n & k with uncertainties
+            stuff.plot(values="both", uncertainties=True)
 
         All the magic happens inside the plot method. For those interested
         in more details: a plotter factory stored in
@@ -308,7 +383,7 @@ class Material:
             Plotter used for plotting the data.
 
         """
-        plotter = self.plotter_factory.get_plotter()
+        plotter = self.plotter_factory.get_plotter(**kwargs)
         plotter.dataset = self
         plotter.plot()
         return plotter
@@ -725,7 +800,7 @@ class AbstractPlotter:
     convenience, graphical representations of the optical constants for a
     material are quite helpful.
 
-    Plotting as such is provided in the :mod:`plotting` module, but the
+    Plotting as such is provided in the :mod:`ocdb.plotting` module, but the
     abstract plotter class resides here, according to the dependency
     inversion principle. To not have the hard dependency of the ocdb
     package from the Matplotlib stack (as this will require a lot of other
@@ -810,10 +885,10 @@ class AbstractPlotterFactory:
 
     This may get you a plotter capable of plotting not only the values,
     but the uncertainties as well. Details of the available plotters can
-    be found in the :mod:`plotting` documentation.
+    be found in the :mod:`ocdb.plotting` documentation.
 
     The actual users of the ocdb package will not see much of the factory,
-    as they will usually just call the :meth:`Materials.plot` method that
+    as they will usually just call the :meth:`Material.plot` method that
     will take care of the rest.
 
     """
