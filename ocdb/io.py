@@ -42,17 +42,7 @@ needs nothing else than the name of an existing metadata file to start with.
       name: Cobalt
       symbol: Co
     uncertainties:
-      boundaries: 3 sigma
-    sample:
-      thickness: 40 nm
-      substrate: Si
-      layer_stack: C/Co/Ru@Si
-      morphology: amorphous
-    measurement:
-      type: reflection
-      facility: BESSY-II
-      beamline: SX700
-      date: 2022-04-01
+      confidence_interval: 3 sigma
     references:
       - saadeh-optik-273-170455
     versions:
@@ -97,80 +87,8 @@ material
 uncertainties
     Relevant information about the uncertainties, if present.
 
-    boundaries
+    confidence_interval
         The value the uncertainties are provided for.
-
-        .. todo::
-            Do we need a better name for this?
-
-sample
-    Crucial information concerning the sample, such as (layer) thickness,
-    substrate, and layer stack.
-
-    More information may be added here in the future.
-
-    thickness
-        Thickness of the sample (the actual layer of the material of interest),
-        most probably in nanometres. Nevertheless, the unit should be
-        explicitly given, with (numerical) value and unit separated by a space.
-
-    substrate
-        The substrate used as basis. Typically a single material, such as Si.
-
-        This is different from the layer stack.
-
-    layer_stack
-        The full layer stack, including the substrate and the material of
-        interest.
-
-        Layer stacks always start with the surface layer and proceed all the
-        way to the substrate. Layer stack and substrate are separated by an
-        ``@`` sign.
-
-        Example: ``C/Co/Ru@Si``
-
-    morphology
-        Morphology of the sample.
-
-        Controlled vocabulary, currently with "amorphous", "crystalline",
-        "microcrystalline", "polycrystalline", "unknown" as entries.
-
-measurement
-    Basic information on the measurement, such as facility used and date the
-    data were obtained.
-
-    type
-        Type of measurement.
-
-        Controlled vocabulary, currently with "reflection", "transmission" as
-        entries.
-
-    facility
-        Name of the facility the data were recorded at.
-
-    beamline
-        Name of the actual beamline used to record the data.
-
-    date
-        Date (in ``YYYY-MM-DD`` format) the data were recorded at.
-
-
-    .. todo::
-        How to deal with datasets spanning multiple wavelength ranges,
-        hence are measured at more than one beamline and possibly at more
-        than one facility (if we count BESSY-II and MLS as different
-        facilities, as would make sense to me)?
-
-        Two possibilities are immediately obvious: omit the fields
-        ``facility`` and ``beamline``, or make them lists (of strings).
-        A third possibility would be to make it a list of (implicit) objects
-        that have (at least) the two attributes ``facility`` and
-        ``beamline``. The last option would have the advantage that
-        facility and beamline are always explicitly together.
-
-        Would it eventually make sense to change the name ``beamline`` to
-        ``setup`` or ``instrument``? We may not always have beamlines at
-        synchrotrons...
 
 references
     BibTeX keys of citable reference(s) for the data.
@@ -303,19 +221,7 @@ METADATA = {
         "symbol": "",
     },
     "uncertainties": {
-        "boundaries": "",
-    },
-    "sample": {
-        "thickness": "xx nm",
-        "substrate": "",
-        "layer_stack": "",
-        "morphology": "amorphous",
-    },
-    "measurement": {
-        "type": "reflection",
-        "facility": "BESSY-II",
-        "beamline": "SX700",
-        "date": "2022-04-01",
+        "confidence_interval": "",
     },
     "references": [""],
     "versions": [
