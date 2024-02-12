@@ -206,6 +206,10 @@ class Material:
             In case of uncertainties set to True, two additional arrays with
             lower and upper bound.
 
+        See Also
+        --------
+        :meth:`k`, :meth:`index_of_refraction`
+
         """
         wavelengths = self.n_data.axes[0].values
         if uncertainties:
@@ -233,6 +237,10 @@ class Material:
         k : :class:`tuple`
             wavelength and *k* as :class:`numpy.ndarray`
 
+        See Also
+        --------
+        :meth:`n`, :meth:`index_of_refraction`
+
         """
         wavelengths = self.k_data.axes[0].values
         if uncertainties:
@@ -259,6 +267,10 @@ class Material:
         -------
         index_of_refraction : :class:`tuple`
             wavelength and *n* - i\ *k* as :class:`numpy.ndarray`
+
+        See Also
+        --------
+        :meth:`n`, :meth:`k`
 
         """
         n_k = self.n_data.data - 1j * self.k_data.data
