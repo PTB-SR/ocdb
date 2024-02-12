@@ -941,15 +941,25 @@ class AbstractProcessingStep:
     conversion.
 
 
+    Parameters
+    ----------
+    data : :class:`Data`
+        Data of a :class:`Material` that should be processed
+
+
     Attributes
     ----------
     data : :class:`Data`
         Data of a :class:`Material` that should be processed
 
+    parameters : :class:`dict`
+        All parameters necessary to perform the processing step
+
     """
 
-    def __init__(self):
-        self.data = Data()
+    def __init__(self, data=None):
+        self.data = data or Data()
+        self.parameters = {}
 
     def process(self):
         """Perform the actual processing."""

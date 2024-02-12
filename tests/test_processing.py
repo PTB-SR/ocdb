@@ -163,3 +163,26 @@ class TestInterpolation(unittest.TestCase):
         self.interpolation.parameters["values"] = np.linspace(-5, 5, 11)
         with self.assertRaises(ValueError):
             self.interpolation.process()
+
+    def test_interpolate_single_value_with_data_provided_in_constructor(self):
+        interpolation = processing.Interpolation(self.data)
+        interpolation.parameters["values"] = 13.5
+        interpolation.process()
+        self.assertEqual(interpolation.data.data.size, 1)
+        self.assertEqual(interpolation.data.axes[0].values.size, 1)
+        self.assertEqual(interpolation.data.lower_bounds.size, 1)
+        self.assertEqual(interpolation.data.upper_bounds.size, 1)
+
+    def test_interpolate_single_na_value_with_kind_none_raises(self):
+        self.interpolation.data = self.data
+        self.interpolation.parameters["values"] = 13.4
+        self.interpolation.parameters["kind"] = None
+        with self.assertRaisesRegex(ValueError, "Values not available"):
+            self.interpolation.process()
+
+    def test_interpolate_range_na_value_with_kind_none_raises(self):
+        self.interpolation.data = self.data
+        self.interpolation.parameters["values"] = np.linspace(13.2, 13.6, 3)
+        self.interpolation.parameters["kind"] = None
+        with self.assertRaisesRegex(ValueError, "Values not available"):
+            self.interpolation.process()

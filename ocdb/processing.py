@@ -133,12 +133,21 @@ class Interpolation(ProcessingStep):
         values : :class:`float` or :class:`numpy.ndarray`
             Values to perform the interpolation for
 
+        kind : :class:`str`
+            Kind of interpolation used.
+
+            If :type:`None`, no interpolation will be performed and a
+            :class:`ValueError` raised if the value is not in the axis.
+
     Raises
     ------
     ValueError
         Raised if the values are not within the data range.
 
         Data will only be interpolated, not extrapolated.
+
+    ValueError
+        Raised if kind of interpolation is None and values are not in axis.
 
 
     Examples
@@ -151,7 +160,17 @@ class Interpolation(ProcessingStep):
     .. code-block::
 
         interpolation = Interpolation()
-        interpolation.data = ocdb.elements.Co.data
+        interpolation.data = ocdb.elements.Co.n_data
+        interpolation.parameters["values"] = 13.5
+        interpolated_data = interpolation.process()
+
+    Or a bit simpler, directly instantiating the interpolation object with the
+    data to interpolate:
+
+    .. code-block::
+
+        interpolation = Interpolation(ocdb.elements.Co.n_data)
+        interpolation.parameters["values"] = 13.5
         interpolated_data = interpolation.process()
 
     Typically, users will not directly interact with the class, but rather ask
@@ -165,9 +184,10 @@ class Interpolation(ProcessingStep):
 
     """
 
-    def __init__(self):
-        super().__init__()
-        self.parameters = {"values": None}
+    def __init__(self, data=None):
+        super().__init__(data=data)
+        self.parameters["values"] = None
+        self.parameters["kind"] = "linear"
 
     def _process(self):
         self._sanitise_parameters()
@@ -186,7 +206,7 @@ class Interpolation(ProcessingStep):
         if (
             min(self.parameters["values"]) < min(axes_values)
             or max(self.parameters["values"]) > max(axes_values)
-            or None
+            # This line is here to satisfy Black...
         ):
             message = (
                 f"Requested range not within data range. "
@@ -201,10 +221,24 @@ class Interpolation(ProcessingStep):
             data_arrays = ["data"]
         for data_array in data_arrays:
             # noinspection PyTypeChecker
-            interpolated = np.interp(
-                self.parameters["values"],
-                self.data.axes[0].values,
-                getattr(self.data, data_array),
-            )
-            setattr(self.data, data_array, interpolated)
+            if self.parameters["kind"]:
+                interpolated = np.interp(
+                    self.parameters["values"],
+                    self.data.axes[0].values,
+                    getattr(self.data, data_array),
+                )
+                setattr(self.data, data_array, interpolated)
+            else:
+                index = [
+                    np.where(self.data.axes[0].values == value)[0]
+                    for value in self.parameters["values"]
+                    if any(np.where(self.data.axes[0].values == value)[0])
+                ]
+                if not index:
+                    raise ValueError("Values not available")
+                setattr(
+                    self.data,
+                    data_array,
+                    getattr(self.data, data_array)[index],
+                )
         self.data.axes[0].values = self.parameters["values"]

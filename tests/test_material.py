@@ -345,6 +345,7 @@ class TestAbstractProcessingStep(unittest.TestCase):
     def test_has_attributes(self):
         attributes = [
             "data",
+            "parameters",
         ]
         for attribute in attributes:
             self.assertTrue(hasattr(self.processing_step, attribute))
@@ -352,6 +353,12 @@ class TestAbstractProcessingStep(unittest.TestCase):
     def test_has_process_method(self):
         self.assertTrue(hasattr(self.processing_step, "process"))
         self.assertTrue(callable(self.processing_step.process))
+
+    def test_instantiate_object_with_data_sets_data_attribute(self):
+        data = material.Data()
+        data.data = np.linspace(1, 2, 11)
+        processing_step = material.AbstractProcessingStep(data)
+        np.testing.assert_array_equal(data.data, processing_step.data.data)
 
 
 class TestAbstractProcessingStepFactory(unittest.TestCase):
