@@ -67,13 +67,6 @@ How about getting all information for both, elements and compositions, at once?
         print(material.symbol)
 
 
-.. todo::
-
-    Decide whether ``materials`` is the right name here, or whether we would rather like to go with ``substance``. In any case, the name should be general enough and intuitive enough to cover the concept that both, elements and compositions are covered.
-
-    **Answer:** ``materials`` is probably the better name in the given (local) context of the OCDB, where people deal with materials.
-
-
 Accessing a single element or composition
 =========================================
 
@@ -87,11 +80,9 @@ Following the user interface of the `periodictable package <https://pypi.org/pro
     taten = ocdb.compositions.TaTeN
 
 
-.. todo::
+.. note::
 
-    Decide whether to use capitalised names, as in the periodictable package, or to stick with PEP8 naming conventions. Probably, capitalised names are much more intuitive and easier to read.
-
-    **Answer:** Given the rather complicated names of the composites, capitalisation as used in the chemical formulae is most probably the only sensible choice, although this runs against PEP8 conventions in this particular case.
+    Names of the individual entries (datasets) follow the convention used in  the periodictable package and are capitalised. Given the rather complicated names of the composites, capitalisation ("camel case") as used in the chemical formulae is most probably the only sensible choice, although this runs against PEP8 conventions in this particular case.
 
 
 Accessing *n* and *k* values
@@ -111,39 +102,7 @@ For each material/substance a database record is present in the OCDB, the ocdb p
   * reference (`bibrecord <https://bibrecord.docs.till-biskup.de/>`_ entry if citable reference)
 
 
-.. todo::
-
-    *n* and *k* values are available for different wavelength ranges and with different sampling of the wavelength axis for the different elements and compositions. Furthermore, the wavelength axes are not necessarily equidistant. How to deal with a user wanting to access the value for a certain wavelength (or energy)? Interpolate, and if so, how (linear, cubic, spline, ...)?
-
-    Raw data as provided by OCDB seem to provide *n* and *k* values. Provide methods for getting delta and beta instead?
-
-    Provide data as complex float? Or *n* and *k* separately?
-
-    **Answer:** Both, *n* and *k* separately (and uncertainties with them), and a property ``index_of_refraction`` (note: ``refractive_index`` would be an alternative, though ``index_of_refraction`` would be compatible to ``periodictable``) as complex float. Uncertainties need to be both, lower and upper boundary, as the distribution might not be strictly symmetric.
-
-    Generally, the wavelength axis should be either a separate property or the first row/column in a matrix.
-
-
-.. todo::
-
-    How to provide uncertainties? Matrix with two columns/rows for lower and upper bound for each wavelength entry? Add wavelength as first row/column (only if wavelength is not a separate property)?
-
-
 If no uncertainties are available, return simply ``None`` ("principle of least surprise").
-
-
-.. todo::
-
-    Decide upon a structure for the metadata. Currently, this information is contained in a somewhat human-readable (though not strictly machine-readable) form in the header of the data files.
-
-    Important metadata (VS):
-
-    * layer thickness
-    * substrate
-    * layer stack
-    * date of measurement
-    * sample preparation details (ideally eventually a DOI)
-
 
 Within the ocdb package, we could directly access the data, and we would not need to have an additional ``xray`` property as an intermediate level. Hence, there would be two ways to access all *n* values of an element/substance:
 
@@ -209,7 +168,7 @@ Users may want to get uncertainties together with the values for *n* or *k*. How
     ocdb.elements.Co.n(uncertainties=True)
 
 
-This would return a list of *three* numpy arrays, the first two one-dimensional, the third two-dimensional with lower and upper bound. How lower and upper bound are defined can be looked up in the metadata.
+This would return a list of *four* one-dimensional numpy arrays: wavelength, *n* lower bound, and upper bound. How lower and upper bound are defined can be looked up in the metadata.
 
 And of course, this could be combined with asking for an explicit unit for the energy/wavelength axis:
 
@@ -260,16 +219,16 @@ A single value or all available values for a material are nice, but how about a 
     As long as the range is within the overall axis range of data available from the OCDB, this will perform a *linear* interpolation (allow for other interpolation methods later?). Otherwise, ``np.nan`` will be returned.
 
 
-Reference for values
-====================
+References for values
+=====================
 
-One idea behind the ocdb package, besides providing uncertainties for the values, is to have "FAIR" and citable values/data. Hence, for each material/substance, there should be a reference for the values that allows for citing the correct paper/source.
+One idea behind the ocdb package, besides providing uncertainties for the values, is to have "FAIR" and citable values/data. Hence, for each material/substance, there should be references for the values that allows for citing the correct paper/source.
 
 Thanks to the `bibrecord package <https://bibrecord.docs.till-biskup.de/>`_, this should be straight-forward:
 
 .. code-block::
 
-    print(ocdb.elements.Co.reference.to_string())
+    print(ocdb.elements.Co.references[0].to_string())
 
 would result in the following string:
 
@@ -324,12 +283,12 @@ Plotting values should be straight-forward, however it might be convenient to pr
 * plot of *k* vs. wavelength
 * plot of both, *n* and *k*, vs. wavelength in one plot
 
-  * one joint *y* axis? or two axes left and right, for *n* and *k*, respectively?
+  * two axes left and right, for *n* and *k*, respectively, and colour-coded for easily assigning the values to the axes.
 
 * plot of *n* or *k* vs. wavelength with uncertainties
 * plot of both, *n* and *k*, vs. wavelength with uncertainties in one plot
 
-All plots should automatically provide correct axis labels and perhaps a title displaying the material the data are plotted for. In case of plotting both, *n* and *k* values, a legend would be nice to have as well.
+All plots should automatically provide correct axis labels and perhaps a title displaying the material the data are plotted for. In case of plotting both, *n* and *k* values, the two separate *y* axes are colour-coded to allow for easily assigning the data to their axes.
 
 In the simplest form, plotting should be as easy as:
 

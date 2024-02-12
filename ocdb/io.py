@@ -41,6 +41,8 @@ needs nothing else than the name of an existing metadata file to start with.
     material:
       name: Cobalt
       symbol: Co
+    uncertainties:
+      boundaries: 3 sigma
     sample:
       thickness: 40 nm
       substrate: Si
@@ -91,6 +93,15 @@ material
             This string is used to access the data from within the ocdb
             package. Hence, it should be short and needs to be a valid Python
             variable name.
+
+uncertainties
+    Relevant information about the uncertainties, if present.
+
+    boundaries
+        The value the uncertainties are provided for.
+
+        .. todo::
+            Do we need a better name for this?
 
 sample
     Crucial information concerning the sample, such as (layer) thickness,
@@ -290,6 +301,9 @@ METADATA = {
     "material": {
         "name": "",
         "symbol": "",
+    },
+    "uncertainties": {
+        "boundaries": "",
     },
     "sample": {
         "thickness": "xx nm",
