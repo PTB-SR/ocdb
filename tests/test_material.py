@@ -368,11 +368,14 @@ class TestAbstractProcessingStepFactory(unittest.TestCase):
     def test_instantiate_class(self):
         pass
 
-    def test_get_processing_step_returns_processing_step(self):
+    def test_get_processing_steps_returns_list(self):
+        self.assertIsInstance(self.factory.get_processing_steps(), list)
+
+    def test_get_processing_steps_returns_list_with_processing_steps(self):
         self.assertIsInstance(
-            self.factory.get_processing_step(),
+            self.factory.get_processing_steps()[0],
             material.AbstractProcessingStep,
         )
 
     def test_get_processing_step_accepts_keyword_arguments(self):
-        self.factory.get_processing_step(foo=None, bar="foobar")
+        self.factory.get_processing_steps(foo=None, bar="foobar")

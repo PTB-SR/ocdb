@@ -65,9 +65,18 @@ class ProcessingStepFactory(material.AbstractProcessingStepFactory):
 
     """
 
-    def get_processing_step(self, **kwargs):
+    def get_processing_steps(self, **kwargs):
         """
-        Return processing step given the criteria in the keyword arguments.
+        Return processing steps given the criteria in the keyword arguments.
+
+        For a given list of keyword arguments, there may be more than one
+        processing step that needs to be applied sequentially to the data.
+
+        The factory is responsible for returning the individual processing
+        steps in the correct order. Assigning the correct data to the
+        processing step, however, is the duty of the calling code, as
+        otherwise, processing would not be sequentially applied to the result
+        of the previous processing step, respectively.
 
         Parameters
         ----------
@@ -79,11 +88,14 @@ class ProcessingStepFactory(material.AbstractProcessingStepFactory):
 
         Returns
         -------
-        processing_step : :class:`ProcessingStep`
-            Processing step fitting to the criteria provided by the parameters.
+        processing_steps : :class:`list`
+            Processing steps fitting to the criteria provided by the parameters.
+
+            Each element in the list is an object of type
+            :class:`ProcessingStep`.
 
         """
-        return ProcessingStep()
+        return [ProcessingStep()]
 
 
 class ProcessingStep(material.AbstractProcessingStep):

@@ -16,9 +16,12 @@ class TestProcessingStepFactory(unittest.TestCase):
             self.factory, material.AbstractProcessingStepFactory
         )
 
-    def test_get_processing_step_returns_processing_step(self):
+    def test_get_processing_step_returns_list(self):
+        self.assertIsInstance(self.factory.get_processing_steps(), list)
+
+    def test_get_processing_step_returns_processing_step_in_ist(self):
         self.assertIsInstance(
-            self.factory.get_processing_step(), processing.ProcessingStep
+            self.factory.get_processing_steps()[0], processing.ProcessingStep
         )
 
 

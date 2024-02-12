@@ -996,7 +996,7 @@ class AbstractProcessingStepFactory:
     .. code-block::
 
         processing_step_factory = AbstractProcessingStepFactory()
-        processing_step = processing_step_factory.get_processing_step()
+        processing_steps = processing_step_factory.get_processing_steps()
 
     The criteria for getting the *correct* processing step will be some
     key-value pairs, hence the :meth:`get_processing_step` method supports
@@ -1005,7 +1005,7 @@ class AbstractProcessingStepFactory:
     .. code-block::
 
         processing_step_factory = AbstractProcessingStepFactory()
-        processing_step = processing_step_factory.get_processing_step(
+        processing_steps = processing_step_factory.get_processing_steps(
             values=13.5
         )
 
@@ -1023,9 +1023,18 @@ class AbstractProcessingStepFactory:
 
     # noinspection PyMethodMayBeStatic
     # pylint: disable=unused-argument
-    def get_processing_step(self, **kwargs):
+    def get_processing_steps(self, **kwargs):
         """
-        Return processing step given the criteria in the keyword arguments.
+        Return processing steps given the criteria in the keyword arguments.
+
+        For a given list of keyword arguments, there may be more than one
+        processing step that needs to be applied sequentially to the data.
+
+        The factory is responsible for returning the individual processing
+        steps in the correct order. Assigning the correct data to the
+        processing step, however, is the duty of the calling code, as
+        otherwise, processing would not be sequentially applied to the result
+        of the previous processing step, respectively.
 
         Parameters
         ----------
@@ -1037,8 +1046,11 @@ class AbstractProcessingStepFactory:
 
         Returns
         -------
-        processing_step : :class:`AbstractProcessingStep`
-            Processing step fitting to the criteria provided by the parameters.
+        processing_steps : :class:`list`
+            Processing steps fitting to the criteria provided by the parameters.
+
+            Each element in the list is an object of type
+            :class:`AbstractProcessingStep`.
 
         """
-        return AbstractProcessingStep()
+        return [AbstractProcessingStep()]
