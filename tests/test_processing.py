@@ -19,10 +19,28 @@ class TestProcessingStepFactory(unittest.TestCase):
     def test_get_processing_step_returns_list(self):
         self.assertIsInstance(self.factory.get_processing_steps(), list)
 
-    def test_get_processing_step_returns_processing_step_in_ist(self):
+    def test_get_processing_step_returns_processing_step_in_list(self):
         self.assertIsInstance(
             self.factory.get_processing_steps()[0], processing.ProcessingStep
         )
+
+    def test_get_processing_step_with_values_returns_interpolation(self):
+        self.assertIsInstance(
+            self.factory.get_processing_steps(values=13.5)[0],
+            processing.Interpolation,
+        )
+        self.assertIsInstance(
+            self.factory.get_processing_steps(values=np.linspace(1, 2, 11))[
+                0
+            ],
+            processing.Interpolation,
+        )
+
+    def test_get_processing_step_with_values_sets_interpolation_kind(self):
+        interpolation = self.factory.get_processing_steps(
+            values=13.5, interpolation="foo"
+        )[0]
+        self.assertEqual(interpolation.parameters["kind"], "foo")
 
 
 class TestProcessingStep(unittest.TestCase):

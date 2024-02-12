@@ -986,6 +986,15 @@ class AbstractProcessingStepFactory:
     :class:`AbstractProcessingStepFactory` are implemented in the
     :mod:`ocdb.processing` module.
 
+    For a given list of keyword arguments, there may be more than one
+    processing step that needs to be applied sequentially to the data.
+
+    The factory is responsible for returning the individual processing
+    steps in the correct order. Assigning the correct data to the
+    processing step, however, is the duty of the calling code, as
+    otherwise, processing would not be sequentially applied to the result
+    of the previous processing step, respectively.
+
 
     Examples
     --------

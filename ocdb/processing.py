@@ -31,6 +31,15 @@ class ProcessingStepFactory(material.AbstractProcessingStepFactory):
     the :attr:`ocdb.material.Material.processing_step_factory` will be set
     to an instance of this class.
 
+    For a given list of keyword arguments, there may be more than one
+    processing step that needs to be applied sequentially to the data.
+
+    The factory is responsible for returning the individual processing
+    steps in the correct order. Assigning the correct data to the
+    processing step, however, is the duty of the calling code, as
+    otherwise, processing would not be sequentially applied to the result
+    of the previous processing step, respectively.
+
 
     Examples
     --------
@@ -41,7 +50,7 @@ class ProcessingStepFactory(material.AbstractProcessingStepFactory):
     .. code-block::
 
         processing_step_factory = ProcessingStepFactory()
-        processing_step = processing_step_factory.get_processing_step()
+        processing_steps = processing_step_factory.get_processing_steps()
 
     The criteria for getting the *correct* processing step will be some
     key-value pairs, hence the :meth:`get_processing_step` method supports
@@ -50,12 +59,18 @@ class ProcessingStepFactory(material.AbstractProcessingStepFactory):
     .. code-block::
 
         processing_step_factory = ProcessingStepFactory()
-        processing_step = processing_step_factory.get_processing_step(
+        processing_steps = processing_step_factory.get_processing_steps(
             values=13.5
         )
 
     This may get you a processing step extracting (and interpolating,
     where necessary) the values for *n* and *k* for the given wavelength.
+
+    .. note::
+
+        As depending on the keyword arguments there may be more than one
+        processing step, :meth:`get_processing_steps` will always return a
+        list of :obj:`ProcessingStep` objects.
 
     The actual users of the ocdb package will not see much of the factory,
     as they will usually just call the :meth:`ocdb.material.Material.n`,
@@ -95,7 +110,15 @@ class ProcessingStepFactory(material.AbstractProcessingStepFactory):
             :class:`ProcessingStep`.
 
         """
-        return [ProcessingStep()]
+        processing_steps = []
+        if "values" in kwargs:
+            interpolation = Interpolation()
+            if "interpolation" in kwargs:
+                interpolation.parameters["kind"] = kwargs["interpolation"]
+            processing_steps.append(interpolation)
+        if not processing_steps:
+            processing_steps.append(ProcessingStep())
+        return processing_steps
 
 
 class ProcessingStep(material.AbstractProcessingStep):
@@ -148,7 +171,7 @@ class Interpolation(ProcessingStep):
         kind : :class:`str`
             Kind of interpolation used.
 
-            If :type:`None`, no interpolation will be performed and a
+            If :class:`None`, no interpolation will be performed and a
             :class:`ValueError` raised if the value is not in the axis.
 
     Raises
