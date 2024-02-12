@@ -142,6 +142,106 @@ class TestMaterial(unittest.TestCase):
             material.AbstractProcessingStepFactory,
         )
 
+    def test_n_calls_processing_step_factory_with_kwargs(self):
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def __init__(self):
+                self.kwargs = None
+
+            def get_processing_steps(self, **kwargs):
+                self.kwargs = kwargs
+                return super().get_processing_steps(**kwargs)
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"values": 13.5, "interpolation": None}
+        self.material.n(**kwargs)
+        self.assertDictEqual(
+            self.material.processing_step_factory.kwargs, kwargs
+        )
+
+    def test_n_calls_processing_steps(self):
+        class ProcessingStep(material.AbstractProcessingStep):
+            def process(self):
+                self.data.data += 1
+                return self.data
+
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def get_processing_steps(self, **kwargs):
+                return [ProcessingStep()]
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"values": 13.5, "interpolation": None}
+        self.material.n_data.data = np.zeros(1)
+        _, data = self.material.n(**kwargs)
+        self.assertEqual(data[0], 1)
+
+    def test_k_calls_processing_step_factory_with_kwargs(self):
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def __init__(self):
+                self.kwargs = None
+
+            def get_processing_steps(self, **kwargs):
+                self.kwargs = kwargs
+                return super().get_processing_steps(**kwargs)
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"values": 13.5, "interpolation": None}
+        self.material.k(**kwargs)
+        self.assertDictEqual(
+            self.material.processing_step_factory.kwargs, kwargs
+        )
+
+    def test_k_calls_processing_steps(self):
+        class ProcessingStep(material.AbstractProcessingStep):
+            def process(self):
+                self.data.data += 1
+                return self.data
+
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def get_processing_steps(self, **kwargs):
+                return [ProcessingStep()]
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"values": 13.5, "interpolation": None}
+        self.material.k_data.data = np.zeros(1)
+        _, data = self.material.k(**kwargs)
+        self.assertEqual(data[0], 1)
+
+    def test_ind_of_refraction_calls_processing_step_factory_with_kwargs(
+        self,
+    ):
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def __init__(self):
+                self.kwargs = None
+
+            def get_processing_steps(self, **kwargs):
+                self.kwargs = kwargs
+                return super().get_processing_steps(**kwargs)
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"values": 13.5, "interpolation": None}
+        self.material.index_of_refraction(**kwargs)
+        self.assertDictEqual(
+            self.material.processing_step_factory.kwargs, kwargs
+        )
+
+    def test_index_of_refraction_calls_processing_steps(self):
+        class ProcessingStep(material.AbstractProcessingStep):
+            def process(self):
+                self.data.data += 1
+                return self.data
+
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def get_processing_steps(self, **kwargs):
+                return [ProcessingStep()]
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"values": 13.5, "interpolation": None}
+        self.material.n_data.data = np.zeros(1)
+        self.material.k_data.data = np.ones(1)
+        _, data = self.material.index_of_refraction(**kwargs)
+        self.assertEqual(data[0].real, 1)
+        self.assertEqual(data[0].imag, -2)
+
 
 class TestData(unittest.TestCase):
     def setUp(self):
@@ -359,6 +459,9 @@ class TestAbstractProcessingStep(unittest.TestCase):
         data.data = np.linspace(1, 2, 11)
         processing_step = material.AbstractProcessingStep(data)
         np.testing.assert_array_equal(data.data, processing_step.data.data)
+
+    def test_process_returns_data(self):
+        self.assertIsInstance(self.processing_step.process(), material.Data)
 
 
 class TestAbstractProcessingStepFactory(unittest.TestCase):

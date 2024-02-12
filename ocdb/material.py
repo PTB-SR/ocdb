@@ -189,12 +189,26 @@ class Material:
         self.k_data.axes[1].quantity = "extinction coefficient"
         self.k_data.axes[1].symbol = "k"
 
-    def n(self, uncertainties=False):  # pylint: disable=invalid-name
+    def n(
+        self, values=None, interpolation=None, uncertainties=False
+    ):  # pylint: disable=invalid-name
         """
         Return real part *n* of the index of refraction.
 
         Parameters
         ----------
+        values : :class:`float` or :class:`numpy.ndarray`
+            Wavelengths/energies to get *n* for.
+
+            If no values are provided, the entire data contained in the dataset
+            are returned.
+
+        interpolation : :class:`str`, default None
+            Kind of interpolation to perform to get data.
+
+            If no interpolation is provided, just a table lookup will be
+            performed and if that fails, a :class:`ValueError` raised.
+
         uncertainties : :class:`bool`
             Whether to return uncertainties as separate arrays in output
 
@@ -211,24 +225,43 @@ class Material:
         :meth:`k`, :meth:`index_of_refraction`
 
         """
-        wavelengths = self.n_data.axes[0].values
+        processing_steps = self.processing_step_factory.get_processing_steps(
+            values=values, interpolation=interpolation
+        )
+        data = self.n_data
+        for processing_step in processing_steps:
+            processing_step.data = data
+            data = processing_step.process()
+        wavelengths = data.axes[0].values
         if uncertainties:
             output = (
                 wavelengths,
-                self.n_data.data,
-                self.n_data.lower_bounds,
-                self.n_data.upper_bounds,
+                data.data,
+                data.lower_bounds,
+                data.upper_bounds,
             )
         else:
-            output = (wavelengths, self.n_data.data)
+            output = (wavelengths, data.data)
         return output
 
-    def k(self, uncertainties=False):
+    def k(self, values=None, interpolation=None, uncertainties=False):
         """
         Return imaginary part *k* of the index of refraction.
 
         Parameters
         ----------
+        values : :class:`float` or :class:`numpy.ndarray`
+            Wavelengths/energies to get *n* for.
+
+            If no values are provided, the entire data contained in the dataset
+            are returned.
+
+        interpolation : :class:`str`, default None
+            Kind of interpolation to perform to get data.
+
+            If no interpolation is provided, just a table lookup will be
+            performed and if that fails, a :class:`ValueError` raised.
+
         uncertainties : :class:`bool`
             Whether to return uncertainties as separate arrays in output
 
@@ -242,7 +275,14 @@ class Material:
         :meth:`n`, :meth:`index_of_refraction`
 
         """
-        wavelengths = self.k_data.axes[0].values
+        processing_steps = self.processing_step_factory.get_processing_steps(
+            values=values, interpolation=interpolation
+        )
+        data = self.k_data
+        for processing_step in processing_steps:
+            processing_step.data = data
+            data = processing_step.process()
+        wavelengths = data.axes[0].values
         if uncertainties:
             output = (
                 wavelengths,
@@ -254,12 +294,26 @@ class Material:
             output = (wavelengths, self.k_data.data)
         return output
 
-    def index_of_refraction(self, uncertainties=False):
+    def index_of_refraction(
+        self, values=None, interpolation=None, uncertainties=False
+    ):
         r"""
         Return complex index of refraction
 
         Parameters
         ----------
+        values : :class:`float` or :class:`numpy.ndarray`
+            Wavelengths/energies to get *n* for.
+
+            If no values are provided, the entire data contained in the dataset
+            are returned.
+
+        interpolation : :class:`str`, default None
+            Kind of interpolation to perform to get data.
+
+            If no interpolation is provided, just a table lookup will be
+            performed and if that fails, a :class:`ValueError` raised.
+
         uncertainties : :class:`bool`
             Whether to return uncertainties as separate arrays in output
 
@@ -273,20 +327,30 @@ class Material:
         :meth:`n`, :meth:`k`
 
         """
-        n_k = self.n_data.data - 1j * self.k_data.data
-        wavelengths = self.k_data.axes[0].values
+        processing_steps = self.processing_step_factory.get_processing_steps(
+            values=values, interpolation=interpolation
+        )
+        n_data = self.n_data
+        for processing_step in processing_steps:
+            processing_step.data = n_data
+            n_data = processing_step.process()
+        k_data = self.k_data
+        for processing_step in processing_steps:
+            processing_step.data = k_data
+            k_data = processing_step.process()
+        wavelengths = n_data.axes[0].values
+        n_k = n_data.data - 1j * k_data.data
         if uncertainties:
             output = (
                 wavelengths,
                 n_k,
-                self.n_data.lower_bounds,
-                self.n_data.upper_bounds,
-                self.k_data.lower_bounds,
-                self.k_data.upper_bounds,
+                n_data.lower_bounds,
+                n_data.upper_bounds,
+                k_data.lower_bounds,
+                k_data.upper_bounds,
             )
         else:
             output = wavelengths, n_k
-
         return output
 
     def plot(self, **kwargs):
@@ -963,6 +1027,7 @@ class AbstractProcessingStep:
 
     def process(self):
         """Perform the actual processing."""
+        return self.data
 
 
 class AbstractProcessingStepFactory:
