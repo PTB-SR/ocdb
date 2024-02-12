@@ -9,6 +9,7 @@ implemented in this module directly, but only indirectly while accessing the
 values for *n* and *k*.
 
 """
+import numpy as np
 
 from ocdb import material
 
@@ -114,3 +115,96 @@ class ProcessingStep(material.AbstractProcessingStep):
 
     def _process(self):
         pass
+
+
+class Interpolation(ProcessingStep):
+    """
+    Interpolate data for a given value or range of values.
+
+    For the time being, only linear interpolation is supported, as this seems
+    to be the physically most plausible way.
+
+
+    Attributes
+    ----------
+    parameters : :class:`dict`
+        All parameters necessary to perform the processing step
+
+        values : :class:`float` or :class:`numpy.ndarray`
+            Values to perform the interpolation for
+
+    Raises
+    ------
+    ValueError
+        Raised if the values are not within the data range.
+
+        Data will only be interpolated, not extrapolated.
+
+
+    Examples
+    --------
+    Interpolation operates on :obj:`ocdb.material.Data` objects. Hence, you
+    need to have such a data object, most probably from a material. The result
+    will be stored in the :attr:`data` attribute of the :class:`Interpolation`
+    class, but will be returned by the method :meth:`process` as well:
+
+    .. code-block::
+
+        interpolation = Interpolation()
+        interpolation.data = ocdb.elements.Co.data
+        interpolated_data = interpolation.process()
+
+    Typically, users will not directly interact with the class, but rather ask
+    for a given value or range of values:
+
+    .. code-block::
+
+        ocdb.elements.Co.n(13.5, interpolation="linear")
+
+    See the documentation of :meth:`ocdb.material.Material.n` for details.
+
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.parameters = {"values": None}
+
+    def _process(self):
+        self._sanitise_parameters()
+        self._check_range()
+        self._interpolate_data()
+
+    def _sanitise_parameters(self):
+        if isinstance(self.parameters["values"], float):
+            # noinspection PyTypedDict
+            self.parameters["values"] = np.asarray(
+                [self.parameters["values"]]
+            )
+
+    def _check_range(self):
+        axes_values = self.data.axes[0].values
+        if (
+            min(self.parameters["values"]) < min(axes_values)
+            or max(self.parameters["values"]) > max(axes_values)
+            or None
+        ):
+            message = (
+                f"Requested range not within data range. "
+                f"Available range: [{min(axes_values)}, {max(axes_values)}]"
+            )
+            raise ValueError(message)
+
+    def _interpolate_data(self):
+        if self.data.has_uncertainties():
+            data_arrays = ["data", "lower_bounds", "upper_bounds"]
+        else:
+            data_arrays = ["data"]
+        for data_array in data_arrays:
+            # noinspection PyTypeChecker
+            interpolated = np.interp(
+                self.parameters["values"],
+                self.data.axes[0].values,
+                getattr(self.data, data_array),
+            )
+            setattr(self.data, data_array, interpolated)
+        self.data.axes[0].values = self.parameters["values"]

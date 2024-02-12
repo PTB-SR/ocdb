@@ -197,9 +197,9 @@ And if users like energies (in eV) more than wavelengths (in nm):
     ocdb.elements.Co.n(91.84, unit="eV")  # 91.84 ~= 13.5 nm
 
 
-.. note::
+.. important::
 
-    As long as the value is within the overall axis range of data available from the OCDB, this will perform a *linear* interpolation (allow for other interpolation methods later?). Otherwise, ``np.nan`` will be returned.
+    If the user asks for a value that is no exact hit on the axis, ``np.nan`` will be returned, *i.e.*, **no interpolation** will be performed. In case the user explicitly enables interpolation, as long as the value is within the overall axis range of data available from the OCDB, this will perform a *linear* interpolation (allow for other interpolation methods later?). Otherwise, again ``np.nan`` will be returned.
 
 
 Asking for a range of values
