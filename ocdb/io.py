@@ -442,22 +442,28 @@ class DataImporterFactory:
     """
 
     # noinspection PyMethodMayBeStatic
-    def get_importer(self):
+    def get_importer(self, metadata=None):
         """
         Return data importer given the information provided in the metadata.
+
+        Parameters
+        ----------
+        metadata : :class:`Metadata`
+            Metadata describing the data to be imported.
 
         Returns
         -------
         importer : :class:`DataImporter`
             Data importer object best fitting the criteria provided
 
-        .. todo::
-            Add parameter to method and implement logic returning the correct
-            importer. At the same time, probably slightly reimplement data
-            importer regarding reading the metadata.
-
         """
-        return DataImporter()
+        if not metadata:
+            raise ValueError("Missing metadata")
+        if metadata.file["format"] == "text":
+            return TxtDataImporter()
+        raise NotImplementedError(
+            f"Importer for format '{metadata.file['format']}' not implemented"
+        )
 
 
 class Metadata:
@@ -602,7 +608,7 @@ class Metadata:
 
         Parameters
         ----------
-        filename : :class:`string`
+        filename : :class:`str`
             File the metadata should be imported from.
 
         """

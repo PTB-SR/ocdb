@@ -229,12 +229,27 @@ class TestCreateMetadataFile(unittest.TestCase):
 class TestDataImporterFactory(unittest.TestCase):
     def setUp(self):
         self.factory = io.DataImporterFactory()
+        self.metadata = io.Metadata()
+        self.metadata.file["format"] = "text"
 
     def test_instantiate_class(self):
         pass
 
-    def test_get_importer_returns_plotter(self):
-        self.assertIsInstance(self.factory.get_importer(), io.DataImporter)
+    def test_get_importer_returns_data_importer(self):
+        self.assertIsInstance(
+            self.factory.get_importer(metadata=self.metadata), io.DataImporter
+        )
+
+    def test_get_importer_without_metadata_raises(self):
+        with self.assertRaisesRegex(ValueError, "Missing metadata"):
+            self.factory.get_importer()
+
+    def test_get_importer_with_unknown_format_raises(self):
+        self.metadata.file["format"] = "unknown"
+        with self.assertRaisesRegex(
+            NotImplementedError, "Importer for format .* not implemented"
+        ):
+            self.factory.get_importer(metadata=self.metadata)
 
 
 class TestMetadata(unittest.TestCase):
