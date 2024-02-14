@@ -1,3 +1,4 @@
+import copy
 import os
 import unittest
 import yaml
@@ -214,3 +215,156 @@ class TestCreateMetadataFile(unittest.TestCase):
     def test_create_metadata_file_without_filename_raises(self):
         with self.assertRaises(ValueError):
             io.create_metadata_file()
+
+    def test_create_metadata_writes_correct_metadata(self):
+        metadata = io.Metadata()
+        metadata.versions.append(io.VersionMetadata())
+        metadata.references.append("")
+        io.create_metadata_file(filename=self.filename)
+        with open(self.filename, "r", encoding="utf8") as file:
+            metadata_dict = yaml.safe_load(file)
+        self.assertDictEqual(metadata_dict, metadata.to_dict())
+
+
+class TestDataImporterFactory(unittest.TestCase):
+    def setUp(self):
+        self.factory = io.DataImporterFactory()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_get_importer_returns_plotter(self):
+        self.assertIsInstance(self.factory.get_importer(), io.DataImporter)
+
+
+class TestMetadata(unittest.TestCase):
+    def setUp(self):
+        self.metadata = io.Metadata()
+        metadata = io.Metadata()
+        metadata.versions.append(io.VersionMetadata())
+        metadata.references.append("")
+        self.metadata_dict = metadata.to_dict()
+        # self.metadata_dict = copy.deepcopy(io.METADATA_DICT)
+        self.filename = "test.yaml"
+
+    def tearDown(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+    def create_metadata_file(self):
+        with open(self.filename, "w+", encoding="utf8") as file:
+            file.write(yaml.dump(self.metadata_dict))
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "format",
+            "file",
+            "material",
+            "uncertainties",
+            "references",
+            "versions",
+            "comment",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.metadata, attribute))
+
+    def test_format_is_readonly_property(self):
+        with self.assertRaises(AttributeError):
+            # noinspection PyPropertyAccess
+            self.metadata.format = {}
+
+    def test_from_dict_maps_comment(self):
+        self.metadata_dict["comment"] = "Lorem ipsum"
+        self.metadata.from_dict(metadata=self.metadata_dict)
+        self.assertEqual(self.metadata_dict["comment"], self.metadata.comment)
+
+    def test_from_dict_does_not_map_nonexisting_attribute(self):
+        self.metadata_dict["foo"] = "bar"
+        self.metadata.from_dict(metadata=self.metadata_dict)
+        self.assertFalse(hasattr(self.metadata, "foo"))
+
+    def test_from_dict_updates_dict_attributes(self):
+        self.metadata_dict["file"] = {"name": "bar.dat"}
+        self.metadata.from_dict(metadata=self.metadata_dict)
+        file_metadata = {"name": "bar.dat", "format": ""}
+        self.assertDictEqual(file_metadata, self.metadata.file)
+
+    def test_from_dict_with_missing_format_key_raises(self):
+        self.metadata_dict.pop("format")
+        with self.assertRaisesRegex(KeyError, "Wrong metadata schema"):
+            self.metadata.from_dict(metadata=self.metadata_dict)
+
+    def test_from_dict_with_wrong_format_raises(self):
+        self.metadata_dict["format"]["type"] = "Wrong format"
+        with self.assertRaisesRegex(ValueError, "Wrong metadata format"):
+            self.metadata.from_dict(metadata=self.metadata_dict)
+
+    def test_from_dict_with_versions_adds_version_object(self):
+        self.metadata.from_dict(metadata=self.metadata_dict)
+        self.assertIsInstance(self.metadata.versions[0], io.VersionMetadata)
+
+    def test_from_file_maps_comment(self):
+        self.metadata_dict["comment"] = "Lorem ipsum"
+        self.create_metadata_file()
+        self.metadata.from_file(self.filename)
+        self.assertEqual(self.metadata_dict["comment"], self.metadata.comment)
+
+    def test_to_dict_returns_dict(self):
+        self.assertIsInstance(self.metadata.to_dict(), dict)
+
+    def test_to_dict_returns_dict_with_correct_keys(self):
+        keys = [
+            "format",
+            "file",
+            "material",
+            "uncertainties",
+            "references",
+            "versions",
+            "comment",
+        ]
+        self.assertListEqual(keys, list(self.metadata.to_dict().keys()))
+
+    def test_to_dict_converts_version_in_dict(self):
+        self.metadata.versions.append(io.VersionMetadata())
+        self.assertIsInstance(self.metadata.to_dict()["versions"][0], dict)
+
+
+class TestVersionMetadata(unittest.TestCase):
+    def setUp(self):
+        self.metadata = io.VersionMetadata()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "identifier",
+            "description",
+            "metadata",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.metadata, attribute))
+
+    def test_from_dict_maps_attribute(self):
+        metadata_dict = {"identifier": "foo"}
+        self.metadata.from_dict(metadata=metadata_dict)
+        self.assertEqual(
+            metadata_dict["identifier"], self.metadata.identifier
+        )
+
+    def test_from_dict_does_not_map_nonexisting_attribute(self):
+        metadata_dict = {"foo": "bar"}
+        self.metadata.from_dict(metadata=metadata_dict)
+        self.assertFalse(hasattr(self.metadata, "foo"))
+
+    def test_to_dict_returns_dict(self):
+        self.assertIsInstance(self.metadata.to_dict(), dict)
+
+    def test_to_dict_returns_dict_with_correct_keys(self):
+        self.assertListEqual(
+            ["identifier", "description", "metadata"],
+            list(self.metadata.to_dict().keys()),
+        )

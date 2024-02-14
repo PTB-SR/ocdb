@@ -188,11 +188,9 @@ as the ocdb package handles all this transparently and automatically for them.
 Note for developers
 ===================
 
-The metadata schema for the metadata files is currently contained in the
-:attr:`METADATA` attribute of the :mod:`io` module (at the very top, straight
-after the import statements). This is the (only) place to change the version
-number of the format, and the function :func:`create_metadata_file` makes use
-of the :attr:`METADATA` attribute to populate the template file.
+The metadata schema for the metadata files is implemented in the
+:class:`Metadata` class. To create the schema, you may use the
+:meth:`Metadata.to_dict` method.
 
 
 Module documentation
@@ -205,34 +203,6 @@ import numpy as np
 import oyaml as yaml
 
 from ocdb import material
-
-
-METADATA = {
-    "format": {
-        "type": "OCDB metadata",
-        "version": "1.0.rc-1",
-    },
-    "file": {
-        "name": "",
-        "format": "text",
-    },
-    "material": {
-        "name": "",
-        "symbol": "",
-    },
-    "uncertainties": {
-        "confidence_interval": "",
-    },
-    "references": [""],
-    "versions": [
-        {
-            "identifier": "",
-            "description": "",
-            "metadata": "",
-        },
-    ],
-    "comment": "",
-}
 
 
 class DataImporter:
@@ -442,5 +412,278 @@ def create_metadata_file(filename=""):
     """
     if not filename:
         raise ValueError("Missing filename")
+    metadata = Metadata()
+    metadata.versions.append(VersionMetadata())
+    metadata.references.append("")
     with open(filename, "w+", encoding="utf8") as file:
-        file.write(yaml.dump(METADATA))
+        file.write(yaml.dump(metadata.to_dict()))
+
+
+class DataImporterFactory:
+    """
+    Factory for data importer.
+
+    Data containing the actual optical constants for a given material can be
+    stored in different formats. While for each format supported, there exists
+    a dedicated importer class inheriting from :class:`DataImporter`, the
+    factory is the one place deciding which importer object to return.
+
+
+    Examples
+    --------
+    Getting a data importer object from the factory is straight-forward: Create
+    an instance of the factory and call its :meth:`get_importer` method:
+
+    .. code-block::
+
+        importer_factory = DataImporterFactory()
+        importer_factory.get_importer()
+
+    """
+
+    # noinspection PyMethodMayBeStatic
+    def get_importer(self):
+        """
+        Return data importer given the information provided in the metadata.
+
+        Returns
+        -------
+        importer : :class:`DataImporter`
+            Data importer object best fitting the criteria provided
+
+        .. todo::
+            Add parameter to method and implement logic returning the correct
+            importer. At the same time, probably slightly reimplement data
+            importer regarding reading the metadata.
+
+        """
+        return DataImporter()
+
+
+class Metadata:
+    """
+    Metadata for a given dataset as read from a metadata file.
+
+    Data without context (*i.e.*, metadata) are mostly useless. Hence, for the
+    ocdb package, metadata accompanying the actual data (*i.e.*, optical
+    constants) are stored in separate metadata files for each dataset.
+
+    This class provides the code representation of all the information
+    contained in these files.
+
+
+    Attributes
+    ----------
+    file : :class:`dict`
+        Metadata describing the data file
+
+    material : :class:`dict`
+        Metadata describing the material
+
+    uncertainties : :class:`dict`
+        Metadata describing the uncertainties provided
+
+    references : :class:`list`
+        List of references related to the dataset
+
+        If you use the data for your own work, consider citing these references.
+
+    versions : :class:`list`
+        List of related datasets
+
+        Each element in the list is an object of type :obj:`VersionMetadata`.
+
+    comment : :class:`str`
+        Any additional relevant information of the dataset.
+
+        There is nearly always the need to store some information that just
+        doesn't fit into any of the fields. However, use with care and expand
+        the data structure if you realise that you repeatedly store the same
+        (kind of) information in the comment.
+
+    """
+
+    def __init__(self):
+        self.file = {
+            "name": "",
+            "format": "",
+        }
+        self.material = {
+            "name": "",
+            "symbol": "",
+        }
+        self.uncertainties = {
+            "confidence_interval": "",
+        }
+        self.references = []
+        self.versions = []
+        self.comment = ""
+
+        self._format = {
+            "type": "OCDB metadata",
+            "version": "1.0.rc-1",
+        }
+
+    @property
+    def format(self):
+        """
+        Metadata describing the metadata schema itself.
+
+        Returns
+        -------
+        metadata : :class:`dict`
+
+        """
+        return self._format
+
+    def from_dict(self, metadata=None):
+        """
+        Set metadata from dictionary.
+
+        Parameters
+        ----------
+        metadata : :class:`dict`
+            Metadata to be set
+
+        """
+        if "format" not in metadata.keys():
+            raise KeyError("Wrong metadata schema")
+        metadata_format = metadata.pop("format")
+        if metadata_format["type"] != self.format["type"]:
+            raise ValueError("Wrong metadata format")
+        for key, value in metadata.items():
+            if key == "versions":
+                for version_dict in value:
+                    version = VersionMetadata()
+                    version.from_dict(version_dict)
+                    self.versions.append(version)
+            elif hasattr(self, key):
+                if isinstance(value, dict):
+                    getattr(self, key).update(value)
+                else:
+                    setattr(self, key, value)
+
+    def to_dict(self):
+        """
+        Return metadata as dictionary.
+
+        Returns
+        -------
+        metadata : :class:`dict`
+
+        """
+        output = {}
+        keys = [
+            "format",
+            "file",
+            "material",
+            "uncertainties",
+            "references",
+            "versions",
+            "comment",
+        ]
+        for key in keys:
+            if key == "versions":
+                output["versions"] = []
+                for version in self.versions:
+                    output["versions"].append(version.to_dict())
+            else:
+                output[key] = getattr(self, key)
+        return output
+
+    def from_file(self, filename=""):
+        """
+        Set metadata from file.
+
+        Metadata are stored in YAML files.
+
+        Internally, the method :meth:`from_dict` will be called after the YAML
+        file has been read (and converted into a :class:`dict`).
+
+        Parameters
+        ----------
+        filename : :class:`string`
+            File the metadata should be imported from.
+
+        """
+        with open(filename, "r+", encoding="utf8") as file:
+            metadata = yaml.safe_load(file.read())
+        self.from_dict(metadata=metadata)
+
+
+class VersionMetadata:
+    """
+    Metadata for an individual version of a dataset contained in the OCDB.
+
+    Over time, different datasets will be available for the same material.
+    Hence, it may be of interest to access the older datasets that are superset
+    by a new one, at least get the information that there are some and where
+    they are located in the ocdb.
+
+    To be able to sensibly address those additional datasets from within the
+    ocdb package, they need a (unique) identifier, a (short) description and
+    the information where to find the data and metadata.
+
+
+    Attributes
+    ----------
+    identifier : :class:`str`
+        Unique identifier for the dataset.
+
+        Typically, this is the name of the "base" dataset with a suffix, *e.g.*
+        ``Co_2018`` in case of a dataset containing data for cobalt created in
+        2018.
+
+        .. important::
+            This string is used to access the data from within the ocdb
+            package. Hence, it should be short and needs to be a valid Python
+            variable name.
+
+    description : :class:`str`
+        Concise description of the characteristics of this version.
+
+        Please *do not* simply state "old data" or "data from 20xx", as this
+        does not help the users of the package at all, but describe/mention the
+        *characteristics* of this version. This may be the wavelength range or
+        a different layer stack or else.
+
+    metadata : :class:`str`
+        Filename of the metadata file (without path).
+
+        The logic of the ocdb package requires only the name of a metadata file
+        to figure out by itself where the data are located.
+
+    """
+
+    def __init__(self):
+        self.identifier = ""
+        self.description = ""
+        self.metadata = ""
+
+    def from_dict(self, metadata=None):
+        """
+        Set metadata from dictionary.
+
+        Parameters
+        ----------
+        metadata : :class:`dict`
+            Metadata to be set
+
+        """
+        for key, value in metadata.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+
+    def to_dict(self):
+        """
+        Return metadata as dictionary.
+
+        Returns
+        -------
+        metadata : :class:`dict`
+
+        """
+        output = {}
+        for key in ["identifier", "description", "metadata"]:
+            output[key] = getattr(self, key)
+        return output
