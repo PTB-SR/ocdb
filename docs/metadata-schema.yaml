@@ -1,0 +1,18 @@
+format:
+  type: OCDB metadata
+  version: 1.0.rc-1
+file:
+  name: ''
+  format: ''
+material:
+  name: ''
+  symbol: ''
+uncertainties:
+  confidence_interval: ''
+references:
+- ''
+versions:
+- identifier: ''
+  description: ''
+  metadata: ''
+comment: ''
