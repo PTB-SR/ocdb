@@ -26,9 +26,9 @@ A :obj:`Material` object is basically a composition of objects for data and
 metadata that are described in the next section.
 
 Interfaces to other modules -- pointing outwards in terms of a layered
-architecture, as described in the :doc:`architecture section <../architecture>`
--- is provided by means of abstract factories and described in a separate
-section below as well.
+architecture, as described in the :doc:`architecture section
+<../architecture>` -- is provided by means of abstract factories and
+described in a separate section below as well.
 
 
 Data and metadata
@@ -53,9 +53,9 @@ objects for data and metadata:
 Abstract interfaces
 ===================
 
-Currently, interfaces to two other modules are provided: :mod:`ocdb.processing`
-and :mod:`ocdb.plotting`. Interfacing is done according to the "dependency
-inversion principle" using abstract factories:
+Currently, interfaces to two other modules are provided:
+:mod:`ocdb.processing` and :mod:`ocdb.plotting`. Interfacing is done
+according to the "dependency inversion principle" using abstract factories:
 
 * :class:`AbstractProcessingStepFactory`
 
@@ -226,8 +226,8 @@ class Material:
 
         print(ocdb.elements.Co.reference.to_bib())
 
-    For details regarding the metadata, have a look at the documentation of the
-    :class:`Metadata` class.
+    For details regarding the metadata, have a look at the documentation of
+    the :class:`Metadata` class.
 
     """
 
@@ -258,8 +258,8 @@ class Material:
         values : :class:`float` or :class:`numpy.ndarray`
             Wavelengths/energies to get *n* for.
 
-            If no values are provided, the entire data contained in the dataset
-            are returned.
+            If no values are provided, the entire data contained in the
+            dataset are returned.
 
         interpolation : :class:`str`, default None
             Kind of interpolation to perform to get data.
@@ -311,8 +311,8 @@ class Material:
         values : :class:`float` or :class:`numpy.ndarray`
             Wavelengths/energies to get *n* for.
 
-            If no values are provided, the entire data contained in the dataset
-            are returned.
+            If no values are provided, the entire data contained in the
+            dataset are returned.
 
         interpolation : :class:`str`, default None
             Kind of interpolation to perform to get data.
@@ -363,8 +363,8 @@ class Material:
         values : :class:`float` or :class:`numpy.ndarray`
             Wavelengths/energies to get *n* for.
 
-            If no values are provided, the entire data contained in the dataset
-            are returned.
+            If no values are provided, the entire data contained in the
+            dataset are returned.
 
         interpolation : :class:`str`, default None
             Kind of interpolation to perform to get data.
@@ -546,14 +546,14 @@ class Data:
     lower_bounds : :class:`numpy.ndarray`
         Lower bounds for uncertainty of the values stored in :attr:`data`.
 
-        Could be an empty array. Use :meth:`has_uncertainties` for a convenient
-        check.
+        Could be an empty array. Use :meth:`has_uncertainties` for a
+        convenient check.
 
     upper_bounds : :class:`numpy.ndarray`
         Upper bounds for uncertainty of the values stored in :attr:`data`.
 
-        Could be an empty array. Use :meth:`has_uncertainties` for a convenient
-        check.
+        Could be an empty array. Use :meth:`has_uncertainties` for a
+        convenient check.
 
     """
 
@@ -585,8 +585,8 @@ class Axis:
 
     Data (stored in :class:`Data`) will always have at least two axes (except
     single points). One axis contains both, values (the independent variable)
-    and metadata for the corresponding label, the second axis will only contain
-    the metadata.
+    and metadata for the corresponding label, the second axis will only
+    contain the metadata.
 
 
     Attributes
@@ -667,8 +667,8 @@ class Metadata:
     """
     Relevant metadata for the optical constants of a given material.
 
-    Data are only as good as their accompanying metadata. Hence, metadata are a
-    prerequisite for both, reproducibility and correct use of the data.
+    Data are only as good as their accompanying metadata. Hence, metadata
+    are a prerequisite for both, reproducibility and correct use of the data.
 
     This class provides a structure and hence access to the relevant metadata
     for optical constants of materials from the OCDB database. These metadata
@@ -836,12 +836,13 @@ class Collection:
     Collection of materials whose data are part of the OCDB.
 
     While each material, be it an element or composition, will be accessed by
-    means of an :obj:`Material` object, users of the ocdb package will typically
-    operate on the properties of a collection that are :obj:`Material` objects.
+    means of an :obj:`Material` object, users of the ocdb package will
+    typically operate on the properties of a collection that are
+    :obj:`Material` objects.
 
     This allows for different collections, *e.g.* elements and compositions.
     Similarly, a general collection such as "materials" would be possible,
-    containing all materials data are availabe for in the OCDB.
+    containing all materials data are available for in the OCDB.
 
 
     Attributes
@@ -868,28 +869,31 @@ class Collection:
     Examples
     --------
     Given a collection with items, here termed ``collection``, we may be
-    interested in just getting a list of all items, either by name or by symbol
-    (or both):
+    interested in just getting a list of all items, either by name or by
+    symbol (or both):
 
     .. code-block::
 
         for item in collection:
             print(item.symbol, item.name)
 
-    If you know the items of your collection, you can access them as attributes
-    of the collection itself. To be exact, each item added to a collection using
-    the :meth:`add_item` method gets added as a attribute to the collection with
-    the symbol of the item being the name of the attribute.
+    If you know the items of your collection, you can access them as
+    attributes of the collection itself. To be exact, each item added to a
+    collection using the :meth:`add_item` method gets added as a attribute
+    to the collection with the symbol of the item being the name of the
+    attribute.
 
     Suppose you know that Cobalt (with symbol Co) is part of the items of your
-    collection. In this case, you can access it as a property of the collection:
+    collection. In this case, you can access it as a property of the
+    collection:
 
     .. code-block::
 
         collection.Co
 
     In the same way, you can access all properties of this item. For details,
-    have a look at the documentation of the underlying :class:`Material` class.
+    have a look at the documentation of the underlying :class:`Material`
+    class.
 
     """
 
@@ -996,9 +1000,9 @@ class AbstractPlotterFactory:
     correct plotter.
 
     Concrete instances of both, :class:`AbstractPlotter` and
-    :class:`AbstractPlotterFactory` are implemented in the :mod:`ocdb.plotting`
-    module. Only if you ever import this module would you need to have a
-    plotting framework (Matplotlib) installed.
+    :class:`AbstractPlotterFactory` are implemented in the
+    :mod:`ocdb.plotting` module. Only if you ever import this module would
+    you need to have a plotting framework (Matplotlib) installed.
 
 
     Examples
@@ -1099,8 +1103,8 @@ class AbstractProcessingStepFactory:
     asking for a value that is an exact match.
 
     In any case, all the material wants and needs to know is that it
-    requires a processing step in order to get its data processed. The abstract
-    interface of the processing step itself is described in the
+    requires a processing step in order to get its data processed. The
+    abstract interface of the processing step itself is described in the
     :class:`AbstractProcessingStep` class, and the
     :class:`AbstractProcessingStepFactory` is the one place to ask for the
     correct processing step.
@@ -1171,7 +1175,7 @@ class AbstractProcessingStepFactory:
         Parameters
         ----------
         kwargs
-            All parameters relevant to decide upon the correct processing step.
+            All parameters relevant to decide upon a correct processing step.
 
             A list of key--value pairs, either as :class:`dict` or
             separate, *i.e.* the Python ``**kwargs`` argument.
@@ -1179,7 +1183,7 @@ class AbstractProcessingStepFactory:
         Returns
         -------
         processing_steps : :class:`list`
-            Processing steps fitting to the criteria provided by the parameters.
+            Processing steps fitting to the criteria provided by parameters.
 
             Each element in the list is an object of type
             :class:`AbstractProcessingStep`.

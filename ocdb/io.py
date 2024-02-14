@@ -1,25 +1,87 @@
 # noqa: D405 D407
 """
-Interfaces to the persistence layer, *i.e.* importers and eventually exporters.
+Interfaces to the persistence layer, *i.e.* importers and exporters.
 
 Data need to come from somewhere (and sometimes need to be persisted). This
 module provides general facilities for reading data from different sources.
 
-From a software architecture perspective, this module belongs to the periphery.
+From a software architecture perspective, this module belongs to the
+periphery.
 
 
-Importing data
-==============
+Data in the ocdb package
+========================
+
+Data and corresponding context (*i.e.*, metadata) are stored in files in
+the ``db`` directory of the ocdb package. The format of data and metadata
+files is nothing users of the ocdb package should be concerned with.
+Contributors and developers, however, need a bit more details.
 
 Data in the OCDB are currently provided as plain text files with a short
 (human-readable) header containing some information. For the ocdb package,
 reading the actual numerical data from these files is rather straight-forward.
 However, this does not help with the relevant metadata. Therefore, a different
-approach will be used, based on additional, separate metadata files that
-contain all relevant information, including the filename of the actual data
-file (and perhaps its format). These metadata files are YAML
-files, due to this format being quite human-writable, while retaining the
-necessary machine-readability.
+approach is used, based on additional, separate metadata files that contain
+all relevant information, including the filename of the actual data file
+(and its format). These metadata files are YAML files, due to this format
+being quite human-writable, while retaining the necessary machine-readability.
+
+
+Importing data
+==============
+
+When importing data, the actual file format does not matter, as this is
+been taken care of by the :class:`DataImporterFactory`. Hence, all you
+need is the name of the metadata file(s). These can be imported via the
+:meth:`Metadata.from_file` method of the :class:`Metadata` class. The
+latter represents the metadata in code. For details, see below. All we
+care about for now is to get the metadata and to use them to get the
+matching importer.
+
+For a single metadata file ``Co.yaml`` containing the relevant metadata for
+the Cobalt dataset in the ODCB, this may look like:
+
+.. code-block::
+
+    metadata = ocdb.io.Metadata()
+    metadata.from_file("Co.yaml")
+
+    importer_factory = ocdb.io.DataImporterFactory()
+    importer = importer_factory.get_importer(metadata=metadata)
+
+    Co = importer.import_data()
+
+Here, ``Co`` will be an :obj:`odcb.material.Material` object containing
+both, data and metadata for Cobalt.
+
+To import a whole bunch of data in one go, assuming you have a list of
+metadata filenames, things could be made a bit smoother. Let's assume for
+the moment that we would want to create a dictionary `materials` with the
+symbol of the individual material contained in the metadata as key:
+
+.. code-block::
+
+    importer_factory = ocdb.io.DataImporterFactory()
+    materials = {}
+
+    for filename in metadata_filenames:
+        metadata = ocdb.io.Metadata(filename=filename)
+        importer = importer_factory.get_importer(metadata=metadata)
+
+        materials[metadata.material["symbol"]] = importer.import_data()
+
+This is what basically happens behind the scenes when you import the ocdb
+package.
+
+
+Metadata
+========
+
+A key concept of the ocdb package is to provide sensible context for the
+data, *i.e.* metadata. As mentioned above, these metadata are stored within
+separate files in YAML format. The format is described in more detail below,
+as well as the ways to create those files and how the metadata are represented
+within the ocdb package.
 
 
 Metadata files
@@ -29,6 +91,19 @@ The current state of affairs regarding the structure of metadata files used to
 both, provide metadata and the name of the file containing the actual data is
 documented below. The metadata files are in YAML format, and a data importer
 needs nothing else than the name of an existing metadata file to start with.
+
+The metadata file as created by the :func:`create_metadata_file` function
+looks as follows:
+
+.. literalinclude:: ../metadata-schema.yaml
+   :language: yaml
+
+
+For convenience, below is an additional example with some hand-crafted
+example content. However, keep in mind that the schema shown above is
+automatically generated and should always be up to date. Hence, if there
+are differences between the schema shown above and the example below,
+the former should be more authoritative.
 
 .. code-block:: yaml
 
@@ -100,9 +175,9 @@ versions
     List of entries for additional datasets for the same material.
 
     Over time, different datasets will be available for the same material.
-    Hence, it may be of interest to access the older datasets that are superset
-    by a new one, at least get the information that there are some and where
-    they are located in the ocdb.
+    Hence, it may be of interest to access the older datasets that are
+    superset by a new one, at least get the information that there are
+    some and where they are located in the ocdb.
 
     To be able to sensibly address those additional datasets from within the
     ocdb package, they need a (unique) identifier, a (short) description and
@@ -118,40 +193,67 @@ versions
         Concise description of the characteristics of this version.
 
         Please *do not* simply state "old data" or "data from 20xx", as this
-        does not help the users of the package at all, but describe/mention the
-        *characteristics* of this version. This may be the wavelength range or
-        a different layer stack or else.
+        does not help the users of the package at all, but describe/mention
+        the *characteristics* of this version. This may be the wavelength
+        range or a different layer stack or else.
 
     metadata
         Filename of the metadata file (without path).
 
-        The logic of the ocdb package requires only the name of a metadata file
-        to figure out by itself where the data are located.
+        The logic of the ocdb package requires only the name of a metadata
+        file to figure out by itself where the data are located.
 
     .. todo::
 
         How to discriminate between current and old/superseded versions? One
         possibility would be to have only the metadata files of the most
-        current datasets in the ``metadata`` directory, and the metadata of the
-        superseded/alternative datasets in a separate (parallel) directory (or
-        simply the ``data`` directory). This "convention over configuration"
-        approach would allow the ocdb package to import all data from a given
-        location, without need to first check for each metadata file whether it
-        has been superseded or not.
+        current datasets in the ``metadata`` directory, and the metadata
+        of the superseded/alternative datasets in a separate (parallel)
+        directory (or simply the ``data`` directory). This "convention
+        over configuration" approach would allow the ocdb package to
+        import all data from a given location, without need to first check
+        for each metadata file whether it has been superseded or not.
 
 comment
     Textual description of whatever additional information.
 
-    There is nearly always the need to store some information that just doesn't
-    fit into any of the fields. However, use with care and expand the data
-    structure if you realise that you repeatedly store the same (kind of)
-    information in the comment.
+    There is nearly always the need to store some information that just
+    doesn't fit into any of the fields. However, use with care and expand
+    the data structure if you realise that you repeatedly store the same
+    (kind of) information in the comment.
 
+    .. note::
+
+        The ``>`` sign shown in the hand-crafted example above is the YAML
+        syntax for a multiline text field where where each line break is
+        folded to a space unless it ends an empty or a more-indented line.
+        For more details, see the `YAML specification
+        <http://yaml.org/spec/1.2.2/#23-scalars>`_.
+
+
+
+Creating metadata files
+-----------------------
 
 Rather than creating the metadata YAML files by hand, (data) contributors to
 the ocdb package should use the :func:`create_metadata_file` function. This
 function will always use the latest metadata scheme to write the template.
 See the :func:`create_metadata_file` documentation for further details.
+
+
+Representing metadata in code
+-----------------------------
+
+Metadata are represented as classes within the module. Currently,
+the following classes are implemented:
+
+* :class:`Metadata`
+
+    Metadata for a given dataset as read from a metadata file.
+
+* :class:`VersionMetadata`
+
+    Metadata for an individual version of a dataset contained in the OCDB.
 
 
 .. warning::
@@ -167,17 +269,17 @@ See the :func:`create_metadata_file` documentation for further details.
 
 
 Data files
-----------
+==========
 
-Data files reside in a directory separate from the metadata. The reason of this
-"convention over configuration" approach is simply to allow the machinery
-importing all the data for the user to iterate over all files in a directory
-and import the accompanying (meta)data.
+Data files reside in a directory separate from the metadata. The reason of
+this "convention over configuration" approach is simply to allow the
+machinery importing all the data for the user to iterate over all files in
+a directory and import the accompanying (meta)data.
 
-As described above, for one material, there can (and will) be several datasets,
-each with their data (and metadata) files. Where the additional metadata files
-are stored is still under discussion, for details see the section on metadata
-above.
+As described above, for one material, there can (and will) be several
+datasets, each with their data (and metadata) files. Where the additional
+metadata files are stored is still under discussion, for details see the
+section on metadata above.
 
 Data files are, for the time being, simply text files as those currently
 available from the OCDB. Those data files can be read using the
@@ -185,12 +287,42 @@ available from the OCDB. Those data files can be read using the
 as the ocdb package handles all this transparently and automatically for them.
 
 
-Note for developers
-===================
+Notes for developers
+====================
+
+Adding importers for data file formats
+--------------------------------------
+
+Currently, there is only one importer for plain text files available. To
+implement importers for other data file formats requires these steps:
+
+* Decide upon a format specifier used in the metadata schema as well.
+
+* Implement the importer class, inheriting from :class:`DataImporter`
+
+* Add the logic to the :class:`DataImporterFactory` to select the new
+  importer given the format string in the metadata.
+
+
+Updating the metadata schema
+----------------------------
 
 The metadata schema for the metadata files is implemented in the
-:class:`Metadata` class. To create the schema, you may use the
-:meth:`Metadata.to_dict` method.
+:class:`Metadata` class. Hence, all changes should be applied there,
+and with each change incrementing the version number of the schema as well.
+
+To create the YAML listing of the schema shown above, use the Python script
+``create_metadata_schema.py`` located in the ``docs`` directory of the ocdb
+package.
+
+.. important::
+
+    Whenever you change the schema, don't forget to update the schema file
+    included in the documentation as well.
+
+If the metadata schema evolves and hence the need exists to deal with
+different versions of the schema, appropriate functionality needs to be
+implemented, most probably in the :meth:`Metadata.from_dict` method.
 
 
 Module documentation
@@ -203,6 +335,58 @@ import numpy as np
 import oyaml as yaml
 
 from ocdb import material
+
+
+class DataImporterFactory:
+    """
+    Factory for data importer.
+
+    Data containing the actual optical constants for a given material can be
+    stored in different formats. While for each format supported, there exists
+    a dedicated importer class inheriting from :class:`DataImporter`, the
+    factory is the one place deciding which importer object to return.
+
+
+    Examples
+    --------
+    Getting a data importer object from the factory is straight-forward:
+    Create an instance of the factory and call its :meth:`get_importer`
+    method:
+
+    .. code-block::
+
+        importer_factory = DataImporterFactory()
+        importer_factory.get_importer()
+
+    """
+
+    # noinspection PyMethodMayBeStatic
+    def get_importer(self, metadata=None):
+        """
+        Return data importer given the information provided in the metadata.
+
+        Parameters
+        ----------
+        metadata : :class:`Metadata`
+            Metadata describing the data to be imported.
+
+        Returns
+        -------
+        importer : :class:`DataImporter`
+            Data importer object best fitting the criteria provided
+
+        """
+        if not metadata:
+            raise ValueError("Missing metadata")
+        if metadata.file["format"] == "text":
+            importer = TxtDataImporter()
+        else:
+            raise NotImplementedError(
+                f"Importer for format '{metadata.file['format']}' "
+                f"not implemented"
+            )
+        importer.metadata = metadata
+        return importer
 
 
 class DataImporter:
@@ -231,10 +415,7 @@ class DataImporter:
     data_filename : :class:`str`
         Name of the file containing the actual (numerical) data
 
-    metadata_filename : :class:`str`
-        Name of the file containing the corresponding metadata
-
-    metadata : :class:`dict`
+    metadata : :class:`Metadata`
         Metadata as read from the metadata file.
 
         These metadata are automatically mapped to the resulting
@@ -248,25 +429,26 @@ class DataImporter:
 
     Examples
     --------
-    Importing data is a two-step process: (i) create an importer object and set
-    the metadata filename, and (ii) call the import method:
+    Importing data is a two-step process: (i) create an importer object
+    and set the metadata, and (ii) call the import method:
 
     .. code-block::
 
         importer = ocdb.io.DataImporter()
-        importer.metadata_filename = "metadata/foo.yaml"
-
+        importer.metadata = ocdb.io.Metadata(filename="metadata/foo.yaml")
         material = importer.import_data()
 
-    As you can see from the example, the :meth:`import_data` method will return
-    the actual material, an object of class :class:`ocdb.material.Material`.
+    As you can see from the example, the :meth:`import_data` method will
+    return the actual material, an object of class
+    :class:`ocdb.material.Material`.
 
-    For convenience, you can set the metadata filename upon instantiating the
-    importer object:
+    For convenience, you can set the metadata upon instantiating the importer
+    object:
 
     .. code-block::
 
-        importer = ocdb.io.DataImporter(metadata="metadata/foo.yaml")
+        metadata = ocdb.io.Metadata(filename="metadata/foo.yaml")
+        importer = ocdb.io.DataImporter(metadata=metadata)
         material = importer.import_data()
 
     Furthermore, there is no need to catch the return value of the
@@ -275,7 +457,8 @@ class DataImporter:
 
     .. code-block::
 
-        importer = ocdb.io.DataImporter(metadata="metadata/foo.yaml")
+        metadata = ocdb.io.Metadata(filename="metadata/foo.yaml")
+        importer = ocdb.io.DataImporter(metadata=metadata)
         importer.import_data()
         foo = importer.material
 
@@ -284,10 +467,9 @@ class DataImporter:
 
     """
 
-    def __init__(self, metadata=""):
+    def __init__(self, metadata=None):
         self.data_filename = ""
-        self.metadata_filename = metadata
-        self.metadata = None
+        self.metadata = metadata
         self.material = material.Material()
 
     def import_data(self):
@@ -301,9 +483,9 @@ class DataImporter:
         .. important::
 
             All actual importing of the (numerical) data is delegated to the
-            non-public method :meth:`_import_data`. Hence, importers inheriting
-            from :class:`DataImporter` usually *only* need to implement this
-            method.
+            non-public method :meth:`_import_data`. Hence, importers
+            inheriting from :class:`DataImporter` usually *only* need to
+            implement this method.
 
             The :class:`DataImporter` class takes care of the metadata and
             their mapping to the :obj:`ocdb.material.Material` object.
@@ -321,22 +503,18 @@ class DataImporter:
         return self.material
 
     def _check_for_metadata(self):
-        if not self.metadata_filename:
-            raise ValueError("No filename for metadata provided")
-        if not os.path.exists(self.metadata_filename):
-            raise FileNotFoundError("Could not find {self.metadata_filename}")
+        if not self.metadata:
+            raise ValueError("No metadata provided")
 
     def _import_metadata(self):
-        with open(self.metadata_filename, "r+", encoding="utf8") as file:
-            self.metadata = yaml.safe_load(file.read())
-        self.data_filename = self.metadata["file"]["name"]
+        self.data_filename = self.metadata.file["name"]
         mappings = {
             "material.name": "name",
             "material.symbol": "symbol",
         }
         for metadata_value, material_attribute in mappings.items():
             first, second = metadata_value.split(".")
-            value = self.metadata[first][second]
+            value = getattr(self.metadata, first)[0][second]
             setattr(self.material, material_attribute, value)
 
     def _check_for_data(self):
@@ -354,9 +532,9 @@ class TxtDataImporter(DataImporter):
     Import data from (plain) text files.
 
     Currently, the OCDB provides the data as (plain) text files with a small
-    header with a bit of metadata (in non-standardised formatting). Hence, data
-    are read using :func:`numpy.loadtxt` and metadata entirely read from the
-    YAML metadata file accompanying the data.
+    header with a bit of metadata (in non-standardised formatting). Hence,
+    data are read using :func:`numpy.loadtxt` and metadata entirely read
+    from the YAML metadata file accompanying the data.
 
     Examples
     --------
@@ -365,7 +543,8 @@ class TxtDataImporter(DataImporter):
 
     .. code-block::
 
-        importer = ocdb.io.TxtDataImporter(metadata="metadata/foo.yaml")
+        metadata = ocdb.io.Metadata(filename="metadata/foo.yaml")
+        importer = ocdb.io.TxtDataImporter(metadata=metadata)
         importer.import_data()
         foo = importer.material
 
@@ -401,8 +580,8 @@ def create_metadata_file(filename=""):
     creates a YAML template file with the current metadata structure.
 
     All that is left to do to the data contributors is to fill out the fields
-    of the metadata file and to submit both, metadata and data file to the ocdb
-    package maintainers.
+    of the metadata file and to submit both, metadata and data file to the
+    ocdb package maintainers.
 
     Parameters
     ----------
@@ -417,53 +596,6 @@ def create_metadata_file(filename=""):
     metadata.references.append("")
     with open(filename, "w+", encoding="utf8") as file:
         file.write(yaml.dump(metadata.to_dict()))
-
-
-class DataImporterFactory:
-    """
-    Factory for data importer.
-
-    Data containing the actual optical constants for a given material can be
-    stored in different formats. While for each format supported, there exists
-    a dedicated importer class inheriting from :class:`DataImporter`, the
-    factory is the one place deciding which importer object to return.
-
-
-    Examples
-    --------
-    Getting a data importer object from the factory is straight-forward: Create
-    an instance of the factory and call its :meth:`get_importer` method:
-
-    .. code-block::
-
-        importer_factory = DataImporterFactory()
-        importer_factory.get_importer()
-
-    """
-
-    # noinspection PyMethodMayBeStatic
-    def get_importer(self, metadata=None):
-        """
-        Return data importer given the information provided in the metadata.
-
-        Parameters
-        ----------
-        metadata : :class:`Metadata`
-            Metadata describing the data to be imported.
-
-        Returns
-        -------
-        importer : :class:`DataImporter`
-            Data importer object best fitting the criteria provided
-
-        """
-        if not metadata:
-            raise ValueError("Missing metadata")
-        if metadata.file["format"] == "text":
-            return TxtDataImporter()
-        raise NotImplementedError(
-            f"Importer for format '{metadata.file['format']}' not implemented"
-        )
 
 
 class Metadata:
@@ -492,7 +624,8 @@ class Metadata:
     references : :class:`list`
         List of references related to the dataset
 
-        If you use the data for your own work, consider citing these references.
+        If you use the data for your own work, consider citing these
+        references.
 
     versions : :class:`list`
         List of related datasets
@@ -507,9 +640,52 @@ class Metadata:
         the data structure if you realise that you repeatedly store the same
         (kind of) information in the comment.
 
+
+    Parameters
+    ----------
+    filename : :class:`str`
+        Name of a metadata file to import the metadata from.
+
+    Examples
+    --------
+    There are several ways to populate a :obj:`Metadata` object: from a
+    dictionary conforming to the schema, or from a YAML file. Usually,
+    you will have a YAML file conforming to the metadata schema that you
+    want to import the metadata from:
+
+    .. code-block::
+
+        metadata = Metadata()
+        metadata.from_file(<my_metadata.yaml>)
+
+    For convenience, there is a shortcut, directly providing the filename
+    when instantiating the object:
+
+    .. code-block::
+
+        metadata = Metadata(filename=<my_metadata.yaml>)
+
+    If you would like to get the current metadata schema as dictionary,
+    this is possible as well:
+
+    .. code-block::
+
+        metadata = Metadata()
+        metadata_dict = metadata.to_dict()
+
+    Or, again even shorter:
+
+    .. code-block::
+
+        metadata_dict = Metadata().to_dict()
+
+    However, if you would like to create a metadata YAML file from this
+    template, simply use the :func:`create_metadata_file` function provided
+    by the module as well.
+
     """
 
-    def __init__(self):
+    def __init__(self, filename=""):
         self.file = {
             "name": "",
             "format": "",
@@ -529,6 +705,8 @@ class Metadata:
             "type": "OCDB metadata",
             "version": "1.0.rc-1",
         }
+        if filename:
+            self.from_file(filename=filename)
 
     @property
     def format(self):
@@ -550,6 +728,14 @@ class Metadata:
         ----------
         metadata : :class:`dict`
             Metadata to be set
+
+
+        .. note::
+
+            As soon as there are different versions of the metadata schema,
+            this is the place to implement the logic mapping the contents
+            of the dictionary to the class attributes. The version can be
+            accessed from the ``format`` section of the metadata dictionary.
 
         """
         if "format" not in metadata.keys():
@@ -622,9 +808,9 @@ class VersionMetadata:
     Metadata for an individual version of a dataset contained in the OCDB.
 
     Over time, different datasets will be available for the same material.
-    Hence, it may be of interest to access the older datasets that are superset
-    by a new one, at least get the information that there are some and where
-    they are located in the ocdb.
+    Hence, it may be of interest to access the older datasets that are
+    superset by a new one, at least get the information that there are
+    some and where they are located in the ocdb.
 
     To be able to sensibly address those additional datasets from within the
     ocdb package, they need a (unique) identifier, a (short) description and
@@ -636,9 +822,9 @@ class VersionMetadata:
     identifier : :class:`str`
         Unique identifier for the dataset.
 
-        Typically, this is the name of the "base" dataset with a suffix, *e.g.*
-        ``Co_2018`` in case of a dataset containing data for cobalt created in
-        2018.
+        Typically, this is the name of the "base" dataset with a suffix,
+        *e.g.* ``Co_2018`` in case of a dataset containing data for cobalt
+        created in 2018.
 
         .. important::
             This string is used to access the data from within the ocdb
@@ -649,15 +835,15 @@ class VersionMetadata:
         Concise description of the characteristics of this version.
 
         Please *do not* simply state "old data" or "data from 20xx", as this
-        does not help the users of the package at all, but describe/mention the
-        *characteristics* of this version. This may be the wavelength range or
-        a different layer stack or else.
+        does not help the users of the package at all, but describe/mention
+        the *characteristics* of this version. This may be the wavelength
+        range or a different layer stack or else.
 
     metadata : :class:`str`
         Filename of the metadata file (without path).
 
-        The logic of the ocdb package requires only the name of a metadata file
-        to figure out by itself where the data are located.
+        The logic of the ocdb package requires only the name of a metadata
+        file to figure out by itself where the data are located.
 
     """
 

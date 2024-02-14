@@ -9,6 +9,7 @@ implemented in this module directly, but only indirectly while accessing the
 values for *n* and *k*.
 
 """
+
 import numpy as np
 
 from ocdb import material

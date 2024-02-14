@@ -6,27 +6,51 @@ import yaml
 from ocdb import io, material
 
 
+class TestDataImporterFactory(unittest.TestCase):
+    def setUp(self):
+        self.factory = io.DataImporterFactory()
+        self.metadata = io.Metadata()
+        self.metadata.file["format"] = "text"
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_get_importer_returns_data_importer(self):
+        self.assertIsInstance(
+            self.factory.get_importer(metadata=self.metadata), io.DataImporter
+        )
+
+    def test_get_importer_without_metadata_raises(self):
+        with self.assertRaisesRegex(ValueError, "Missing metadata"):
+            self.factory.get_importer()
+
+    def test_get_importer_with_unknown_format_raises(self):
+        self.metadata.file["format"] = "unknown"
+        with self.assertRaisesRegex(
+            NotImplementedError, "Importer for format .* not implemented"
+        ):
+            self.factory.get_importer(metadata=self.metadata)
+
+    def test_get_importer_sets_metadata_in_importer(self):
+        importer = self.factory.get_importer(metadata=self.metadata)
+        self.assertTrue(importer.metadata)
+
+
 class TestDataImporter(unittest.TestCase):
     def setUp(self):
         self.importer = io.DataImporter()
         self.data_filename = "foo.txt"
-        self.metadata_filename = "foo.yaml"
+        self.metadata = io.Metadata()
+        self.metadata.file["name"] = self.data_filename
+        self.metadata.material = ({"name": "Cobalt", "symbol": "Co"},)
 
     def tearDown(self):
-        for file in [self.data_filename, self.metadata_filename]:
-            if os.path.exists(file):
-                os.remove(file)
+        if os.path.exists(self.data_filename):
+            os.remove(self.data_filename)
 
-    def create_files(self):
+    def create_data_file(self):
         with open(self.data_filename, "w+", encoding="utf8") as f:
             f.write("")
-
-        metadata = {
-            "file": {"name": self.data_filename},
-            "material": {"name": "Cobalt", "symbol": "Co"},
-        }
-        with open(self.metadata_filename, "w+", encoding="utf8") as f:
-            f.write(yaml.dump(metadata))
 
     def test_instantiate_class(self):
         pass
@@ -34,12 +58,13 @@ class TestDataImporter(unittest.TestCase):
     def test_has_attributes(self):
         attributes = [
             "data_filename",
-            "metadata_filename",
+            "metadata",
+            "material",
         ]
         for attribute in attributes:
             self.assertTrue(hasattr(self.importer, attribute))
 
-    def test_import_without_metadata_filename_raises(self):
+    def test_import_without_metadata_raises(self):
         self.importer.data_filename = self.data_filename
         with self.assertRaises(ValueError):
             self.importer.import_data()
@@ -49,41 +74,28 @@ class TestDataImporter(unittest.TestCase):
             self.importer.import_data()
 
     def test_import_data_returns_material(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
+        self.create_data_file()
+        self.importer.metadata = self.metadata
         self.assertIsInstance(self.importer.import_data(), material.Material)
 
     def test_import_with_nonexisting_data_file_raises(self):
-        self.importer.metadata_filename = self.metadata_filename
+        self.importer.metadata = self.metadata
         with self.assertRaises(FileNotFoundError):
             self.importer.import_data()
 
-    def test_import_with_nonexisting_metadata_file_raises(self):
-        self.create_files()
-        os.remove(self.metadata_filename)
-        self.importer.metadata_filename = self.metadata_filename
-        with self.assertRaises(FileNotFoundError):
-            self.importer.import_data()
-
-    def test_setting_metadata_filename_on_instantiation(self):
-        importer = io.DataImporter(metadata=self.metadata_filename)
-        self.assertEqual(self.metadata_filename, importer.metadata_filename)
-
-    def test_import_reads_metadata(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
-        self.importer.import_data()
-        self.assertTrue(self.importer.metadata)
+    def test_instantiating_with_metadata_sets_metadata(self):
+        importer = io.DataImporter(metadata=self.metadata)
+        self.assertTrue(importer.metadata)
 
     def test_import_maps_name(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
+        self.create_data_file()
+        self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertTrue(material_.name)
 
     def test_import_maps_symbol(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
+        self.create_data_file()
+        self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertTrue(material_.name)
 
@@ -122,79 +134,73 @@ class TestTxtDataImporter(unittest.TestCase):
     def setUp(self):
         self.importer = io.TxtDataImporter()
         self.data_filename = "foo.txt"
-        self.metadata_filename = "foo.yaml"
+        self.metadata = io.Metadata()
+        self.metadata.file["name"] = self.data_filename
+        self.metadata.material = ({"name": "Cobalt", "symbol": "Co"},)
 
     def tearDown(self):
-        for file in [self.data_filename, self.metadata_filename]:
-            if os.path.exists(file):
-                os.remove(file)
+        if os.path.exists(self.data_filename):
+            os.remove(self.data_filename)
 
-    def create_files(self):
+    def create_data_file(self):
         with open(self.data_filename, "w+", encoding="utf8") as f:
             f.write(DATA_WITH_UNCERTAINTIES)
-
-        metadata = {
-            "file": {"name": self.data_filename},
-            "material": {"name": "Cobalt", "symbol": "Co"},
-        }
-        with open(self.metadata_filename, "w+", encoding="utf8") as f:
-            f.write(yaml.dump(metadata))
 
     def test_instantiate_class(self):
         pass
 
     def test_import_data_sets_wavelength_in_n(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
+        self.create_data_file()
+        self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertTrue(material_.n()[0][0])
 
     def test_import_data_sets_data_in_n(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
+        self.create_data_file()
+        self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertTrue(material_.n()[1][0])
 
     def test_import_data_sets_wavelength_in_k(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
+        self.create_data_file()
+        self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertTrue(material_.k()[0][0])
 
     def test_import_data_sets_data_in_k(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
+        self.create_data_file()
+        self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertTrue(material_.k()[1][0])
 
     def test_import_data_sets_wavelength_metadata_in_n(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
+        self.create_data_file()
+        self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertEqual("wavelength", material_.n_data.axes[0].quantity)
         self.assertEqual(r"\lambda", material_.n_data.axes[0].symbol)
         self.assertEqual("nm", material_.n_data.axes[0].unit)
 
     def test_import_data_sets_wavelength_metadata_in_k(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
+        self.create_data_file()
+        self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertEqual("wavelength", material_.k_data.axes[0].quantity)
         self.assertEqual(r"\lambda", material_.k_data.axes[0].symbol)
         self.assertEqual("nm", material_.k_data.axes[0].unit)
 
     def test_import_data_with_uncertainties_sets_uncertainties(self):
-        self.create_files()
-        self.importer.metadata_filename = self.metadata_filename
+        self.create_data_file()
+        self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertTrue(material_.n_data.has_uncertainties())
         self.assertTrue(material_.k_data.has_uncertainties())
 
     def test_import_data_without_uncertainties_doesnt_set_uncertainties(self):
-        self.create_files()
+        self.create_data_file()
         with open(self.data_filename, "w", encoding="utf8") as f:
             f.write(DATA_WITHOUT_UNCERTAINTIES)
-        self.importer.metadata_filename = self.metadata_filename
+        self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertFalse(material_.n_data.has_uncertainties())
         self.assertFalse(material_.k_data.has_uncertainties())
@@ -224,32 +230,6 @@ class TestCreateMetadataFile(unittest.TestCase):
         with open(self.filename, "r", encoding="utf8") as file:
             metadata_dict = yaml.safe_load(file)
         self.assertDictEqual(metadata_dict, metadata.to_dict())
-
-
-class TestDataImporterFactory(unittest.TestCase):
-    def setUp(self):
-        self.factory = io.DataImporterFactory()
-        self.metadata = io.Metadata()
-        self.metadata.file["format"] = "text"
-
-    def test_instantiate_class(self):
-        pass
-
-    def test_get_importer_returns_data_importer(self):
-        self.assertIsInstance(
-            self.factory.get_importer(metadata=self.metadata), io.DataImporter
-        )
-
-    def test_get_importer_without_metadata_raises(self):
-        with self.assertRaisesRegex(ValueError, "Missing metadata"):
-            self.factory.get_importer()
-
-    def test_get_importer_with_unknown_format_raises(self):
-        self.metadata.file["format"] = "unknown"
-        with self.assertRaisesRegex(
-            NotImplementedError, "Importer for format .* not implemented"
-        ):
-            self.factory.get_importer(metadata=self.metadata)
 
 
 class TestMetadata(unittest.TestCase):
@@ -345,6 +325,12 @@ class TestMetadata(unittest.TestCase):
     def test_to_dict_converts_version_in_dict(self):
         self.metadata.versions.append(io.VersionMetadata())
         self.assertIsInstance(self.metadata.to_dict()["versions"][0], dict)
+
+    def test_instantiate_with_filename_reads_from_file(self):
+        self.metadata_dict["comment"] = "Lorem ipsum"
+        self.create_metadata_file()
+        metadata = io.Metadata(filename=self.filename)
+        self.assertEqual(self.metadata_dict["comment"], metadata.comment)
 
 
 class TestVersionMetadata(unittest.TestCase):
