@@ -212,7 +212,7 @@ METADATA = {
         "type": "OCDB metadata",
         "version": "1.0.rc-1",
     },
-    "filename": {
+    "file": {
         "name": "",
         "format": "text",
     },

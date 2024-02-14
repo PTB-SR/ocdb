@@ -77,14 +77,14 @@ class TestDataImporter(unittest.TestCase):
     def test_import_maps_name(self):
         self.create_files()
         self.importer.metadata_filename = self.metadata_filename
-        material = self.importer.import_data()
-        self.assertTrue(material.name)
+        material_ = self.importer.import_data()
+        self.assertTrue(material_.name)
 
     def test_import_maps_symbol(self):
         self.create_files()
         self.importer.metadata_filename = self.metadata_filename
-        material = self.importer.import_data()
-        self.assertTrue(material.name)
+        material_ = self.importer.import_data()
+        self.assertTrue(material_.name)
 
 
 DATA_WITH_UNCERTAINTIES = """
@@ -145,58 +145,58 @@ class TestTxtDataImporter(unittest.TestCase):
     def test_import_data_sets_wavelength_in_n(self):
         self.create_files()
         self.importer.metadata_filename = self.metadata_filename
-        material = self.importer.import_data()
-        self.assertTrue(material.n()[0][0])
+        material_ = self.importer.import_data()
+        self.assertTrue(material_.n()[0][0])
 
     def test_import_data_sets_data_in_n(self):
         self.create_files()
         self.importer.metadata_filename = self.metadata_filename
-        material = self.importer.import_data()
-        self.assertTrue(material.n()[1][0])
+        material_ = self.importer.import_data()
+        self.assertTrue(material_.n()[1][0])
 
     def test_import_data_sets_wavelength_in_k(self):
         self.create_files()
         self.importer.metadata_filename = self.metadata_filename
-        material = self.importer.import_data()
-        self.assertTrue(material.k()[0][0])
+        material_ = self.importer.import_data()
+        self.assertTrue(material_.k()[0][0])
 
     def test_import_data_sets_data_in_k(self):
         self.create_files()
         self.importer.metadata_filename = self.metadata_filename
-        material = self.importer.import_data()
-        self.assertTrue(material.k()[1][0])
+        material_ = self.importer.import_data()
+        self.assertTrue(material_.k()[1][0])
 
     def test_import_data_sets_wavelength_metadata_in_n(self):
         self.create_files()
         self.importer.metadata_filename = self.metadata_filename
-        material = self.importer.import_data()
-        self.assertEqual("wavelength", material.n_data.axes[0].quantity)
-        self.assertEqual("\lambda", material.n_data.axes[0].symbol)
-        self.assertEqual("nm", material.n_data.axes[0].unit)
+        material_ = self.importer.import_data()
+        self.assertEqual("wavelength", material_.n_data.axes[0].quantity)
+        self.assertEqual(r"\lambda", material_.n_data.axes[0].symbol)
+        self.assertEqual("nm", material_.n_data.axes[0].unit)
 
     def test_import_data_sets_wavelength_metadata_in_k(self):
         self.create_files()
         self.importer.metadata_filename = self.metadata_filename
-        material = self.importer.import_data()
-        self.assertEqual("wavelength", material.k_data.axes[0].quantity)
-        self.assertEqual("\lambda", material.k_data.axes[0].symbol)
-        self.assertEqual("nm", material.k_data.axes[0].unit)
+        material_ = self.importer.import_data()
+        self.assertEqual("wavelength", material_.k_data.axes[0].quantity)
+        self.assertEqual(r"\lambda", material_.k_data.axes[0].symbol)
+        self.assertEqual("nm", material_.k_data.axes[0].unit)
 
     def test_import_data_with_uncertainties_sets_uncertainties(self):
         self.create_files()
         self.importer.metadata_filename = self.metadata_filename
-        material = self.importer.import_data()
-        self.assertTrue(material.n_data.has_uncertainties())
-        self.assertTrue(material.k_data.has_uncertainties())
+        material_ = self.importer.import_data()
+        self.assertTrue(material_.n_data.has_uncertainties())
+        self.assertTrue(material_.k_data.has_uncertainties())
 
     def test_import_data_without_uncertainties_doesnt_set_uncertainties(self):
         self.create_files()
         with open(self.data_filename, "w", encoding="utf8") as f:
             f.write(DATA_WITHOUT_UNCERTAINTIES)
         self.importer.metadata_filename = self.metadata_filename
-        material = self.importer.import_data()
-        self.assertFalse(material.n_data.has_uncertainties())
-        self.assertFalse(material.k_data.has_uncertainties())
+        material_ = self.importer.import_data()
+        self.assertFalse(material_.n_data.has_uncertainties())
+        self.assertFalse(material_.k_data.has_uncertainties())
 
 
 class TestCreateMetadataFile(unittest.TestCase):

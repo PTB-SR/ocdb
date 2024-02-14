@@ -105,6 +105,7 @@ class TestMaterial(unittest.TestCase):
     def test_plot_calls_plotter(self):
         class Plotter(material.AbstractPlotter):
             def __init__(self):
+                super().__init__()
                 self.called = False
 
             def plot(self):
@@ -384,7 +385,7 @@ class TestMeasurement(unittest.TestCase):
 class TestCollection(unittest.TestCase):
     def setUp(self):
         self.collection = material.Collection()
-        self.item = material.Material
+        self.item = material.Material()
         self.item.symbol = "Co"
 
     def test_instantiate_class(self):
