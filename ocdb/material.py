@@ -22,6 +22,64 @@ Two abstractions form the core entities of the ocdb package:
     Collection of materials whose data are part of the OCDB.
 
 
+A :obj:`Material` object is basically a composition of objects for data and
+metadata that are described in the next section.
+
+Interfaces to other modules -- pointing outwards in terms of a layered
+architecture, as described in the :doc:`architecture section <../architecture>`
+-- is provided by means of abstract factories and described in a separate
+section below as well.
+
+
+Data and metadata
+=================
+
+As mentioned above, a :obj:`Material` object is basically a composition of
+objects for data and metadata:
+
+* :class:`Data`
+
+    Unit containing both, numeric data and corresponding axes.
+
+* :class:`Axis`
+
+    Data and metadata for an axis.
+
+* :class:`Metadata`
+
+    Relevant metadata for the optical constants of a given material.
+
+
+Abstract interfaces
+===================
+
+Currently, interfaces to two other modules are provided: :mod:`ocdb.processing`
+and :mod:`ocdb.plotting`. Interfacing is done according to the "dependency
+inversion principle" using abstract factories:
+
+* :class:`AbstractProcessingStepFactory`
+
+    Abstract factory for processing steps.
+
+* :class:`AbstractPlotterFactory`
+
+    Abstract factory for plotter.
+
+Those abstract factories create the relevant objects whose (abstract) base
+classes are defined here as well:
+
+* :class:`AbstractProcessingStep`
+
+    Abstract base class for processing steps.
+
+* :class:`AbstractPlotter`
+
+    Abstract base class for plotter.
+
+The concrete factories and base classes are implemented in the respective
+modules: :mod:`ocdb.processing` and :mod:`ocdb.plotting`.
+
+
 Module documentation
 ====================
 
