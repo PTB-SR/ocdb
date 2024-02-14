@@ -7,7 +7,7 @@ package:
   urls:
     main: 'https://www.ocdb.ptb.de/'
     documentation: 'https://ocdb.docs.till-biskup.de/'
-    source: 'https://github.com/tillbiskup/ocdb'
+    source: 'https://github.com/ptb-sr/ocdb'
   keywords: ["optical constants", "EUV", "VUV", "reflectometry"]
   install_requires: []
   license: GPLv3
