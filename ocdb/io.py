@@ -39,7 +39,7 @@ care about for now is to get the metadata and to use them to get the
 matching importer.
 
 For a single metadata file ``Co.yaml`` containing the relevant metadata for
-the Cobalt dataset in the ODCB, this may look like:
+the Cobalt dataset in the OCDB, this may look like:
 
 .. code-block::
 
@@ -51,7 +51,7 @@ the Cobalt dataset in the ODCB, this may look like:
 
     Co = importer.import_data()
 
-Here, ``Co`` will be an :obj:`odcb.material.Material` object containing
+Here, ``Co`` will be an :obj:`ocdb.material.Material` object containing
 both, data and metadata for Cobalt.
 
 To import a whole bunch of data in one go, assuming you have a list of
@@ -108,7 +108,7 @@ the former should be more authoritative.
 .. code-block:: yaml
 
     format:
-      type: ODCB metadata
+      type: OCDB metadata
       version: 1.0.rc-1
     file:
       name: foo.txt
@@ -337,6 +337,9 @@ Module documentation
 """
 import os.path
 
+import bibrecord.bibtex
+import bibrecord.database
+import importlib_resources
 import numpy as np
 import oyaml as yaml
 
@@ -433,15 +436,20 @@ class DataImporter:
         The object data and metadata are imported into upon calling
         :meth:`import_data`.
 
+    references : :class:`References`
+        Database of bibliographic records.
+
     Examples
     --------
     Importing data is a two-step process: (i) create an importer object
-    and set the metadata, and (ii) call the import method:
+    and set the metadata and references, and (ii) call the import method:
 
     .. code-block::
 
         importer = ocdb.io.DataImporter()
         importer.metadata = ocdb.io.Metadata(filename="metadata/foo.yaml")
+        importer.references = ocdb.io.References()
+        importer.references.load()
         material = importer.import_data()
 
     As you can see from the example, the :meth:`import_data` method will
@@ -455,6 +463,8 @@ class DataImporter:
 
         metadata = ocdb.io.Metadata(filename="metadata/foo.yaml")
         importer = ocdb.io.DataImporter(metadata=metadata)
+        importer.references = ocdb.io.References()
+        importer.references.load()
         material = importer.import_data()
 
     Furthermore, there is no need to catch the return value of the
@@ -465,6 +475,8 @@ class DataImporter:
 
         metadata = ocdb.io.Metadata(filename="metadata/foo.yaml")
         importer = ocdb.io.DataImporter(metadata=metadata)
+        importer.references = ocdb.io.References()
+        importer.references.load()
         importer.import_data()
         foo = importer.material
 
@@ -477,6 +489,7 @@ class DataImporter:
         self.data_filename = ""
         self.metadata = metadata
         self.material = material.Material()
+        self.references = None
 
     def import_data(self):
         """
@@ -504,6 +517,7 @@ class DataImporter:
         """
         self._check_for_metadata()
         self._map_metadata()
+        self._load_references()
         self._check_for_data()
         self._import_data()
         return self.material
@@ -522,6 +536,12 @@ class DataImporter:
         self.material.metadata.uncertainties.confidence_interval = (
             self.metadata.uncertainties["confidence_interval"]
         )
+
+    def _load_references(self):
+        for reference in self.metadata.references:
+            self.material.references.append(
+                self.references.records[reference]
+            )
 
     def _check_for_data(self):
         if not self.data_filename:
@@ -551,6 +571,8 @@ class TxtDataImporter(DataImporter):
 
         metadata = ocdb.io.Metadata(filename="metadata/foo.yaml")
         importer = ocdb.io.TxtDataImporter(metadata=metadata)
+        importer.references = ocdb.io.References()
+        importer.references.load()
         importer.import_data()
         foo = importer.material
 
@@ -885,3 +907,70 @@ class VersionMetadata:
         for key in ["identifier", "description", "metadata"]:
             output[key] = getattr(self, key)
         return output
+
+
+class References:
+    """
+    Database of bibliographic records.
+
+    Each record is of type :class:`bibrecord.record.Record` (actually, it is
+    a subtype corresponding to the actual BibTeX entry type). Records are
+    stored in the :attr:`records` attribute as a dictionary whose keys are
+    the BibTeX keys used to cite the bibliographic record and the
+    corresponding value the instance of the corresponding
+    :class:`bibrecord.record.Record` subclass.
+
+    The bibliographic data are read from a BibTeX file residing in
+    ``db/literature.bib`` in the ``ocdb`` package directory. Reading of this
+    file is done using the :mod:`importlib_resources` library to not depend
+    on the way how the ocdb package is installed.
+
+    Attributes
+    ----------
+    records : :class:`dict`
+        Bibliographic records
+
+        The keys are the BibTeX keys used to cite the bibliographic record and
+        the value the instance of the corresponding
+        :class:`bibrecord.record.Record` subclass.
+
+
+    Examples
+    --------
+    Users of the :mod:`ocdb` package will not have to deal with this class,
+    as everything is magically been taken care of. Nevertheless, some code
+    within the :mod:`ocdb` package needs to use this class. Two lines are
+    all there is to it:
+
+    .. code-block::
+
+        references = References()
+        references.load()
+
+    Afterwards, all bibliographic records are contained in the
+    :attr:`References.records` attribute.
+
+    """
+
+    def __init__(self):
+        self.records = {}
+        self._bibliography_file = "db/literature.bib"
+
+    def load(self):
+        """
+        Load references from BibTeX bibliography.
+
+        References are stored in a BibTeX file that is loaded as package
+        resource via the :mod:`importlib_resources` library.
+
+        """
+        bibtex = (
+            importlib_resources.files(__package__)
+            .joinpath(self._bibliography_file)
+            .read_text()
+        )
+        bibliography = bibrecord.bibtex.Bibliography()
+        bibliography.from_bib(bibtex)
+        database = bibrecord.database.Database()
+        database.from_bibliography(bibliography)
+        self.records = database.records

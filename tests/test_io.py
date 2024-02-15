@@ -1,6 +1,8 @@
 import copy
 import os
 import unittest
+
+import bibrecord.record
 import yaml
 
 from ocdb import io, material
@@ -43,6 +45,8 @@ class TestDataImporter(unittest.TestCase):
         self.metadata = io.Metadata()
         self.metadata.file["name"] = self.data_filename
         self.metadata.material = {"name": "Cobalt", "symbol": "Co"}
+        self.references = io.References()
+        self.references.load()
 
     def tearDown(self):
         if os.path.exists(self.data_filename):
@@ -60,6 +64,7 @@ class TestDataImporter(unittest.TestCase):
             "data_filename",
             "metadata",
             "material",
+            "references",
         ]
         for attribute in attributes:
             self.assertTrue(hasattr(self.importer, attribute))
@@ -116,6 +121,24 @@ class TestDataImporter(unittest.TestCase):
             material_.metadata.uncertainties.confidence_interval,
         )
 
+    def test_import_with_reference_adds_reference(self):
+        self.create_data_file()
+        self.metadata.references.append("ciesielski-zenodo-5602719")
+        self.importer.metadata = self.metadata
+        self.importer.references = self.references
+        material_ = self.importer.import_data()
+        self.assertTrue(material_.references)
+
+    def test_import_with_reference_adds_reference_as_reference(self):
+        self.create_data_file()
+        self.metadata.references.append("ciesielski-zenodo-5602719")
+        self.importer.metadata = self.metadata
+        self.importer.references = self.references
+        material_ = self.importer.import_data()
+        self.assertIsInstance(
+            material_.references[0], bibrecord.record.Record
+        )
+
 
 DATA_WITH_UNCERTAINTIES = """
 # Optical constants for Co created by PTB
@@ -153,7 +176,7 @@ class TestTxtDataImporter(unittest.TestCase):
         self.data_filename = "foo.txt"
         self.metadata = io.Metadata()
         self.metadata.file["name"] = self.data_filename
-        self.metadata.material = ({"name": "Cobalt", "symbol": "Co"},)
+        self.metadata.material = {"name": "Cobalt", "symbol": "Co"}
 
     def tearDown(self):
         if os.path.exists(self.data_filename):
@@ -386,3 +409,29 @@ class TestVersionMetadata(unittest.TestCase):
             ["identifier", "description", "metadata"],
             list(self.metadata.to_dict().keys()),
         )
+
+
+class TestReferences(unittest.TestCase):
+    def setUp(self):
+        self.references = io.References()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "records",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.references, attribute))
+
+    def test_load_populates_entries(self):
+        self.references.load()
+        self.assertTrue(self.references.records)
+
+    def test_entries_are_bibrecord_records(self):
+        self.references.load()
+        for key in self.references.records:
+            self.assertIsInstance(
+                self.references.records[key], bibrecord.record.Record
+            )
