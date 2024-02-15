@@ -17,6 +17,16 @@ class TestDataImporterFactory(unittest.TestCase):
     def test_instantiate_class(self):
         pass
 
+    def test_has_attributes(self):
+        attributes = [
+            "references",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.factory, attribute))
+
+    def test_references_contain_actual_references(self):
+        self.assertTrue(self.factory.references.records)
+
     def test_get_importer_returns_data_importer(self):
         self.assertIsInstance(
             self.factory.get_importer(metadata=self.metadata), io.DataImporter
@@ -36,6 +46,10 @@ class TestDataImporterFactory(unittest.TestCase):
     def test_get_importer_sets_metadata_in_importer(self):
         importer = self.factory.get_importer(metadata=self.metadata)
         self.assertTrue(importer.metadata)
+
+    def test_get_importer_sets_references_in_importer(self):
+        importer = self.factory.get_importer(metadata=self.metadata)
+        self.assertTrue(importer.references)
 
 
 class TestDataImporter(unittest.TestCase):

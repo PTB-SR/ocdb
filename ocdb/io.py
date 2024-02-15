@@ -356,6 +356,16 @@ class DataImporterFactory:
     factory is the one place deciding which importer object to return.
 
 
+    Attributes
+    ----------
+    references : :class:`References`
+        Database of bibliographic records.
+
+        The references are loaded from the BibTeX database upon
+        instantiating the :class:`DataImporterFactory` class and passed on to
+        the :obj:`DataImporter` objects returned by the :meth:`get_importer`
+        method. Thus, the BibTeX database is typically only loaded once.
+
     Examples
     --------
     Getting a data importer object from the factory is straight-forward:
@@ -368,6 +378,10 @@ class DataImporterFactory:
         importer_factory.get_importer()
 
     """
+
+    def __init__(self):
+        self.references = References()
+        self.references.load()
 
     # noinspection PyMethodMayBeStatic
     def get_importer(self, metadata=None):
@@ -395,6 +409,7 @@ class DataImporterFactory:
                 f"not implemented"
             )
         importer.metadata = metadata
+        importer.references = self.references
         return importer
 
 
