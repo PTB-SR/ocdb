@@ -14,7 +14,7 @@ setuptools.setup(
     description="Optical constants for elements and various materials in the EUV and VUV wavelengths",
     long_description=read("README.rst"),
     long_description_content_type="text/x-rst",
-    author="Till Biskup, Victor Soltwisch",
+    author="Till Biskup",
     author_email="till.biskup@ptb.de",
     url="https://www.ocdb.ptb.de/",
     project_urls={
@@ -31,8 +31,6 @@ setuptools.setup(
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
@@ -40,7 +38,7 @@ setuptools.setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
         "Intended Audience :: Science/Research",
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
     ],
     install_requires=[
         "bibrecord",

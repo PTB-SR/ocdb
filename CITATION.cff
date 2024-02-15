@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: If you use this software, please cite it using these metadata.
-title: ocdb
+title: The ocdb Python package
 abstract: >
     Optical constants for elements and various materials in the EUV and VUV wavelengths
 authors:

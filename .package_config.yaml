@@ -1,6 +1,6 @@
 package:
   name: 'ocdb'
-  author: 'Till Biskup, Victor Soltwisch'
+  author: 'Till Biskup'
   author_email: 'till.biskup@ptb.de'
   year: '2024'
   description: 'Optical constants for elements and various materials in the EUV and VUV wavelengths'

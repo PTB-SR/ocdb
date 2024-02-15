@@ -6,7 +6,7 @@ Who are the people behind the ocdb package?
 
 * `Victor Soltwisch <https://orcid.org/0000-0001-8469-8589>`_
 
-  Mastermind behind the `Optical Constants Database (OCDB) <https://www.ocdb.ptb.de/>`_ and main provider of the data (together with his group at the German National Metrology Institute, the `Physikalisch-Technische Bundesanstalt, PTB <https://www.ptb.de/>`_).
+  Mastermind behind the `Optical Constants Database (OCDB) <https://www.ocdb.ptb.de/>`_ and main provider and manager of the data (together with his group at the German National Metrology Institute, the `Physikalisch-Technische Bundesanstalt, PTB <https://www.ptb.de/>`_).
 
 * `Till Biskup <https://orcid.org/0000-0003-2913-0004>`_
 

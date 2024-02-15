@@ -1,5 +1,5 @@
 {
-    "title": "ocdb",
+    "title": "The ocdb Python package",
     "description": "A Python package for easily accessing the X-ray/EUV/VUV scattering and absorption data contained in the Optical Constants Database (OCDB) provided by the German National Metrology Institute, the Physikalisch-Technische Bundesanstalt, PTB.",
     "creators": [
         {
@@ -13,7 +13,8 @@
         {
             "orcid": "https://orcid.org/0000-0001-8469-8589",
             "affiliation": "Physikalisch-Technische Bundesanstalt (PTB)",
-            "name": "Soltwisch, Victor"
+            "name": "Soltwisch, Victor",
+            "type": "DataManager"
         }
     ],
     "license": "GPL-3.0",

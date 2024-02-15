@@ -25,7 +25,7 @@ For later versions
 
 * Integration with ``periodictable`` package
 
-  * Bidirectional integration? Accessing data from CXRO via ``periodictable`` from within ``ocdb`` package if no data are available from OCDB; accessing ODCB data from within ``periodictable`` via extension mechanism provided by the latter.
+  * Bidirectional integration? Accessing data from CXRO via ``periodictable`` from within ``ocdb`` package if no data are available from OCDB; accessing OCDB data from within ``periodictable`` via extension mechanism provided by the latter.
 
 * Consolidate structure for relevant metadata
 

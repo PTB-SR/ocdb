@@ -174,7 +174,7 @@ latex_documents = [
         master_doc,
         "ocdb.tex",
         "ocdb Documentation",
-        "Till Biskup, Victor Soltwisch",
+        "Till Biskup",
         "manual",
     ),
 ]

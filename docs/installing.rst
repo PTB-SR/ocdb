@@ -18,7 +18,13 @@ Installing the ocdb package is as simple as installing any other Python package,
 
     pip install ocdb
 
-This will install the ocdb package (and all its dependencies) on your computer.
+This will install the ocdb package (and all its necessary dependencies) on your computer.
+
+If you intend to use the purely optional plotting and report generating capabilites, a few more packages need to be installed. The easiest way is to install the ocdb package explicitly stating these additional requirements:
+
+.. code-block:: bash
+
+    pip install ocdb[presentation]
 
 Of course, you need to have Python (and pip) installed before you can use the above command, and it is always advisable to install packages in a **virtual environment** of their own.
 
