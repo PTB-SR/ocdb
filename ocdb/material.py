@@ -678,11 +678,8 @@ class Metadata:
 
     Attributes
     ----------
-    sample : :class:`Sample`
-        Metadata regarding the sample used to obtain the optical constants.
-
-    measurement : :class:`Measurement`
-        Metadata regarding the actual measurement.
+    uncertainties : :class:`Uncertainties`
+        Metadata regarding the uncertainties of the optical constants.
 
     comment : :class:`str`
         Any relevant information that does not (yet) fit into anywhere else.
@@ -695,9 +692,36 @@ class Metadata:
     """
 
     def __init__(self):
-        self.sample = Sample()
-        self.measurement = Measurement()
+        self.uncertainties = Uncertainties()
         self.comment = ""
+
+
+class Uncertainties:
+    """
+    Relevant information about the uncertainties, if present.
+
+    Data are only as good as their accompanying metadata. Hence, metadata
+    are a prerequisite for both, reproducibility and correct use of the data.
+
+    This class provides a structure and hence access to the relevant metadata
+    regarding the uncertainties of the values of the optical constants.
+
+    .. note::
+        Currently, there is not much information contained in this class. But
+        this will change in the future, providing more detailed information on
+        how the uncertainties have been determined.
+
+    Attributes
+    ----------
+    confidence_interval : :class:`str`
+        The value the uncertainties are provided for.
+
+        A typical example would be "3 sigma".
+
+    """
+
+    def __init__(self):
+        self.confidence_interval = ""
 
 
 class Sample:

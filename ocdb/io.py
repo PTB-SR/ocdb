@@ -214,6 +214,20 @@ versions
         import all data from a given location, without need to first check
         for each metadata file whether it has been superseded or not.
 
+
+    .. todo::
+
+        How to deal with versions/history in older datasets? Generally there
+        would be two strategies possible: (i) Keep it simple: Only the
+        most current dataset has a list of versions. In case of a new
+        version, not only will the metadata file be moved, but its version
+        list deleted as well. (ii) Keep references in both directions: Each
+        dataset potentially has a list of versions, with indication which of
+        them are newer than the current dataset and which are older. This
+        would require a much more complicated handling of the versions,
+        but would allow to keep the version information in superseded
+        metadata files. Probably for starters start with the simple option.
+
 comment
     Textual description of whatever additional information.
 
@@ -244,8 +258,8 @@ See the :func:`create_metadata_file` documentation for further details.
 Representing metadata in code
 -----------------------------
 
-Metadata are represented as classes within the module. Currently,
-the following classes are implemented:
+Metadata are represented as classes within the :mod:`ocdb.io` module.
+Currently, the following classes are implemented:
 
 * :class:`Metadata`
 
@@ -255,17 +269,9 @@ the following classes are implemented:
 
     Metadata for an individual version of a dataset contained in the OCDB.
 
-
-.. warning::
-
-    The format/contents of the metadata file is/are currently still under
-    development. Furthermore, the automatic mapping of metadata to the
-    :obj:`ocdb.material.Material` is not complete.
-
-.. todo::
-
-    Complete format of the metadata file and implement the missing mapping of
-    metadata in :meth:`DataImporter._import_metadata`.
+Note that these classes only belong to the :mod:`ocdb.io` module. Metadata
+of the :class:`ocdb.material.Material` class are entirely separate and
+described in more detail in the :mod:`ocdb.material` module.
 
 
 Data files
@@ -497,7 +503,7 @@ class DataImporter:
 
         """
         self._check_for_metadata()
-        self._import_metadata()
+        self._map_metadata()
         self._check_for_data()
         self._import_data()
         return self.material
@@ -506,16 +512,16 @@ class DataImporter:
         if not self.metadata:
             raise ValueError("No metadata provided")
 
-    def _import_metadata(self):
+    def _map_metadata(self):
+        # Note: This is currently hard-coded, but a more general mapping is
+        #       complicated and seems not worth it for the time being.
         self.data_filename = self.metadata.file["name"]
-        mappings = {
-            "material.name": "name",
-            "material.symbol": "symbol",
-        }
-        for metadata_value, material_attribute in mappings.items():
-            first, second = metadata_value.split(".")
-            value = getattr(self.metadata, first)[0][second]
-            setattr(self.material, material_attribute, value)
+        self.material.name = self.metadata.material["name"]
+        self.material.symbol = self.metadata.material["symbol"]
+        self.material.metadata.comment = self.metadata.comment
+        self.material.metadata.uncertainties.confidence_interval = (
+            self.metadata.uncertainties["confidence_interval"]
+        )
 
     def _check_for_data(self):
         if not self.data_filename:

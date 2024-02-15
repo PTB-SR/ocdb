@@ -18,8 +18,8 @@ with open(
     release_ = version_file.read().strip()
 
 project = "ocdb"
-copyright = "2024, Till Biskup, Victor Soltwisch"
-author = "Till Biskup, Victor Soltwisch"
+copyright = "2024, Till Biskup"
+author = "Till Biskup"
 
 # The short X.Y version
 version = ".".join(release_.split(".")[0:2])

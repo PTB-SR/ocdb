@@ -42,7 +42,7 @@ class TestDataImporter(unittest.TestCase):
         self.data_filename = "foo.txt"
         self.metadata = io.Metadata()
         self.metadata.file["name"] = self.data_filename
-        self.metadata.material = ({"name": "Cobalt", "symbol": "Co"},)
+        self.metadata.material = {"name": "Cobalt", "symbol": "Co"}
 
     def tearDown(self):
         if os.path.exists(self.data_filename):
@@ -98,6 +98,23 @@ class TestDataImporter(unittest.TestCase):
         self.importer.metadata = self.metadata
         material_ = self.importer.import_data()
         self.assertTrue(material_.name)
+
+    def test_import_maps_comment(self):
+        self.create_data_file()
+        self.metadata.comment = "Lorem ipsum"
+        self.importer.metadata = self.metadata
+        material_ = self.importer.import_data()
+        self.assertEqual(self.metadata.comment, material_.metadata.comment)
+
+    def test_import_maps_uncertainties(self):
+        self.create_data_file()
+        self.metadata.uncertainties["confidence_interval"] = "3 sigma"
+        self.importer.metadata = self.metadata
+        material_ = self.importer.import_data()
+        self.assertEqual(
+            self.metadata.uncertainties["confidence_interval"],
+            material_.metadata.uncertainties.confidence_interval,
+        )
 
 
 DATA_WITH_UNCERTAINTIES = """

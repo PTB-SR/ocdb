@@ -332,18 +332,31 @@ class TestMetadata(unittest.TestCase):
 
     def test_has_attributes(self):
         attributes = [
-            "sample",
-            "measurement",
+            "uncertainties",
             "comment",
         ]
         for attribute in attributes:
             self.assertTrue(hasattr(self.metadata, attribute))
 
-    def test_sample_is_correct_class(self):
-        self.assertIsInstance(self.metadata.sample, material.Sample)
+    def test_uncertainties_is_correct_class(self):
+        self.assertIsInstance(
+            self.metadata.uncertainties, material.Uncertainties
+        )
 
-    def test_measurement_is_correct_class(self):
-        self.assertIsInstance(self.metadata.measurement, material.Measurement)
+
+class TestUncertainties(unittest.TestCase):
+    def setUp(self):
+        self.uncertainties = material.Uncertainties()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "confidence_interval",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.uncertainties, attribute))
 
 
 class TestSample(unittest.TestCase):
