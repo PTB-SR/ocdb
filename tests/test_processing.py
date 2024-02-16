@@ -46,6 +46,13 @@ class TestProcessingStepFactory(unittest.TestCase):
         interpolation = self.factory.get_processing_steps(values=13.5)[0]
         self.assertEqual(interpolation.parameters["values"], 13.5)
 
+    def test_get_processing_step_with_values_none_omits_interpolation(self):
+        processing_step = self.factory.get_processing_steps(values=None)[0]
+        self.assertNotIsInstance(
+            processing_step,
+            processing.Interpolation,
+        )
+
 
 class TestProcessingStep(unittest.TestCase):
     def setUp(self):
