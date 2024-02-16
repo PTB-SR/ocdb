@@ -8,6 +8,16 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.1.rc-1
 ====================
 
+* Update :doc:`Use cases <usecases>` to reflect current implementation.
+
+* Check other documentation for consistency.
+
+* Describe how to add data to the package.
+
+* Examples section, including Jupyter notebooks?
+
+* Implement reporting?
+
 * Design data structures and user interface
 
   * For starters, only ``ocdb`` user interface, not yet integrated into ``periodictable``.
