@@ -320,22 +320,25 @@ class TestSingleUncertaintiesPlotter(unittest.TestCase):
         self.plotter = plotting.SingleUncertaintiesPlotter()
         self.material = material.Material()
         self.material.n_data.data = np.linspace(0.98, 0.99, 10)
-        self.material.n_data.lower_bounds = np.random.normal(
-            0.005, 0.002, size=10
+        self.material.n_data.lower_bounds = (
+            self.material.n_data.data
+            - np.random.normal(0.005, 0.002, size=10)
         )
-        self.material.n_data.upper_bounds = np.random.normal(
-            0.005, 0.002, size=10
+        self.material.n_data.upper_bounds = (
+            self.material.n_data.data
+            + np.random.normal(0.005, 0.002, size=10)
         )
         self.material.n_data.axes[0].values = np.linspace(10, 12, 10)
         self.material.n_data.axes[0].symbol = r"\lambda"
         self.material.n_data.axes[0].quantity = "wavelength"
         self.material.n_data.axes[0].unit = "nm"
         self.material.k_data.data = np.linspace(0.02, 0.01, 10)
-        self.material.k_data.lower_bounds = np.random.normal(
-            0.01, 0.002, size=10
+        self.material.k_data.lower_bounds = (
+            self.material.k_data.data - np.random.normal(0.01, 0.002, size=10)
         )
-        self.material.k_data.upper_bounds = np.random.normal(
-            0.01, 0.002, size=10
+        self.material.k_data.upper_bounds = (
+            self.material.k_data.data
+            + np.random.normal(0.005, 0.002, size=10)
         )
         self.material.k_data.axes[0].values = np.linspace(10, 12, 10)
         self.material.k_data.axes[0].symbol = r"\lambda"
@@ -365,16 +368,13 @@ class TestSingleUncertaintiesPlotter(unittest.TestCase):
             self.plotter.axes.get_children()[1]
             .get_paths()[0]
             .to_polygons()[0][1:11, 1],
-            -(self.material.n_data.lower_bounds - self.material.n_data.data),
-        )
-        upper_bounds = (
-            self.material.n_data.data + self.material.n_data.upper_bounds
+            self.material.n_data.lower_bounds,
         )
         np.testing.assert_array_equal(
             self.plotter.axes.get_children()[1]
             .get_paths()[0]
             .to_polygons()[0][12:, 1],
-            upper_bounds[::-1],
+            self.material.n_data.upper_bounds[::-1],
         )
 
     def test_plot_with_values_k_plots_k(self):
@@ -394,16 +394,13 @@ class TestSingleUncertaintiesPlotter(unittest.TestCase):
             self.plotter.axes.get_children()[1]
             .get_paths()[0]
             .to_polygons()[0][1:11, 1],
-            -(self.material.k_data.lower_bounds - self.material.k_data.data),
-        )
-        upper_bounds = (
-            self.material.k_data.data + self.material.k_data.upper_bounds
+            self.material.k_data.lower_bounds,
         )
         np.testing.assert_array_equal(
             self.plotter.axes.get_children()[1]
             .get_paths()[0]
             .to_polygons()[0][12:, 1],
-            upper_bounds[::-1],
+            self.material.k_data.upper_bounds[::-1],
         )
 
     def test_plot_sets_alpha_value_for_uncertainties(self):
@@ -422,22 +419,25 @@ class TestTwinUncertaintiesPlotter(unittest.TestCase):
         self.plotter = plotting.TwinUncertaintiesPlotter()
         self.material = material.Material()
         self.material.n_data.data = np.linspace(0.98, 0.99, 10)
-        self.material.n_data.lower_bounds = np.random.normal(
-            0.005, 0.002, size=10
+        self.material.n_data.lower_bounds = (
+            self.material.n_data.data
+            - np.random.normal(0.005, 0.002, size=10)
         )
-        self.material.n_data.upper_bounds = np.random.normal(
-            0.005, 0.002, size=10
+        self.material.n_data.upper_bounds = (
+            self.material.n_data.data
+            + np.random.normal(0.005, 0.002, size=10)
         )
         self.material.n_data.axes[0].values = np.linspace(10, 12, 10)
         self.material.n_data.axes[0].symbol = r"\lambda"
         self.material.n_data.axes[0].quantity = "wavelength"
         self.material.n_data.axes[0].unit = "nm"
         self.material.k_data.data = np.linspace(0.02, 0.01, 10)
-        self.material.k_data.lower_bounds = np.random.normal(
-            0.01, 0.002, size=10
+        self.material.k_data.lower_bounds = (
+            self.material.k_data.data - np.random.normal(0.01, 0.002, size=10)
         )
-        self.material.k_data.upper_bounds = np.random.normal(
-            0.01, 0.002, size=10
+        self.material.k_data.upper_bounds = (
+            self.material.k_data.data
+            + np.random.normal(0.005, 0.002, size=10)
         )
         self.material.k_data.axes[0].values = np.linspace(10, 12, 10)
         self.material.k_data.axes[0].symbol = r"\lambda"
@@ -490,16 +490,13 @@ class TestTwinUncertaintiesPlotter(unittest.TestCase):
             self.plotter.axes.get_children()[1]
             .get_paths()[0]
             .to_polygons()[0][1:11, 1],
-            -(self.material.n_data.lower_bounds - self.material.n_data.data),
-        )
-        upper_bounds = (
-            self.material.n_data.data + self.material.n_data.upper_bounds
+            self.material.n_data.lower_bounds,
         )
         np.testing.assert_array_equal(
             self.plotter.axes.get_children()[1]
             .get_paths()[0]
             .to_polygons()[0][12:, 1],
-            upper_bounds[::-1],
+            self.material.n_data.upper_bounds[::-1],
         )
 
     def test_plot_plots_k_uncertainties(self):
@@ -509,16 +506,13 @@ class TestTwinUncertaintiesPlotter(unittest.TestCase):
             self.plotter.axes2.get_children()[1]
             .get_paths()[0]
             .to_polygons()[0][1:11, 1],
-            -(self.material.k_data.lower_bounds - self.material.k_data.data),
-        )
-        upper_bounds = (
-            self.material.k_data.data + self.material.k_data.upper_bounds
+            self.material.k_data.lower_bounds,
         )
         np.testing.assert_array_equal(
             self.plotter.axes2.get_children()[1]
             .get_paths()[0]
             .to_polygons()[0][12:, 1],
-            upper_bounds[::-1],
+            self.material.k_data.upper_bounds[::-1],
         )
 
     def test_plot_sets_color_for_n_uncertainties(self):

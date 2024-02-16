@@ -555,8 +555,8 @@ class SingleUncertaintiesPlotter(SinglePlotter):
             data = self.dataset.n_data
         self.axes.fill_between(
             data.axes[0].values,
-            data.data - data.lower_bounds,
-            data.data + data.upper_bounds,
+            data.lower_bounds,
+            data.upper_bounds,
             alpha=0.3,
         )
 
@@ -624,15 +624,15 @@ class TwinUncertaintiesPlotter(TwinPlotter):
         colors = prop_cycle.by_key()["color"]
         self.axes.fill_between(
             self.dataset.n_data.axes[0].values,
-            self.dataset.n_data.data - self.dataset.n_data.lower_bounds,
-            self.dataset.n_data.data + self.dataset.n_data.upper_bounds,
+            self.dataset.n_data.lower_bounds,
+            self.dataset.n_data.upper_bounds,
             alpha=0.3,
             facecolor=colors[0],
         )
         self.axes2.fill_between(
             self.dataset.k_data.axes[0].values,
-            self.dataset.k_data.data - self.dataset.k_data.lower_bounds,
-            self.dataset.k_data.data + self.dataset.k_data.upper_bounds,
+            self.dataset.k_data.lower_bounds,
+            self.dataset.k_data.upper_bounds,
             alpha=0.3,
             facecolor=colors[1],
         )

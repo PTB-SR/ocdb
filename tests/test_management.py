@@ -1,6 +1,7 @@
 import unittest
 
 import ocdb.material
+import ocdb.plotting
 import ocdb.processing
 from ocdb import management
 
@@ -50,4 +51,15 @@ class TestCollectionCreator(unittest.TestCase):
         self.assertIsInstance(
             collection.Co.processing_step_factory,
             ocdb.processing.ProcessingStepFactory,
+        )
+
+    @unittest.skipUnless(
+        hasattr(ocdb.plotting, "plt"), "Matplotlib not loaded"
+    )
+    def test_create_adds_plotter_factory_to_material(self):
+        self.collection_creator.name = "elements"
+        collection = self.collection_creator.create()
+        self.assertIsInstance(
+            collection.Co.plotter_factory,
+            ocdb.plotting.PlotterFactory,
         )

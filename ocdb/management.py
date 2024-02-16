@@ -14,6 +14,7 @@ import importlib.resources
 
 import ocdb.io
 import ocdb.material
+import ocdb.plotting
 import ocdb.processing
 
 
@@ -111,6 +112,8 @@ class CollectionCreator:
             material.processing_step_factory = (
                 ocdb.processing.ProcessingStepFactory()
             )
+            if hasattr(ocdb.plotting, "plt"):
+                material.plotter_factory = ocdb.plotting.PlotterFactory()
             collection.add_item(material)
         return collection
 
