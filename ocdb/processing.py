@@ -273,6 +273,8 @@ class Interpolation(ProcessingStep):
                 ]
                 if not index:
                     raise ValueError("Value(s) not available")
+                if len(index) != len(self.parameters["values"]):
+                    raise ValueError("Value(s) not available")
                 setattr(
                     self.data,
                     data_array,

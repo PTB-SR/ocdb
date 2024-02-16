@@ -227,3 +227,10 @@ class TestInterpolation(unittest.TestCase):
         self.interpolation.parameters["kind"] = None
         with self.assertRaisesRegex(ValueError, r"Value\(s\) not available"):
             self.interpolation.process()
+
+    def test_interpolate_range_na_value_with_kind_none_raises(self):
+        self.interpolation.data = self.data
+        self.interpolation.parameters["values"] = np.linspace(10, 20, 21)
+        self.interpolation.parameters["kind"] = None
+        with self.assertRaisesRegex(ValueError, r"Value\(s\) not available"):
+            self.interpolation.process()
