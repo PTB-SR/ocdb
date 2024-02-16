@@ -139,10 +139,20 @@ format
 file
     Name and format of the file containing the actual numerical data.
 
-    The format string should ideally be from a controlled vocabulary. As soon
-    as there are several formats, an ImporterFactory will be in place, and
-    there, this string may be used to decide which importer to instantiate
-    and return.
+    name:
+        Name of the file containing the data.
+
+        Only the file name without path. Due to the "convention over
+        configuration" approach of the ocdb package, all data reside in one
+        location. Furthermore, data are accessed as package data, not via
+        the file system, due to the way Python packages are handled internally.
+
+    format:
+        Identifier of the file format the data are provided in.
+
+        The format string is an entry of a controlled vocabulary. This
+        string gets used by the :class:`DataImporterFactory` to decide which
+        importer to instantiate and return.
 
 material
     Basic information on the material.
@@ -335,11 +345,11 @@ Module documentation
 ====================
 
 """
+import importlib.resources
 import os.path
 
 import bibrecord.bibtex
 import bibrecord.database
-import importlib_resources
 import numpy as np
 import oyaml as yaml
 
@@ -366,6 +376,7 @@ class DataImporterFactory:
         the :obj:`DataImporter` objects returned by the :meth:`get_importer`
         method. Thus, the BibTeX database is typically only loaded once.
 
+
     Examples
     --------
     Getting a data importer object from the factory is straight-forward:
@@ -374,8 +385,10 @@ class DataImporterFactory:
 
     .. code-block::
 
+        metadata = Metadata(filename=<my_metadata.yaml>)
+
         importer_factory = DataImporterFactory()
-        importer_factory.get_importer()
+        importer_factory.get_importer(metadata=metadata)
 
     """
 
@@ -383,7 +396,6 @@ class DataImporterFactory:
         self.references = References()
         self.references.load()
 
-    # noinspection PyMethodMayBeStatic
     def get_importer(self, metadata=None):
         """
         Return data importer given the information provided in the metadata.
@@ -397,6 +409,14 @@ class DataImporterFactory:
         -------
         importer : :class:`DataImporter`
             Data importer object best fitting the criteria provided
+
+        Raises
+        ------
+        ValueError
+            Raised if no metadata are provided
+
+        NotImplementedError
+            Raised if no importer for the given format is implemented.
 
         """
         if not metadata:
@@ -980,9 +1000,9 @@ class References:
 
         """
         bibtex = (
-            importlib_resources.files(__package__)
+            importlib.resources.files(__package__)
             .joinpath(self._bibliography_file)
-            .read_text()
+            .read_text(encoding="utf8")
         )
         bibliography = bibrecord.bibtex.Bibliography()
         bibliography.from_bib(bibtex)
