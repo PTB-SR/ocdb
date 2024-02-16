@@ -11,7 +11,8 @@ def read(filename):
 setuptools.setup(
     name="ocdb",
     version=read("VERSION").strip(),
-    description="Optical constants for elements and various materials in the EUV and VUV wavelengths",
+    description="Optical constants for elements and various materials in "
+    "the EUV and VUV wavelengths",
     long_description=read("README.rst"),
     long_description_content_type="text/x-rst",
     author="Till Biskup",
@@ -41,7 +42,7 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
     ],
     install_requires=[
-        "bibrecord",
+        "bibrecord>=0.2.0",
         "numpy",
         "oyaml",
     ],
@@ -66,6 +67,6 @@ setuptools.setup(
             "twine",
         ],
     },
-    python_requires=">=3.7",
+    python_requires=">=3.9",
     include_package_data=True,
 )
