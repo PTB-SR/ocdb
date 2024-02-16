@@ -1,0 +1,15 @@
+format:
+  type: OCDB metadata
+  version: 1.0.rc-1
+file:
+  name: TaCo.txt
+  format: text
+material:
+  name: TaCo
+  symbol: TaCo
+uncertainties:
+  confidence_interval: "3 sigma"
+references:
+- "saadeh-optmatex-13-78"
+versions: []
+comment: ''
