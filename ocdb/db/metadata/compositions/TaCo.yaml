@@ -5,7 +5,7 @@ file:
   name: TaCo.txt
   format: text
 material:
-  name: TaCo
+  name: "Tantalum cobalt"
   symbol: TaCo
 uncertainties:
   confidence_interval: "3 sigma"
