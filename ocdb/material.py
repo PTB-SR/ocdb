@@ -955,6 +955,7 @@ class Collection:
 
         """
         setattr(self, item.symbol, item)
+        self._items[item.symbol] = item
 
 
 class AbstractPlotter:

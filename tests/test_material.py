@@ -408,6 +408,11 @@ class TestCollection(unittest.TestCase):
         self.collection.add_item(self.item)
         self.assertTrue(hasattr(self.collection, self.item.symbol))
 
+    def test_iterate_over_collection_yields_item(self):
+        self.collection.add_item(self.item)
+        elements = [element for element in self.collection]
+        self.assertTrue(elements)
+
     def test_iterate_over_collection_yields_material(self):
         self.collection.add_item(self.item)
         for element in self.collection:
