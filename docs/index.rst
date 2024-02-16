@@ -78,13 +78,19 @@ Have a look at the more detailed :doc:`installation instructions <installing>` a
 License
 =======
 
-This program is free software: you can redistribute it and/or modify it under the terms of the **GPLv3 License**. Please note that this license only applies to the ocdb Python package, *not* to the data contained in the `Optical Constants Database (OCDB) <OCDB_>`_. The data themselves are licensed under CC BY 4.0, if not explicitly stated otherwise. If you use the ocdb Python package or the data contained in the OCDB, please cite it appropriately. See the :ref:`How to cite <sec-how_to_cite>` section for further details.
+This program is free software: you can redistribute it and/or modify it under the terms of the **GPLv3 License**. Please note that this license only applies to the ocdb Python package, *not* to the data contained in the `Optical Constants Database (OCDB) <OCDB_>`_. The data themselves are licensed under CC BY 4.0, if not explicitly stated otherwise. If you use the ocdb Python package or the data contained in the OCDB, please cite the relevant references. See the :ref:`How to cite <sec-how_to_cite>` section for further details.
 
 
 OCDB funding
 ============
 
 Development of the `Optical Constants Database (OCDB) <OCDB_>`_ containing the data the ocdb Python package provides convenient access to has been funded by the `EMPIR project 20IND04-ATMOC <https://www.atmoc.ptb.de/>`_.
+
+
+Logo
+====
+
+The copyright of the logo of the `Optical Constants Database (OCDB) <OCDB_>`_ used here for the Python ocdb package belongs to Victor Soltwisch.
 
 
 .. toctree::
