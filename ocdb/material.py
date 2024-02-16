@@ -201,7 +201,7 @@ class Material:
     methods, *i.e.* :meth:`n`, :meth:`k`, and :meth:`index_of_refraction`.
 
     A key aspect of the ocdb package is available metadata and citable data.
-    Hence the :attr:`reference` and :attr:`metadata` attributes.
+    Hence, the :attr:`reference` and :attr:`metadata` attributes.
 
     Suppose you are interested in a human-readable representation of the
     reference:
@@ -611,7 +611,7 @@ class Axis:
         For automatically generated axis labels, see :meth:`get_label`.
 
         Symbols are treated as mathematical variables, hence you can use at
-        least a standard subset of LaTeX math commands. If in doubt, havw a
+        least a standard subset of LaTeX math commands. If in doubt, have a
         look at the corresponding section of the `Matplotlib documentation
         <https://matplotlib.org/stable/users/explain/text/mathtext.html>`_
         what subset of LaTeX markup is supported without having to use a

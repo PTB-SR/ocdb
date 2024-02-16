@@ -101,6 +101,7 @@ class CollectionCreator:
             .joinpath(self.name)
             .iterdir()
         ):
+            # noinspection PyTypeChecker
             metadata = ocdb.io.Metadata(filename=file)
             metadata.file["name"] = (
                 importlib.resources.files(__package__)

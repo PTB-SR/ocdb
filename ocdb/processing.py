@@ -132,8 +132,8 @@ class ProcessingStep(material.AbstractProcessingStep):
     units. Nevertheless, all these types of processing steps share a common
     base, and this is implemented in this class.
 
-    Real processing steps will always be performed by a descendant of this class.
-    Which processing step to actually use is in the realm of the
+    Real processing steps will always be performed by a descendant of this
+    class. Which processing step to actually use is in the realm of the
     :class:`ProcessingStepFactory` that itself descends from the
     :class:`ocdb.material.AbstractProcessingStepFactory`.
 
@@ -232,7 +232,7 @@ class Interpolation(ProcessingStep):
         self._interpolate_data()
 
     def _sanitise_parameters(self):
-        if isinstance(self.parameters["values"], float):
+        if isinstance(self.parameters["values"], (float, int)):
             # noinspection PyTypedDict
             self.parameters["values"] = np.asarray(
                 [self.parameters["values"]]
@@ -272,7 +272,7 @@ class Interpolation(ProcessingStep):
                     if any(np.where(self.data.axes[0].values == value)[0])
                 ]
                 if not index:
-                    raise ValueError("Values not available")
+                    raise ValueError("Value(s) not available")
                 setattr(
                     self.data,
                     data_array,

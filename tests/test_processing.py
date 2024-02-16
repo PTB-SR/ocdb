@@ -98,6 +98,15 @@ class TestInterpolation(unittest.TestCase):
         self.assertEqual(self.interpolation.data.lower_bounds.size, 1)
         self.assertEqual(self.interpolation.data.upper_bounds.size, 1)
 
+    def test_interpolate_scalar_int_returns_data_with_one_value(self):
+        self.interpolation.data = self.data
+        self.interpolation.parameters["values"] = 13
+        self.interpolation.process()
+        self.assertEqual(self.interpolation.data.data.size, 1)
+        self.assertEqual(self.interpolation.data.axes[0].values.size, 1)
+        self.assertEqual(self.interpolation.data.lower_bounds.size, 1)
+        self.assertEqual(self.interpolation.data.upper_bounds.size, 1)
+
     def test_interpolate_single_value_returns_correct_value_in_data(self):
         self.interpolation.data = self.data
         value = np.interp(13.5, self.data.axes[0].values, self.data.data)
@@ -209,12 +218,12 @@ class TestInterpolation(unittest.TestCase):
         self.interpolation.data = self.data
         self.interpolation.parameters["values"] = 13.4
         self.interpolation.parameters["kind"] = None
-        with self.assertRaisesRegex(ValueError, "Values not available"):
+        with self.assertRaisesRegex(ValueError, r"Value\(s\) not available"):
             self.interpolation.process()
 
     def test_interpolate_range_na_value_with_kind_none_raises(self):
         self.interpolation.data = self.data
         self.interpolation.parameters["values"] = np.linspace(13.2, 13.6, 3)
         self.interpolation.parameters["kind"] = None
-        with self.assertRaisesRegex(ValueError, "Values not available"):
+        with self.assertRaisesRegex(ValueError, r"Value\(s\) not available"):
             self.interpolation.process()
