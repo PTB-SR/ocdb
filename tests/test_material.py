@@ -173,7 +173,23 @@ class TestMaterial(unittest.TestCase):
         kwargs = {"values": 13.5, "interpolation": None}
         self.material.n_data.data = np.zeros(1)
         _, data = self.material.n(**kwargs)
-        self.assertEqual(data[0], 1)
+        self.assertEqual(1, data[0])
+
+    def test_n_calls_processing_steps_on_copy_of_data(self):
+        class ProcessingStep(material.AbstractProcessingStep):
+            def process(self):
+                self.data.data += 1
+                return self.data
+
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def get_processing_steps(self, **kwargs):
+                return [ProcessingStep()]
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"values": 13.5, "interpolation": None}
+        self.material.n_data.data = np.zeros(1)
+        _, data = self.material.n(**kwargs)
+        self.assertEqual(self.material.n_data.data, np.zeros(1))
 
     def test_k_calls_processing_step_factory_with_kwargs(self):
         class ProcessingStepFactory(material.AbstractProcessingStepFactory):
@@ -205,9 +221,25 @@ class TestMaterial(unittest.TestCase):
         kwargs = {"values": 13.5, "interpolation": None}
         self.material.k_data.data = np.zeros(1)
         _, data = self.material.k(**kwargs)
-        self.assertEqual(data[0], 1)
+        self.assertEqual(1.0, data[0])
 
-    def test_ind_of_refraction_calls_processing_step_factory_with_kwargs(
+    def test_k_calls_processing_steps_on_copy_of_data(self):
+        class ProcessingStep(material.AbstractProcessingStep):
+            def process(self):
+                self.data.data += 1
+                return self.data
+
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def get_processing_steps(self, **kwargs):
+                return [ProcessingStep()]
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"values": 13.5, "interpolation": None}
+        self.material.k_data.data = np.zeros(1)
+        _, data = self.material.k(**kwargs)
+        self.assertEqual(np.zeros(1), self.material.k_data.data)
+
+    def test_index_of_refraction_calls_processing_step_factory_with_kwargs(
         self,
     ):
         class ProcessingStepFactory(material.AbstractProcessingStepFactory):
@@ -242,6 +274,24 @@ class TestMaterial(unittest.TestCase):
         _, data = self.material.index_of_refraction(**kwargs)
         self.assertEqual(data[0].real, 1)
         self.assertEqual(data[0].imag, -2)
+
+    def test_index_of_refraction_calls_processing_steps_on_copy_of_data(self):
+        class ProcessingStep(material.AbstractProcessingStep):
+            def process(self):
+                self.data.data += 1
+                return self.data
+
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def get_processing_steps(self, **kwargs):
+                return [ProcessingStep()]
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"values": 13.5, "interpolation": None}
+        self.material.n_data.data = np.zeros(1)
+        self.material.k_data.data = np.ones(1)
+        _, data = self.material.index_of_refraction(**kwargs)
+        self.assertEqual(np.zeros(1), self.material.n_data.data)
+        self.assertEqual(np.ones(1), self.material.k_data.data)
 
 
 class TestData(unittest.TestCase):

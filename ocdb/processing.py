@@ -114,6 +114,7 @@ class ProcessingStepFactory(material.AbstractProcessingStepFactory):
         processing_steps = []
         if "values" in kwargs:
             interpolation = Interpolation()
+            interpolation.parameters["values"] = kwargs["values"]
             if "interpolation" in kwargs:
                 interpolation.parameters["kind"] = kwargs["interpolation"]
             processing_steps.append(interpolation)

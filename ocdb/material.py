@@ -85,6 +85,7 @@ Module documentation
 
 """
 
+import copy
 import datetime
 
 import numpy as np
@@ -286,7 +287,7 @@ class Material:
         processing_steps = self.processing_step_factory.get_processing_steps(
             values=values, interpolation=interpolation
         )
-        data = self.n_data
+        data = copy.deepcopy(self.n_data)
         for processing_step in processing_steps:
             processing_step.data = data
             data = processing_step.process()
@@ -336,7 +337,7 @@ class Material:
         processing_steps = self.processing_step_factory.get_processing_steps(
             values=values, interpolation=interpolation
         )
-        data = self.k_data
+        data = copy.deepcopy(self.k_data)
         for processing_step in processing_steps:
             processing_step.data = data
             data = processing_step.process()
@@ -344,12 +345,12 @@ class Material:
         if uncertainties:
             output = (
                 wavelengths,
-                self.k_data.data,
-                self.k_data.lower_bounds,
-                self.k_data.upper_bounds,
+                data.data,
+                data.lower_bounds,
+                data.upper_bounds,
             )
         else:
-            output = (wavelengths, self.k_data.data)
+            output = (wavelengths, data.data)
         return output
 
     def index_of_refraction(
@@ -388,11 +389,11 @@ class Material:
         processing_steps = self.processing_step_factory.get_processing_steps(
             values=values, interpolation=interpolation
         )
-        n_data = self.n_data
+        n_data = copy.deepcopy(self.n_data)
         for processing_step in processing_steps:
             processing_step.data = n_data
             n_data = processing_step.process()
-        k_data = self.k_data
+        k_data = copy.deepcopy(self.k_data)
         for processing_step in processing_steps:
             processing_step.data = k_data
             k_data = processing_step.process()

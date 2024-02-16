@@ -1,6 +1,7 @@
 import unittest
 
 import ocdb.material
+import ocdb.processing
 from ocdb import management
 
 
@@ -42,3 +43,11 @@ class TestCollectionCreator(unittest.TestCase):
         self.collection_creator.name = "elements"
         collection = self.collection_creator.create()
         self.assertTrue(hasattr(collection, "Co"))
+
+    def test_create_adds_processing_step_factory_to_material(self):
+        self.collection_creator.name = "elements"
+        collection = self.collection_creator.create()
+        self.assertIsInstance(
+            collection.Co.processing_step_factory,
+            ocdb.processing.ProcessingStepFactory,
+        )

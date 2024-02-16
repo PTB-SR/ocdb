@@ -42,6 +42,10 @@ class TestProcessingStepFactory(unittest.TestCase):
         )[0]
         self.assertEqual(interpolation.parameters["kind"], "foo")
 
+    def test_get_processing_step_with_values_sets_values(self):
+        interpolation = self.factory.get_processing_steps(values=13.5)[0]
+        self.assertEqual(interpolation.parameters["values"], 13.5)
+
 
 class TestProcessingStep(unittest.TestCase):
     def setUp(self):

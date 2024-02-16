@@ -96,10 +96,8 @@ For each material/substance a database record is present in the OCDB, the ocdb p
 * [uncertainties for *k* (lower and upper boundary)]
 * metadata
 
-  * sample information
-  * measurement information (at least date)
   * uncertainty information (if uncertainties are present, *e.g.* "3 sigma")
-  * reference (`bibrecord <https://bibrecord.docs.till-biskup.de/>`_ entry if citable reference)
+  * references (`bibrecord <https://bibrecord.docs.till-biskup.de/>`_ entries)
 
 
 If no uncertainties are available, return simply ``None`` ("principle of least surprise").

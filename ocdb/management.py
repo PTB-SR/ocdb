@@ -14,6 +14,7 @@ import importlib.resources
 
 import ocdb.io
 import ocdb.material
+import ocdb.processing
 
 
 class CollectionCreator:
@@ -106,7 +107,11 @@ class CollectionCreator:
                 .joinpath(metadata.file["name"])
             )
             importer = importer_factory.get_importer(metadata)
-            collection.add_item(importer.import_data())
+            material = importer.import_data()
+            material.processing_step_factory = (
+                ocdb.processing.ProcessingStepFactory()
+            )
+            collection.add_item(material)
         return collection
 
     def _check_prerequisites(self):
