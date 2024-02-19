@@ -127,6 +127,7 @@ The copyright of the logo of the `Optical Constants Database (OCDB) <OCDB_>`_ us
 
    people
    contributing
+   addingdata
    architecture
    changelog
    roadmap

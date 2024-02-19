@@ -1,3 +1,6 @@
+
+.. _OCDB: https://www.ocdb.ptb.de/
+
 ==================
 Essential Concepts
 ==================
@@ -8,7 +11,7 @@ Why another Python package for accessing optical constants? What makes the ocdb 
 Uncertainties
 =============
 
-One essential goal of the `Optical Constants Database (OCDB) <https://www.ocdb.ptb.de/>`_ maintained by the German National Metrology Institute, the `Physikalisch-Technische Bundesanstalt, PTB <https://www.ptb.de/>`_ is to provide **uncertainties** together with the optical constants.
+One essential goal of the `Optical Constants Database (OCDB) <OCDB_>`_ maintained by the German National Metrology Institute, the `Physikalisch-Technische Bundesanstalt, PTB <https://www.ptb.de/>`_ is to provide **uncertainties** together with the optical constants.
 
 
 Transparency and reproducibility
@@ -20,10 +23,12 @@ Can I trust the data? The essence of science is to be as transparent as possible
 History of records
 ==================
 
-Science never provides definite and final answers, and similarly, the data provided by the OCDB and the ocdb Python package in turn will change over time. Reasons for change are manifold: extending the available wavelength range (from the EUV to the VUV and eventually all the way to the IR), improved setup to measure the primary data, an enhanced understanding of the factors influencing the measurements and in turn an improved sample preparation and measurement strategies, and more advanced algorithms and strategies to obtain optical constants from the measured data, to name but the most important aspects.
+Science never provides definite and final answers, and similarly, the data provided by the `OCDB <OCDB_>`_  and the ocdb Python package in turn will change over time. Reasons for change are manifold: extending the available wavelength range (from the EUV to the VUV and eventually all the way to the IR), improved setup to measure the primary data, an enhanced understanding of the factors influencing the measurements and in turn an improved sample preparation and measurement strategies, and more advanced algorithms and strategies to obtain optical constants from the measured data, to name but the most important aspects.
 
 The ocdb Python package aims at creating a **full transparency how the datasets for a given substance have been evolved**, besides providing access to previous versions of the data for the same substance if there are any. This leads to an essential distinction: dataset vs. measurement.
 
+
+.. _sec-dataset_vs_measurement:
 
 Dataset vs. measurement
 -----------------------

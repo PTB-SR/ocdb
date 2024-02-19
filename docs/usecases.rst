@@ -264,7 +264,7 @@ ready for copy&paste into your preferred literature search and retrieval tool.
 Plotting values
 ===============
 
-Plotting values should be straight-forward. However it is sometimes convenient to plot methods for each material readily available. The following plots would be immediately obvious:
+Plotting values should be straight-forward. However it is sometimes convenient to have plot methods for each material readily available. The following plots are immediately obvious:
 
 * plot of *n* vs. wavelength
 * plot of *k* vs. wavelength
@@ -283,7 +283,7 @@ All plots should automatically provide correct axis labels and perhaps a title d
     The ocdb package purposefully does *not* depend on Matplotlib, due to its many dependencies. Therefore, if you install ocdb without further explicit dependencies, you may not have Matplotlib available and plotting will not work. However, as soon as Matplotlib is available from within your Python installation/virtual environment, plotting as shown below will work.
 
 
-In the simplest form, plotting data of a given substance are as easy as:
+In the simplest form, plotting data of a given substance is as easy as:
 
 .. code-block::
 

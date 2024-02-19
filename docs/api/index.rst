@@ -3,6 +3,8 @@ API documentation
 
 This is the definite source of information for developers, besides having a look at the actual source code. Each class and public method should be fully documented.
 
+To get a more high-level overview of the overall package architecture first, you may have a look at the separate :doc:`architecture <../architecture>` section of the documentation. And just in case that you would like to contribute to the package, make sure to check out the :doc:`contribution guidelines <../contributing>`.
+
 
 Modules
 -------

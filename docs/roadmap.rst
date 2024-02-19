@@ -8,30 +8,23 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.1.rc-1
 ====================
 
-* Check other documentation for consistency.
-
-* Describe how to add data to the package.
-
-* Examples section, including Jupyter notebooks?
-
 * Implement reporting?
 
-* Design data structures and user interface
-
-  * For starters, only ``ocdb`` user interface, not yet integrated into ``periodictable``.
-  * User interface is described in the :doc:`Use cases <usecases>` section.
-
-* Decide upon a data file format for the actual data
-
-  * For starters, probably simply the text files from the OCDB, accompanied by YAML files with the relevant metadata and a BibTeX file with the references.
+* Examples section, including Jupyter notebooks?
 
 
 For version 0.1
 ===============
 
+* Dataset with multiple versions -- at least Ru and Ta
+
 * DOI via Zenodo
 
 * Initial Python package on GitHub and PyPI
+
+* Unit conversion?
+
+* Plotting with range and different *x* axis unit?
 
 
 For later versions

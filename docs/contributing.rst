@@ -5,6 +5,11 @@ Contributing
 You want to contribute to the ocdb package? Excellent! Here, you will get some important background information regarding the necessary and available tools, the code formatting and organisation, tests, static code analysis, and how to build the documentation.
 
 
+.. note::
+
+    This guide addresses software developers who want to contribute to the further development of the ocdb Python package. A completely different, but equally important aspect of contributing are data for optical constants. For the latter, see the dedicated section on :doc:`adding data <addingdata>`.
+
+
 Virtual environment
 ===================
 
