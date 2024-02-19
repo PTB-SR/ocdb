@@ -34,6 +34,6 @@ Interfaces
 
 Eventually, data need to come from somewhere. Hence the need for importers of actual data and accompanying metadata. This is the realm of the :mod:`ocdb.io` module, and in particular the :class:`ocdb.io.DataImporter` class and its descendants for specific data formats.
 
-Similarly, collections ought to be created and filled for the users of the package. These housekeeping and management tasks are located in a :mod:`ocdb.management` module, and this machinery is most likely eventually called from the package ``__init__.py`` file, such that importing ocdb by means of a simple ``import ocdb`` will make the collections accessible from within the ``ocdb`` namespace immediately. If loading data becomes a time-critical issue, deferred loading of the actual data needs to be implemented.
+Similarly, collections ought to be created and filled for the users of the package. These housekeeping and management tasks are located in an :mod:`ocdb.management` module, and this machinery is eventually called from the package ``__init__.py`` file, such that importing ocdb by means of a simple ``import ocdb`` will make the collections accessible from within the ``ocdb`` namespace immediately. If loading data becomes a time-critical issue, deferred loading of the actual data needs to be implemented.
 
 Last but not least, management utils, *e.g.* for creating metadata files for new entries, can come in quite handy. The latter is taken care of by the :func:`ocdb.io.create_metadata_file` function.

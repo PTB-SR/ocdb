@@ -9,6 +9,23 @@ ocdb
 
 Welcome! This is the documentation for ocdb, a **Python package** for easily accessing the X-ray/EUV/VUV **scattering and absorption data** contained in the `Optical Constants Database (OCDB) <OCDB_>`_  provided by the German National Metrology Institute, the `Physikalisch-Technische Bundesanstalt, PTB <https://www.ptb.de/>`_.
 
+This is a first glimpse on how working with the ocdb package may look like:
+
+.. code-block::
+
+    import ocdb
+
+    # All available values for n
+    [co_wl, co_n] = ocdb.elements.Co.n()
+
+    # Complex index of refraction for a given wavelength
+    _, co_13_5 = ocdb.elements.Co.index_of_refraction(13.5)
+
+    # All available values for k with uncertainties
+    [co_wl, co_k, co_k_lb, co_k_ub] = ocdb.elements.Co.k(uncertainties=True)
+
+For further details, have a look at the :doc:`use cases <usecases>` section.
+
 
 Features
 ========
@@ -47,7 +64,7 @@ The ocdb package comes with a rather minimal set of requirements:
 * Python >= 3.9
 * numpy, oyaml, and bibrecord packages
 
-In case you would like to make use of the optional plotting and report generating capabilities, you would need to install additional dependencies, namely Matplotlib (with all its dependencies) and jinja. Have a look at the :doc:`installation instructions <installing>` for further details.
+In case you would like to make use of the optional plotting and report generating capabilities, you would need to install additional dependencies, namely Matplotlib (with all its dependencies) and Jinja. Have a look at the :doc:`installation instructions <installing>` for further details.
 
 
 .. _sec-how_to_cite:
@@ -59,7 +76,7 @@ The Python ocdb package is free software. However, if you use it for your own re
 
   * Till Biskup. The ocdb Python package (2024). `doi:10.5281/zenodo.######## <https://doi.org/10.5281/zenodo.########>`_
 
-Furthermore, if you use the data the ocdb package provides access to for your own research, use the appropriate references for each individual dataset, as available from the metadata. Have a look at the documentation of the :class:`ocdb.material.Material` class for details how to conveniently obtain the relevant bibliographic data, either as string or as BibTeX record.
+Furthermore, if you use the data the ocdb package provides access to for your own research, use the appropriate references for each individual dataset, as available from its metadata. Have a look at the documentation of the :class:`ocdb.material.Material` class for details how to conveniently obtain the relevant bibliographic data, either as string or as BibTeX record.
 
 
 Installation

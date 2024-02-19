@@ -15,13 +15,13 @@ Use cases
         :depth: 1
 
 
-For the time being, the following description of use cases is rather an idea how working with the ocdb package may look like than a description of what actually can be achieved.
+For the time being, the following description of use cases serves as **user manual**: it showcases specific usage scenarios focussing on those interested in the data provided by the `Optical Constants Database (OCDB) <OCDB_>`_ and provides an idea how working with the ocdb package may look like. Those interested in the details may have a look at the :doc:`API documentation <api/index>`.
 
 
 General usage
 =============
 
-The ocdb package is meant to provide easy access to the values contained in the `Optical Constants Database (OCDB) <https://www.ocdb.ptb.de/>`_ provided by the German National Metrology Institute, the `Physikalisch-Technische Bundesanstalt, PTB <https://www.ptb.de/>`_. Furthermore it should seamlessly integrate in the `periodictable package <periodictable_>`_, at least provide an interface similar to this package.
+The ocdb package is meant to provide easy access to the values contained in the `Optical Constants Database (OCDB) <OCDB_>`_ provided by the German National Metrology Institute, the `Physikalisch-Technische Bundesanstalt, PTB <https://www.ptb.de/>`_. Furthermore it should seamlessly integrate in the `periodictable package <periodictable_>`_, at least provide an interface similar to this package.
 
 For starters, you should import the ocdb package for further use:
 
@@ -121,11 +121,11 @@ Within the ocdb package, we can directly access the data, not needing the additi
 
 .. code-block::
 
-    ocdb.elements.Co.n()  # [np.array(dtype=float), np.array(dtype=float)]
+    ocdb.elements.Co.n()  # -> [np.array(dtype=float), np.array(dtype=float)]
 
-    ocdb.elements.Co.k()  # [np.array(dtype=float), np.array(dtype=float)]
+    ocdb.elements.Co.k()  # -> [np.array(dtype=float), np.array(dtype=float)]
 
-    ocdb.elements.Co.index_of_refraction()  # [np.array(dtype=float), np.array(dtype=complex)]
+    ocdb.elements.Co.index_of_refraction()  # -> [np.array(dtype=float), np.array(dtype=complex)]
 
 
 All these will return the complete list of available values and provide wavelength values (in nm) in the first array (as this is currently the way the data are provided by the `OCDB <OCDB_>`_).
@@ -133,14 +133,14 @@ All these will return the complete list of available values and provide waveleng
 
 .. important::
 
-    The values are not accessed as a property/attribute, but as a method, and without any further parameters will return an array/list of all values (to be exact: they will return a list of numpy arrays: wavelength/energy and optical constant).
+    The values are not accessed as a property/attribute, but as a method, and without any further parameters will return an array/list of all values (to be exact: they will return a list of numpy arrays: wavelength/energy and optical constants).
 
     While using a method with a name that rather reflects a property (and besides that does not conform to PEP8 due to its short name) is unusual, it seems justified here, as it makes for an intuitive user interface.
 
 
 .. important::
 
-    Calling ``index_of_refraction()`` returns a complex value with both, *n* and *k* contained. Hence, we need to clearly define which convention we follow regarding signs. ;-)
+    Calling :meth:`ocdb.material.Material.index_of_refraction()` returns a complex value with both, *n* and *k* contained. Hence, we need to clearly define which convention we follow regarding signs. ;-)
 
 
 .. note::
@@ -156,7 +156,7 @@ Users may want to get uncertainties together with the values for *n* or *k*. Aft
 
 .. code-block::
 
-    ocdb.elements.Co.n(uncertainties=True)
+    [co_wl, co_n, co_n_lb, co_n_ub] = ocdb.elements.Co.n(uncertainties=True)
 
 
 This would return a list of *four* one-dimensional numpy arrays: wavelength, *n* lower bound, and upper bound. How lower and upper bound are defined can be looked up in the metadata.
@@ -164,7 +164,7 @@ This would return a list of *four* one-dimensional numpy arrays: wavelength, *n*
 
 .. note::
 
-    If you ask for uncertainties, but no uncertainties are available from the `OCDB <OCDB_>`_, empty arrays will be returned.
+    If you ask for uncertainties, but no uncertainties are available from the `OCDB <OCDB_>`_, empty arrays will be returned. To check for uncertainties being present for a given material, you best use its method :meth:`ocdb.material.Material.has_uncertainties`. This method will return a Boolean value.
 
 
 Asking for a specific value
@@ -175,12 +175,15 @@ If a user is interested in the value for a given wavelength/energy only, they ma
 
 .. code-block::
 
-    ocdb.elements.Co.n(10.0)
+    _, co_13_5 = ocdb.elements.Co.n(13.5)
+
+
+Note that here, again, technically speaking the return value is a tuple of two numpy arrays: wavelength and optical constant. As you are usually not interested in the first if you explicitly provide only *one* specific value, you can omit it using the Pythonic ``_`` as variable name for the first return value.
 
 
 .. important::
 
-    If the user asks for a value that is no exact hit on the axis, **no interpolation** will be performed and an exception thrown. In case the user explicitly enables interpolation, as long as the value is within the overall axis range of data available from the OCDB, this will perform a *linear* interpolation (allow for other interpolation methods later?). Otherwise, again an exception will be thrown.
+    If the user asks for a value that is no exact hit on the axis, **no interpolation** will be performed and an exception thrown. In case the user explicitly enables interpolation, as long as the value is within the overall axis range of data available from the OCDB, this will perform a *linear* interpolation. Otherwise, again an exception will be thrown. For further details, see the documentation for the :class:`ocdb.processing.Interpolation` class.
 
 
 In case a user wants to get interpolated values, they need to be explicit about this. The reason for this design decision is to make users aware of the actual measured data.
@@ -222,12 +225,16 @@ Although the primary data currently available from the `OCDB <OCDB_>`_ provide a
     ocdb.elements.Co.n(unit="eV")
 
 
+.. todo::
+    Unit conversion is not yet implemented, but planned for the first release (version 0.1) for "eV".
+
+
 References for values
 =====================
 
-One idea behind the ocdb package, besides providing uncertainties for the values, is to have "FAIR" and citable values/data. Hence, for each material/substance, there should be references for the values that allows for citing the correct paper/source.
+One idea behind the ocdb package, besides providing uncertainties for the values, is to have "FAIR" and citable values/data. Hence, for each material/substance, there are references for the values that allows for citing the correct paper/source.
 
-Thanks to the `bibrecord package <https://bibrecord.docs.till-biskup.de/>`_, this should be straight-forward:
+Thanks to the `bibrecord package <https://bibrecord.docs.till-biskup.de/>`_, accessing the bibliographic data of the relevant references should be straight-forward:
 
 .. code-block::
 
@@ -239,43 +246,25 @@ would result in the following string:
 
     Qais Saadeh, Philipp Naujok, Devesh Thakare, Meiyi Wu, Vicky Philipsen, Frank Scholze, Christian Buchholz, Zanyar Salami, Yasser Abdulhadi, Danilo Ocaña García, Heiko Mentzel, Anja Babuschkin, Christian Laubis, Victor Soltwisch: On the optical constants of cobalt in the M-absorption edge region. Optik 273:17045, 2023.
 
-For more options, *e.g.* a full BibTeX record, see the `bibrecord package <https://bibrecord.docs.till-biskup.de/>`_.
-
-In case of no separate reference for a substance/material, a general reference to the `OCDB <OCDB_>`_ should be returned, probably https://zenodo.org/doi/10.5281/zenodo.5602718.
-
-
-Accessing relevant metadata
-===========================
-
-A key aspect of the ocdb package and a strict requirement from a scientific point of view is access to relevant metadata. Those metadata include (but may not be limited to):
-
-* information regarding the uncertainty values (such as ":math:`3\sigma`")
-
-For the time being, just providing a :class:`dict` with respective fields is probably the most sensible solution. However, this interface should be regarded as unstable and not for general use.
-
-It might be interesting though to provide a method displaying a summary of the available information in textual format:
-
+For more options, *e.g.* a full BibTeX record, see the `bibrecord package <https://bibrecord.docs.till-biskup.de/>`_. Usually, a DOI will be available for each reference. Those interested in a quick and easy way to retrieve the reference may use something like:
 
 .. code-block::
 
-    ocdb.elements.Co.metadata.to_string()
+    print(ocdb.elements.Co.references[0].doi)
 
+resulting (currently) in:
 
-This would require ``metadata`` to be a class rather than a plain :class:`dict`. Alternatively, one could provide the same information by just using ``print`` on the metadata as such:
+.. code-block:: text
 
+    10.1016/j.ijleo.2022.170455
 
-.. code-block::
-
-    print(ocdb.elements.Co.metadata)
-
-
-Again, this requires ``metadata`` to be a class rather than a plain :class:`dict`.
+ready for copy&paste into your preferred literature search and retrieval tool.
 
 
 Plotting values
 ===============
 
-Plotting values should be straight-forward, however it might be convenient to provide plot methods for each material. The following plots would be immediately obvious:
+Plotting values should be straight-forward. However it is sometimes convenient to plot methods for each material readily available. The following plots would be immediately obvious:
 
 * plot of *n* vs. wavelength
 * plot of *k* vs. wavelength
@@ -288,14 +277,21 @@ Plotting values should be straight-forward, however it might be convenient to pr
 
 All plots should automatically provide correct axis labels and perhaps a title displaying the material the data are plotted for. In case of plotting both, *n* and *k* values, the two separate *y* axes are colour-coded to allow for easily assigning the data to their axes.
 
-In the simplest form, plotting should be as easy as:
+
+.. important::
+
+    The ocdb package purposefully does *not* depend on Matplotlib, due to its many dependencies. Therefore, if you install ocdb without further explicit dependencies, you may not have Matplotlib available and plotting will not work. However, as soon as Matplotlib is available from within your Python installation/virtual environment, plotting as shown below will work.
+
+
+In the simplest form, plotting data of a given substance are as easy as:
 
 .. code-block::
 
     ocdb.elements.Co.plot()
 
+This will simply plot the *n* values of the given dataset, in our case that of Cobalt.
 
-We may want to parametrise the plot by specifying additional key--value pairs:
+Plots can be customised and controlled in quite some detail by specifying additional key--value pairs to the :meth:`ocdb.material.Material.plot` method:
 
 .. code-block::
 
@@ -310,3 +306,9 @@ Similarly, we may want to provide a range and unit for the *x* axis:
     ocdb.elements.Co.plot(range=[80, 124], unit="eV")
 
     ocdb.elements.Co.plot(values="both", uncertainties=True, range=[80, 124], unit="eV")
+
+
+.. todo::
+
+    Plotting ranges and different units for the *x* axis are not yet implemented.
+

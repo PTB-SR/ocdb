@@ -8,8 +8,6 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.1.rc-1
 ====================
 
-* Update :doc:`Use cases <usecases>` to reflect current implementation.
-
 * Check other documentation for consistency.
 
 * Describe how to add data to the package.

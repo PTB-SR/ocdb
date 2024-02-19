@@ -34,9 +34,4 @@ A **measurement** in contrast is understood here as the entire workflow from a s
 
 What does that mean in practice? For a measurement, we can directly provide metadata for measurement (facility, beamline, measurement mode, ...) and sample (thickness, layer stack, morphology) and usually give an individual reference. For a dataset consisting potentially of the consolidated merge of different measurements, there is not necessarily a direct relation to a single sample or measurement.
 
-
-.. todo::
-
-    Do we want to provide both, individual measurements (in the definition given here, *i.e.* the data for the optical constants from a "single" measurement) as well as the consolidated datasets? And do we want to provide the history for both?
-
-    At least, there should be a citable reference for every version of a published dataset, be it via Zenodo or as a text publication. In the longer run, even the Zenodo publications should be accompanied by a detailed description of how the data (read: optical constants) have been extracted from the primary data (read: measurements).
+For the time being, the ocdb package will only provide datasets, *i.e.* one set of (consolidated) optical constants for a given material, potentially spanning multiple wavelength ranges and resulting from a series of individual measurements. For each and every version of a dataset, there will be a citable reference, be it via Zenodo or as a text publication. Detailed information on how the data (read: optical constants) have been extracted from the primary data (read: measurements) can be found there.
