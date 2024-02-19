@@ -527,6 +527,24 @@ class Material:
         plotter.plot()
         return plotter
 
+    def has_uncertainties(self):
+        """
+        Indicate whether uncertainties are present.
+
+        Only in case of both, lower *and* upper boundary being present for
+        both, *n* and *k* values, will the answer be "True".
+
+        Returns
+        -------
+        answer : :class:`bool`
+            Whether dataset contains uncertainties
+
+        """
+        return bool(
+            self.n_data.has_uncertainties()
+            and self.k_data.has_uncertainties()
+        )
+
 
 class Data:
     """
@@ -577,7 +595,7 @@ class Data:
             Whether data contain uncertainties
 
         """
-        return self.lower_bounds.size and self.upper_bounds.size
+        return bool(self.lower_bounds.size and self.upper_bounds.size)
 
 
 class Axis:

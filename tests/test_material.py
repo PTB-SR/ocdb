@@ -293,6 +293,26 @@ class TestMaterial(unittest.TestCase):
         self.assertEqual(np.zeros(1), self.material.n_data.data)
         self.assertEqual(np.ones(1), self.material.k_data.data)
 
+    def test_has_uncertainties_returns_actual_true_if_lb_and_ub_present(self):
+        self.material.n_data.lower_bounds = np.zeros(10)
+        self.material.n_data.upper_bounds = np.ones(10)
+        self.material.k_data.lower_bounds = np.zeros(10)
+        self.material.k_data.upper_bounds = np.ones(10)
+        self.assertTrue(self.material.has_uncertainties())
+        self.assertEqual(True, self.material.has_uncertainties())
+
+    def test_has_uncertainties_returns_false_if_no_n_uncertainties(self):
+        self.material.k_data.lower_bounds = np.zeros(10)
+        self.material.k_data.upper_bounds = np.ones(10)
+        self.assertFalse(self.material.has_uncertainties())
+        self.assertEqual(False, self.material.has_uncertainties())
+
+    def test_has_uncertainties_returns_false_if_no_k_uncertainties(self):
+        self.material.n_data.lower_bounds = np.zeros(10)
+        self.material.n_data.upper_bounds = np.ones(10)
+        self.assertFalse(self.material.has_uncertainties())
+        self.assertEqual(False, self.material.has_uncertainties())
+
 
 class TestData(unittest.TestCase):
     def setUp(self):
@@ -311,10 +331,11 @@ class TestData(unittest.TestCase):
         for attribute in attributes:
             self.assertTrue(hasattr(self.data, attribute))
 
-    def test_has_uncertainties_returns_true_if_lb_and_ub_present(self):
+    def test_has_uncertainties_returns_actual_true_if_lb_and_ub_present(self):
         self.data.lower_bounds = np.zeros(10)
         self.data.upper_bounds = np.ones(10)
         self.assertTrue(self.data.has_uncertainties())
+        self.assertEqual(True, self.data.has_uncertainties())
 
     def test_has_uncertainties_returns_false_if_lb_is_missing(self):
         self.data.upper_bounds = np.ones(10)
