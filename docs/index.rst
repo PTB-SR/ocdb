@@ -30,15 +30,15 @@ For further details, have a look at the :doc:`use cases <usecases>` section.
 Features
 ========
 
-A list of (planned) features:
+A list of features:
 
-* Access to X-ray/EUV/VUV scattering and absorption coefficients (*n* and *k*)
+* Access to X-ray/EUV/VUV **scattering and absorption coefficients** (*n* and *k*)
 
-* Interface compatible to the `periodictable Python package <https://pypi.org/project/periodictable/>`_
+* Interface similar/compatible to the `periodictable Python package <https://pypi.org/project/periodictable/>`_
 
-* Provides data *and* uncertainties
+* Provides data *and* **uncertainties**
 
-* FAIR and linked data: citable, reliable, and reproducible
+* FAIR and linked data: **citable**, reliable, and reproducible
 
 * Community-driven: easy to contribute
 

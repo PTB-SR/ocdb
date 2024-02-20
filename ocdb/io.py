@@ -111,19 +111,19 @@ the former should be more authoritative.
       type: OCDB metadata
       version: 1.0.rc-1
     file:
-      name: foo.txt
+      name: Ta.txt
       format: text
     material:
-      name: Cobalt
-      symbol: Co
+      name: Tantalum
+      symbol: Ta
     uncertainties:
-      confidence_interval: 3 sigma
+      confidence_interval: "3 sigma"
     references:
-      - saadeh-optik-273-170455
+      - "saadeh-ao-33-10032"
     versions:
-      - identifier: Co_2018
-        description: Lorem ipsum...
-        metadata: foo-1.yaml
+      - identifier: Ta_2019
+        description: "wavelength range 10-20 nm"
+        metadata: Ta_2019.yaml
     comment: >
       Lorem ipsum
 
@@ -212,17 +212,6 @@ versions
 
         The logic of the ocdb package requires only the name of a metadata
         file to figure out by itself where the data are located.
-
-    .. todo::
-
-        How to discriminate between current and old/superseded versions? One
-        possibility would be to have only the metadata files of the most
-        current datasets in the ``metadata`` directory, and the metadata
-        of the superseded/alternative datasets in a separate (parallel)
-        directory (or simply the ``data`` directory). This "convention
-        over configuration" approach would allow the ocdb package to
-        import all data from a given location, without need to first check
-        for each metadata file whether it has been superseded or not.
 
 
     .. todo::
