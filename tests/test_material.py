@@ -17,6 +17,7 @@ class TestMaterial(unittest.TestCase):
             "symbol",
             "references",
             "metadata",
+            "versions",
         ]
         for attribute in attributes:
             self.assertTrue(hasattr(self.material, attribute))
@@ -404,6 +405,7 @@ class TestMetadata(unittest.TestCase):
     def test_has_attributes(self):
         attributes = [
             "uncertainties",
+            "date",
             "comment",
         ]
         for attribute in attributes:
@@ -464,6 +466,23 @@ class TestMeasurement(unittest.TestCase):
         ]
         for attribute in attributes:
             self.assertTrue(hasattr(self.measurement, attribute))
+
+
+class TestVersion(unittest.TestCase):
+    def setUp(self):
+        self.version = material.Version()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "material",
+            "description",
+            "current",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.version, attribute))
 
 
 class TestCollection(unittest.TestCase):

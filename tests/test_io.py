@@ -1,3 +1,4 @@
+import datetime
 import os
 import unittest
 
@@ -313,6 +314,7 @@ class TestMetadata(unittest.TestCase):
             "material",
             "uncertainties",
             "references",
+            "date",
             "versions",
             "comment",
         ]
@@ -360,6 +362,15 @@ class TestMetadata(unittest.TestCase):
         self.metadata.from_file(self.filename)
         self.assertEqual(self.metadata_dict["comment"], self.metadata.comment)
 
+    def test_from_file_maps_date(self):
+        self.metadata_dict["date"] = "2022-01-01"
+        self.create_metadata_file()
+        self.metadata.from_file(self.filename)
+        self.assertEqual(
+            datetime.date.fromisoformat(self.metadata_dict["date"]),
+            self.metadata.date,
+        )
+
     def test_to_dict_returns_dict(self):
         self.assertIsInstance(self.metadata.to_dict(), dict)
 
@@ -370,6 +381,7 @@ class TestMetadata(unittest.TestCase):
             "material",
             "uncertainties",
             "references",
+            "date",
             "versions",
             "comment",
         ]
@@ -378,6 +390,11 @@ class TestMetadata(unittest.TestCase):
     def test_to_dict_converts_version_in_dict(self):
         self.metadata.versions.append(io.VersionMetadata())
         self.assertIsInstance(self.metadata.to_dict()["versions"][0], dict)
+
+    def test_to_dict_converts_date_in_dict(self):
+        self.assertEqual(
+            str(self.metadata.date), self.metadata.to_dict()["date"]
+        )
 
     def test_instantiate_with_filename_reads_from_file(self):
         self.metadata_dict["comment"] = "Lorem ipsum"

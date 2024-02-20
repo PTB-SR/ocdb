@@ -120,6 +120,7 @@ the former should be more authoritative.
       confidence_interval: "3 sigma"
     references:
       - "saadeh-ao-33-10032"
+    date: "2020-12-01"
     versions:
       - identifier: Ta_2019
         description: "wavelength range 10-20 nm"
@@ -180,6 +181,19 @@ references
 
     The corresponding BibTeX records are stored in the file ``literature.bib``
     in the ``db/`` directory of the ocdb package.
+
+date
+    Date the dataset has been created, in the form ``YYYY-MM-DD``.
+
+    Due to the internal representation as :class:`datetime.date` object, the
+    date must be a full date including valid values for month and day.
+    However, if you cannot or do not want to give a precise date, you may
+    specify something like ``2018-01-01``, *i.e.* January 1st of a given year.
+
+    Make sure to surround the date with quotation marks in the YAML file to
+    explicitly make it a string.
+
+    Dates are used to sort versions of a dataset. For versions, see below.
 
 versions
     List of entries for additional datasets for the same material.
@@ -334,6 +348,7 @@ Module documentation
 ====================
 
 """
+import datetime
 import importlib.resources
 import os.path
 
@@ -750,6 +765,7 @@ class Metadata:
             "confidence_interval": "",
         }
         self.references = []
+        self.date = datetime.date.today()
         self.versions = []
         self.comment = ""
 
@@ -801,6 +817,8 @@ class Metadata:
                     version = VersionMetadata()
                     version.from_dict(version_dict)
                     self.versions.append(version)
+            elif key == "date":
+                self.date = datetime.date.fromisoformat(value)
             elif hasattr(self, key):
                 if isinstance(value, dict):
                     getattr(self, key).update(value)
@@ -823,6 +841,7 @@ class Metadata:
             "material",
             "uncertainties",
             "references",
+            "date",
             "versions",
             "comment",
         ]
@@ -831,6 +850,8 @@ class Metadata:
                 output["versions"] = []
                 for version in self.versions:
                     output["versions"].append(version.to_dict())
+            elif key == "date":
+                output["date"] = str(self.date)
             else:
                 output[key] = getattr(self, key)
         return output

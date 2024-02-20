@@ -158,6 +158,14 @@ class Material:
         as well as sensible use of the data requires access to all relevant
         metadata.
 
+    versions : :class:`list`
+        Previous versions of the dataset for the given material.
+
+        Over time, different datasets will be available for the same material.
+        Hence, it may be of interest to access the older datasets that are
+        superset by a new one, at least get the information that there are
+        some and where they are located in the ocdb.
+
     plotter_factory : :class:`AbstractPlotterFactory`
         Factory for creating plotter objects on request.
 
@@ -237,6 +245,7 @@ class Material:
         self.symbol = ""
         self.references = []
         self.metadata = Metadata()
+        self.versions = []
 
         self.plotter_factory = AbstractPlotterFactory()
         self.processing_step_factory = AbstractProcessingStepFactory()
@@ -700,6 +709,12 @@ class Metadata:
     uncertainties : :class:`Uncertainties`
         Metadata regarding the uncertainties of the optical constants.
 
+    date : :class:`datetime.date`
+        Date the dataset was created.
+
+        This date may be something like January 1st of a given year if no
+        further information is available but the year the dataset was created.
+
     comment : :class:`str`
         Any relevant information that does not (yet) fit into anywhere else.
 
@@ -712,6 +727,7 @@ class Metadata:
 
     def __init__(self):
         self.uncertainties = Uncertainties()
+        self.date = datetime.date.today()
         self.comment = ""
 
 
@@ -871,6 +887,38 @@ class Measurement:
         self.facility = ""
         self.beamline = ""
         self.date = datetime.date.today()
+
+
+class Version:
+    """
+    Metadata for a version of a dataset for a single material.
+
+    Over time, different datasets will be available for the same material.
+    Hence, it may be of interest to access the older datasets that are
+    superset by a new one, at least get the information that there are
+    some and where they are located in the ocdb.
+
+    In case that there are multiple versions of a dataset for one material,
+    each such version is represented by an object of class :obj:`Version` and
+    contained in the :attr:`Material.versions` list.
+
+    Attributes
+    ----------
+    material : :class:`Material`
+        Optical constants and relevant metadata for a single material.
+
+    description : :class:`str`
+        Concise description of the characteristics of this version.
+
+    current : :class:`bool`
+        Flag determining whether the dataset version is the current one
+
+    """
+
+    def __init__(self):
+        self.material = None
+        self.description = ""
+        self.current = False
 
 
 class Collection:
