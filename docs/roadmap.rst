@@ -12,13 +12,11 @@ For version 0.1.rc-1
 
 * Examples section, including Jupyter notebooks?
 
-* Finalise metadata schema and remove "rc-1" suffix in version number in metadata files
-
 
 For version 0.1
 ===============
 
-* Dataset with multiple versions -- at least Ru and Ta
+* Finalise metadata schema and remove "rc-1" suffix in version number in metadata files
 
 * DOI via Zenodo
 

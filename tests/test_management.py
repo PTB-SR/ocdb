@@ -45,6 +45,28 @@ class TestCollectionCreator(unittest.TestCase):
         collection = self.collection_creator.create()
         self.assertTrue(hasattr(collection, "Co"))
 
+    def test_with_versions_adds_version(self):
+        self.collection_creator.name = "elements"
+        collection = self.collection_creator.create()
+        self.assertTrue(collection.Ta.versions)
+
+    def test_added_version_is_version(self):
+        self.collection_creator.name = "elements"
+        collection = self.collection_creator.create()
+        self.assertIsInstance(
+            collection.Ta.versions[0], ocdb.material.Version
+        )
+
+    def test_added_version_has_material(self):
+        self.collection_creator.name = "elements"
+        collection = self.collection_creator.create()
+        self.assertTrue(collection.Ta.versions[0].material)
+
+    def test_added_version_has_description(self):
+        self.collection_creator.name = "elements"
+        collection = self.collection_creator.create()
+        self.assertTrue(collection.Ta.versions[0].description)
+
     def test_create_adds_processing_step_factory_to_material(self):
         self.collection_creator.name = "elements"
         collection = self.collection_creator.create()
