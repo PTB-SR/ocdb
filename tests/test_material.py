@@ -1,3 +1,5 @@
+import warnings
+
 import numpy as np
 import unittest
 
@@ -101,7 +103,10 @@ class TestMaterial(unittest.TestCase):
         )
 
     def test_plot_returns_plotter(self):
-        self.assertIsInstance(self.material.plot(), material.AbstractPlotter)
+        with warnings.catch_warnings(record=True):
+            self.assertIsInstance(
+                self.material.plot(), material.AbstractPlotter
+            )
 
     def test_plot_calls_plotter(self):
         class Plotter(material.AbstractPlotter):
@@ -121,7 +126,8 @@ class TestMaterial(unittest.TestCase):
         self.assertTrue(plotter.called)
 
     def test_plot_sets_dataset_in_plotter(self):
-        plotter = self.material.plot()
+        with warnings.catch_warnings(record=True):
+            plotter = self.material.plot()
         self.assertIs(plotter.dataset, self.material)
 
     def test_plot_calls_plotter_factory_with_kwargs(self):
@@ -135,7 +141,8 @@ class TestMaterial(unittest.TestCase):
 
         self.material.plotter_factory = PlotterFactory()
         kwargs = {"values": "k", "uncertainties": True}
-        self.material.plot(**kwargs)
+        with warnings.catch_warnings(record=True):
+            self.material.plot(**kwargs)
         self.assertDictEqual(self.material.plotter_factory.kwargs, kwargs)
 
     def test_has_processing_step_factory(self):

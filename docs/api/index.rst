@@ -19,6 +19,8 @@ An alphabetic list of the modules available within the ocdb package. The actual 
     ocdb.material
     ocdb.plotting
     ocdb.processing
+    ocdb.report
+
 
 
 

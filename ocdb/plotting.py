@@ -77,6 +77,7 @@ Module documentation
 """
 
 try:
+    # noinspection PyUnresolvedReferences
     import matplotlib.pyplot as plt
 except ImportError:
     pass
