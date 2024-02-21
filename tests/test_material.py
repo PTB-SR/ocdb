@@ -583,6 +583,11 @@ class TestAbstractPlotter(unittest.TestCase):
         self.assertTrue(hasattr(self.plotter, "plot"))
         self.assertTrue(callable(self.plotter.plot))
 
+    def test_plot_method_warns(self):
+        message = "Not plotting... probably Matplotlib is not installed."
+        with self.assertWarnsRegex(Warning, message):
+            self.plotter.plot()
+
 
 class TestAbstractPlotterFactory(unittest.TestCase):
     def setUp(self):

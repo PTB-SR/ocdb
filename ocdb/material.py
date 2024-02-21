@@ -87,6 +87,7 @@ Module documentation
 
 import copy
 import datetime
+import warnings
 
 import numpy as np
 
@@ -1081,6 +1082,7 @@ class AbstractPlotter:
 
     def plot(self):
         """Perform the actual plotting."""
+        warnings.warn("Not plotting... probably Matplotlib is not installed.")
 
 
 class AbstractPlotterFactory:

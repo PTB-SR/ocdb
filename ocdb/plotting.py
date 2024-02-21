@@ -70,20 +70,6 @@ instance of :class:`PlotterFactory` (rather than
 plotter object based on the criteria provided when calling
 :meth:`ocdb.material.Material.plot`.
 
-.. todo::
-
-    How to deal with the dependency on Matplotlib, though? If we
-    instantiate an object of :class:`PlotterFactory` upon creating the
-    actual :obj:`ocdb.material.Material` objects, we would have to have
-    Matplotlib at hand...
-
-    One idea would be to check for the availability of the matplotlib package
-    when creating all the :obj:`ocdb.material.Material` objects and only
-    in case it is available to load the plotting module and to replace the
-    :obj:`ocdb.material.AbstractPlotterFactory` object with a
-    :obj:`PlotterFactory` object. If Matplotlib is not available, probably
-    a warning should be issued that plotting is not possible.
-
 
 Module documentation
 ====================
