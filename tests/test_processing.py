@@ -53,6 +53,23 @@ class TestProcessingStepFactory(unittest.TestCase):
             processing.Interpolation,
         )
 
+    def test_get_processing_step_with_unit_returns_unit_conversion(self):
+        self.assertIsInstance(
+            self.factory.get_processing_steps(unit="eV")[0],
+            processing.UnitConversion,
+        )
+
+    def test_get_processing_step_with_unit_sets_unit(self):
+        unit_conversion = self.factory.get_processing_steps(unit="eV")[0]
+        self.assertEqual(unit_conversion.parameters["unit"], "eV")
+
+    def test_unit_conversion_comes_before_interpolation(self):
+        processing_steps = self.factory.get_processing_steps(
+            values=13.5, unit="eV"
+        )
+        self.assertIsInstance(processing_steps[0], processing.UnitConversion)
+        self.assertIsInstance(processing_steps[1], processing.Interpolation)
+
 
 class TestProcessingStep(unittest.TestCase):
     def setUp(self):
@@ -234,3 +251,76 @@ class TestInterpolation(unittest.TestCase):
         self.interpolation.parameters["kind"] = None
         with self.assertRaisesRegex(ValueError, r"Value\(s\) not available"):
             self.interpolation.process()
+
+
+class TestUnitConversion(unittest.TestCase):
+    def setUp(self):
+        self.unit_conversion = processing.UnitConversion()
+        self.data = material.Data()
+        self.data.axes[0].values = np.linspace(10, 20, 11)
+        # Note: c_0, eV, h_planck are all *exact* starting 2019 according to SI
+        self.constants = {
+            "c_0": 299792458,
+            "eV": 1.602176634e-19,
+            "h_planck": 6.62607015e-34,
+        }
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_convert_without_unit_does_not_change_axis_values(self):
+        self.data.axes[0].unit = "nm"
+        self.unit_conversion.data = self.data
+        processed_data = self.unit_conversion.process()
+        np.testing.assert_allclose(
+            processed_data.axes[0].values, self.data.axes[0].values
+        )
+
+    def test_convert_with_unknown_unit_raises(self):
+        self.unit_conversion.data = self.data
+        self.unit_conversion.parameters["unit"] = "unknown"
+        with self.assertRaisesRegex(ValueError, "not supported"):
+            self.unit_conversion.process()
+
+    def test_convert_from_nm_to_ev(self):
+        self.data.axes[0].unit = "nm"
+        self.unit_conversion.data = self.data
+        self.unit_conversion.parameters["unit"] = "eV"
+        ev_values = (
+            self.constants["h_planck"]
+            / self.constants["eV"]
+            * self.constants["c_0"]
+            * 1e9
+            / self.data.axes[0].values
+        )
+        processed_data = self.unit_conversion.process()
+        np.testing.assert_allclose(processed_data.axes[0].values, ev_values)
+
+    def test_convert_from_ev_to_nm(self):
+        nm_values = self.data.axes[0].values
+        self.data.axes[0].values = (
+            self.constants["h_planck"]
+            / self.constants["eV"]
+            * self.constants["c_0"]
+            * 1e9
+            / self.data.axes[0].values
+        )
+        self.data.axes[0].unit = "ev"
+        self.unit_conversion.data = self.data
+        self.unit_conversion.parameters["unit"] = "nm"
+        processed_data = self.unit_conversion.process()
+        np.testing.assert_allclose(processed_data.axes[0].values, nm_values)
+
+    def test_unit_is_case_insensitive(self):
+        self.data.axes[0].unit = "nm"
+        self.unit_conversion.data = self.data
+        self.unit_conversion.parameters["unit"] = "ev"
+        ev_values = (
+            self.constants["h_planck"]
+            / self.constants["eV"]
+            * self.constants["c_0"]
+            * 1e9
+            / self.data.axes[0].values
+        )
+        processed_data = self.unit_conversion.process()
+        np.testing.assert_allclose(processed_data.axes[0].values, ev_values)

@@ -112,6 +112,10 @@ class ProcessingStepFactory(material.AbstractProcessingStepFactory):
 
         """
         processing_steps = []
+        if "unit" in kwargs:
+            unit_conversion = UnitConversion()
+            unit_conversion.parameters["unit"] = kwargs["unit"]
+            processing_steps.append(unit_conversion)
         if "values" in kwargs and kwargs["values"] is not None:
             interpolation = Interpolation()
             interpolation.parameters["values"] = kwargs["values"]
@@ -281,3 +285,128 @@ class Interpolation(ProcessingStep):
                     getattr(self.data, data_array)[index],
                 )
         self.data.axes[0].values = self.parameters["values"]
+
+
+class UnitConversion(ProcessingStep):
+    """
+    Conversion between units for the wavelength/energy axis.
+
+    Optical constants are generally energy-dependent, and energy can be given
+    in a diverse set of units. Typical units are "nm" and "eV".
+
+
+    Attributes
+    ----------
+    parameters : :class:`dict`
+        All parameters necessary to perform the processing step
+
+        unit : :class:`str`
+            Unit to convert the *x* axis values into.
+
+            Default: ``nm``
+
+            Possible values: ``nm``, ``eV``
+
+            If the value is identical with the unit of the *x* axis of the data
+            to convert, the data are returned as is. Values are handled
+            case-insensitive.
+
+    constants : :class:`dict`
+        All (physical) constants used for the unit conversions.
+
+        c_0 : :class:`float`
+            Speed of light in vacuum.
+
+            Value: 299792458 m/s (exact)
+
+        eV : :class:`float`
+            Electron volt
+
+            Value: 1.602176634e-19 J (exact)
+
+        h_planck : :class:`float`
+            Planck constant
+
+            Value: 6.62607015e-34 J s (exact)
+
+
+    Raises
+    ------
+    ValueError
+        Raised if unit to convert to is not supported.
+
+
+    Examples
+    --------
+    Unit conversion operates on :obj:`ocdb.material.Data` objects. Hence, you
+    need to have such a data object, most probably from a material. The result
+    will be stored in the :attr:`data` attribute of the :class:`UnitConversion`
+    class, but will be returned by the method :meth:`process` as well:
+
+    .. code-block::
+
+        unit_conversion = UnitConversion()
+        unit_conversion.data = ocdb.elements.Co.n_data
+        unit_conversion.parameters["unit"] = "eV"
+        converted_data = unit_conversion.process()
+
+    Or a bit simpler, directly instantiating the unit conversion object with
+    the data to convert the axis for:
+
+    .. code-block::
+
+        unit_conversion = UnitConversion(ocdb.elements.Co.n_data)
+        unit_conversion.parameters["unit"] = "eV"
+        converted_data = unit_conversion.process()
+
+    Typically, users will not directly interact with the class, but rather ask
+    for a given unit:
+
+    .. code-block::
+
+        ocdb.elements.Co.n(unit="eV")
+
+    See the documentation of :meth:`ocdb.material.Material.n` for details.
+
+    """
+
+    def __init__(self, data=None):
+        super().__init__(data=data)
+        self.parameters["unit"] = "nm"
+
+        self._supported_units = ["nm", "eV"]
+        # Note: c_0, eV, h_planck are all *exact* starting 2019 according to SI
+        self.constants = {
+            "c_0": 299792458,
+            "eV": 1.602176634e-19,
+            "h_planck": 6.62607015e-34,
+        }
+
+    def _process(self):
+        self._sanitise_parameters()
+        if self.data.axes[0].unit.lower() == self.parameters["unit"].lower():
+            return
+        conversion_method = (
+            f"_{self.data.axes[0].unit.lower()}_to_"
+            f"{self.parameters['unit'].lower()}"
+        )
+        getattr(self, conversion_method)()
+
+    def _sanitise_parameters(self):
+        supported_units = [unit.lower() for unit in self._supported_units]
+        if self.parameters["unit"].lower() not in supported_units:
+            raise ValueError(
+                f"Conversion to {self.parameters['unit']} not supported"
+            )
+
+    def _nm_to_ev(self):
+        self.data.axes[0].values = (
+            self.constants["h_planck"]
+            / self.constants["eV"]
+            * self.constants["c_0"]
+            * 1e9
+            / self.data.axes[0].values
+        )
+
+    def _ev_to_nm(self):
+        self._nm_to_ev()

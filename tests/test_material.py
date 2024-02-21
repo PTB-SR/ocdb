@@ -156,8 +156,9 @@ class TestMaterial(unittest.TestCase):
         self.material.processing_step_factory = ProcessingStepFactory()
         kwargs = {"values": 13.5, "interpolation": None}
         self.material.n(**kwargs)
-        self.assertDictEqual(
-            self.material.processing_step_factory.kwargs, kwargs
+        self.assertGreaterEqual(
+            self.material.processing_step_factory.kwargs.items(),
+            kwargs.items(),
         )
 
     def test_n_calls_processing_steps(self):
@@ -192,6 +193,23 @@ class TestMaterial(unittest.TestCase):
         _, data = self.material.n(**kwargs)
         self.assertEqual(self.material.n_data.data, np.zeros(1))
 
+    def test_n_calls_processing_step_factory_with_unit(self):
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def __init__(self):
+                self.kwargs = None
+
+            def get_processing_steps(self, **kwargs):
+                self.kwargs = kwargs
+                return super().get_processing_steps(**kwargs)
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"unit": "eV"}
+        self.material.n(**kwargs)
+        self.assertGreaterEqual(
+            self.material.processing_step_factory.kwargs.items(),
+            kwargs.items(),
+        )
+
     def test_k_calls_processing_step_factory_with_kwargs(self):
         class ProcessingStepFactory(material.AbstractProcessingStepFactory):
             def __init__(self):
@@ -204,8 +222,26 @@ class TestMaterial(unittest.TestCase):
         self.material.processing_step_factory = ProcessingStepFactory()
         kwargs = {"values": 13.5, "interpolation": None}
         self.material.k(**kwargs)
-        self.assertDictEqual(
-            self.material.processing_step_factory.kwargs, kwargs
+        self.assertGreaterEqual(
+            self.material.processing_step_factory.kwargs.items(),
+            kwargs.items(),
+        )
+
+    def test_k_calls_processing_step_factory_with_unit(self):
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def __init__(self):
+                self.kwargs = None
+
+            def get_processing_steps(self, **kwargs):
+                self.kwargs = kwargs
+                return super().get_processing_steps(**kwargs)
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"unit": "eV"}
+        self.material.k(**kwargs)
+        self.assertGreaterEqual(
+            self.material.processing_step_factory.kwargs.items(),
+            kwargs.items(),
         )
 
     def test_k_calls_processing_steps(self):
@@ -254,8 +290,28 @@ class TestMaterial(unittest.TestCase):
         self.material.processing_step_factory = ProcessingStepFactory()
         kwargs = {"values": 13.5, "interpolation": None}
         self.material.index_of_refraction(**kwargs)
-        self.assertDictEqual(
-            self.material.processing_step_factory.kwargs, kwargs
+        self.assertGreaterEqual(
+            self.material.processing_step_factory.kwargs.items(),
+            kwargs.items(),
+        )
+
+    def test_index_of_refraction_calls_processing_step_factory_with_unit(
+        self,
+    ):
+        class ProcessingStepFactory(material.AbstractProcessingStepFactory):
+            def __init__(self):
+                self.kwargs = None
+
+            def get_processing_steps(self, **kwargs):
+                self.kwargs = kwargs
+                return super().get_processing_steps(**kwargs)
+
+        self.material.processing_step_factory = ProcessingStepFactory()
+        kwargs = {"unit": "eV"}
+        self.material.index_of_refraction(**kwargs)
+        self.assertGreaterEqual(
+            self.material.processing_step_factory.kwargs.items(),
+            kwargs.items(),
         )
 
     def test_index_of_refraction_calls_processing_steps(self):

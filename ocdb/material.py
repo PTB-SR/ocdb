@@ -258,7 +258,7 @@ class Material:
         self.k_data.axes[1].symbol = "k"
 
     def n(
-        self, values=None, interpolation=None, uncertainties=False
+        self, values=None, interpolation=None, uncertainties=False, unit=""
     ):  # pylint: disable=invalid-name
         """
         Return real part *n* of the index of refraction.
@@ -280,6 +280,9 @@ class Material:
         uncertainties : :class:`bool`
             Whether to return uncertainties as separate arrays in output
 
+        unit : :class:`str`
+            Unit to convert the *x* axis values to
+
         Returns
         -------
         n : :class:`tuple`
@@ -294,7 +297,7 @@ class Material:
 
         """
         processing_steps = self.processing_step_factory.get_processing_steps(
-            values=values, interpolation=interpolation
+            values=values, interpolation=interpolation, unit=unit
         )
         data = copy.deepcopy(self.n_data)
         for processing_step in processing_steps:
@@ -312,7 +315,9 @@ class Material:
             output = (wavelengths, data.data)
         return output
 
-    def k(self, values=None, interpolation=None, uncertainties=False):
+    def k(
+        self, values=None, interpolation=None, uncertainties=False, unit=""
+    ):
         """
         Return imaginary part *k* of the index of refraction.
 
@@ -333,6 +338,9 @@ class Material:
         uncertainties : :class:`bool`
             Whether to return uncertainties as separate arrays in output
 
+        unit : :class:`str`
+            Unit to convert the *x* axis values to
+
         Returns
         -------
         k : :class:`tuple`
@@ -344,7 +352,7 @@ class Material:
 
         """
         processing_steps = self.processing_step_factory.get_processing_steps(
-            values=values, interpolation=interpolation
+            values=values, interpolation=interpolation, unit=unit
         )
         data = copy.deepcopy(self.k_data)
         for processing_step in processing_steps:
@@ -363,7 +371,7 @@ class Material:
         return output
 
     def index_of_refraction(
-        self, values=None, interpolation=None, uncertainties=False
+        self, values=None, interpolation=None, uncertainties=False, unit=""
     ):
         r"""
         Return complex index of refraction
@@ -385,6 +393,9 @@ class Material:
         uncertainties : :class:`bool`
             Whether to return uncertainties as separate arrays in output
 
+        unit : :class:`str`
+            Unit to convert the *x* axis values to
+
         Returns
         -------
         index_of_refraction : :class:`tuple`
@@ -396,7 +407,7 @@ class Material:
 
         """
         processing_steps = self.processing_step_factory.get_processing_steps(
-            values=values, interpolation=interpolation
+            values=values, interpolation=interpolation, unit=unit
         )
         n_data = copy.deepcopy(self.n_data)
         for processing_step in processing_steps:

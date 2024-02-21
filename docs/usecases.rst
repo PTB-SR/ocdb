@@ -225,10 +225,6 @@ Although the primary data currently available from the `OCDB <OCDB_>`_ provide a
     ocdb.elements.Co.n(unit="eV")
 
 
-.. todo::
-    Unit conversion is not yet implemented, but planned for the first release (version 0.1) for "eV".
-
-
 References for values
 =====================
 

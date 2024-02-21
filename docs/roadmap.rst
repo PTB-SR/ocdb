@@ -22,8 +22,6 @@ For version 0.1
 
 * Initial Python package on GitHub and PyPI
 
-* Unit conversion?
-
 * Plotting with range and different *x* axis unit?
 
 
