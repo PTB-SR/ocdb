@@ -276,6 +276,15 @@ class TestUnitConversion(unittest.TestCase):
             processed_data.axes[0].values, self.data.axes[0].values
         )
 
+    def test_convert_with_empty_unit_does_not_change_axis_values(self):
+        self.data.axes[0].unit = "nm"
+        self.unit_conversion.data = self.data
+        self.unit_conversion.parameters["unit"] = ""
+        processed_data = self.unit_conversion.process()
+        np.testing.assert_allclose(
+            processed_data.axes[0].values, self.data.axes[0].values
+        )
+
     def test_convert_with_unknown_unit_raises(self):
         self.unit_conversion.data = self.data
         self.unit_conversion.parameters["unit"] = "unknown"

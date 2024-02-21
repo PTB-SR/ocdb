@@ -97,7 +97,7 @@ class ProcessingStepFactory(material.AbstractProcessingStepFactory):
         Parameters
         ----------
         kwargs
-            All parameters relevant to decide upon the correct processing step.
+            All parameters relevant to decide on the correct processing step.
 
             A list of key--value pairs, either as :class:`dict` or
             separate, *i.e.* the Python ``**kwargs`` argument.
@@ -105,7 +105,7 @@ class ProcessingStepFactory(material.AbstractProcessingStepFactory):
         Returns
         -------
         processing_steps : :class:`list`
-            Processing steps fitting to the criteria provided by the parameters.
+            Processing steps fitting to the parameters.
 
             Each element in the list is an object of type
             :class:`ProcessingStep`.
@@ -307,8 +307,8 @@ class UnitConversion(ProcessingStep):
 
             Possible values: ``nm``, ``eV``
 
-            If the value is identical with the unit of the *x* axis of the data
-            to convert, the data are returned as is. Values are handled
+            If the value is identical with the unit of the *x* axis of the
+            data to convert, the data are returned as is. Values are handled
             case-insensitive.
 
     constants : :class:`dict`
@@ -340,8 +340,9 @@ class UnitConversion(ProcessingStep):
     --------
     Unit conversion operates on :obj:`ocdb.material.Data` objects. Hence, you
     need to have such a data object, most probably from a material. The result
-    will be stored in the :attr:`data` attribute of the :class:`UnitConversion`
-    class, but will be returned by the method :meth:`process` as well:
+    will be stored in the :attr:`data` attribute of the
+    :class:`UnitConversion` class, but will be returned by the method
+    :meth:`process` as well:
 
     .. code-block::
 
@@ -375,7 +376,7 @@ class UnitConversion(ProcessingStep):
         self.parameters["unit"] = "nm"
 
         self._supported_units = ["nm", "eV"]
-        # Note: c_0, eV, h_planck are all *exact* starting 2019 according to SI
+        # Note: c_0, eV, h_planck are all exact starting 2019 according to SI
         self.constants = {
             "c_0": 299792458,
             "eV": 1.602176634e-19,
@@ -383,6 +384,8 @@ class UnitConversion(ProcessingStep):
         }
 
     def _process(self):
+        if not self.parameters["unit"]:
+            return
         self._sanitise_parameters()
         if self.data.axes[0].unit.lower() == self.parameters["unit"].lower():
             return

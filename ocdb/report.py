@@ -11,10 +11,10 @@ metadata including the references come in quite handy.
 .. important::
 
     In order to access the reporting capabilities, you do need to have
-    Jinja installed, although it is not a hard requirement of the ocdb package,
-    to keep things clean and simple. The convenient way to install the
-    necessary requirements would be to use pip with the optional requirements,
-    such as:
+    Jinja installed, although it is not a hard requirement of the ocdb
+    package, to keep things clean and simple. The convenient way to install
+    the necessary requirements would be to use pip with the optional
+    requirements, such as:
 
      .. code-block:: bash
 
@@ -93,8 +93,8 @@ Jinja. As Jinja is developed with web applications (and hence HTML) in
 mind, those delimiters may not be feasible for other types of languages a
 template may be written in, such as LaTeX.
 
-Currently, the :mod:`ocdb.report` module provides a generic environment as well
-as a dedicated LaTeX environment, implemented as respective classes:
+Currently, the :mod:`ocdb.report` module provides a generic environment as
+well as a dedicated LaTeX environment, implemented as respective classes:
 
   * :class:`GenericEnvironment`
   * :class:`LaTeXEnvironment`
@@ -140,6 +140,7 @@ Module documentation
 ====================
 
 """
+
 import contextlib
 import os
 import shutil
