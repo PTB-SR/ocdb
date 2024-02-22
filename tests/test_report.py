@@ -295,14 +295,14 @@ class TestLaTeXReporter(unittest.TestCase):
         self.assertTrue(os.path.exists(self.result))
 
 
-# @unittest.skip("LaTeX runs take too long...")
+@unittest.skip("LaTeX runs take too long...")
 class TestMaterialReporter(unittest.TestCase):
     def setUp(self):
         self.reporter = report.MaterialReporter()
         collection = ocdb.management.CollectionCreator().create(
             name="elements"
         )
-        self.material = collection.Ni
+        self.material = collection.Ta
         self.figure_filename = f"{self.material.symbol}.pdf"
         self.bibliography_filename = f"{self.material.symbol}.bib"
         self.report_filename = f"{self.material.symbol}-report.tex"
