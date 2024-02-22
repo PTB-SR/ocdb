@@ -446,10 +446,21 @@ class LaTeXReporter(Reporter):
 
         Defaults to "pdflatex"
 
+    bibtex_executable : :class:`str`
+        Name of/path to the BibTeX executable.
+
+        Defaults to ""
+
+        Only in case this attribute is set to a non-empty value will the
+        bibliography be built.
+
     Raises
     ------
     FileNotFoundError
         Raised if the LaTeX executable could not be found
+
+    FileNotFoundError
+        Raised if the BibTeX executable could not be found
 
 
     Examples
@@ -474,6 +485,7 @@ class LaTeXReporter(Reporter):
         super().__init__()
         self.includes = []
         self.latex_executable = "pdflatex"
+        self.bibtex_executable = ""
 
         self._environment = LaTeXEnvironment()
         self._temp_dir = tempfile.mkdtemp()
@@ -496,17 +508,29 @@ class LaTeXReporter(Reporter):
         FileNotFoundError
             Raised if the LaTeX executable could not be found
 
+        FileNotFoundError
+            Raised if the BibTeX executable could not be found
+
         """
         if not shutil.which(self.latex_executable):
             raise FileNotFoundError(
                 f"LaTeX executable {self.latex_executable} not found"
             )
+        if self.bibtex_executable and not shutil.which(
+            self.bibtex_executable
+        ):
+            raise FileNotFoundError(
+                f"BibTeX executable {self.bibtex_executable} not found"
+            )
         self._copy_files_to_temp_dir()
-        self._compile()
+        self._compile_latex()
+        if self.bibtex_executable:
+            self._compile_bibtex()
+            self._compile_latex()
         # Note: In order to resolve references in LaTeX, compile twice.
         #       There might be a better option, automatically detecting
         #       whether compiling twice is necessary, but for now...
-        self._compile()
+        self._compile_latex()
         self._copy_files_from_temp_dir()
         self._remove_temp_dir()
 
@@ -525,7 +549,7 @@ class LaTeXReporter(Reporter):
                 filename, os.path.join(self._temp_dir, filename_wo_path)
             )
 
-    def _compile(self):
+    def _compile_latex(self):
         """Actual compiling of the report.
 
         The compiling takes place in a temporary directory that gets
@@ -545,6 +569,27 @@ class LaTeXReporter(Reporter):
                     self._temp_dir,
                     "-interaction=nonstopmode",
                     filename_wo_path,
+                ],
+                check=False,
+                capture_output=True,
+            )
+            print(process.stdout.decode())
+            print(process.stderr.decode())
+
+    def _compile_bibtex(self):
+        """Creating bibliography of the report.
+
+        The compiling takes place in a temporary directory that gets
+        removed after the (successful) compile step using the
+        :meth:`_remove_temp_dir` method.
+        """
+        with change_working_dir(self._temp_dir):
+            _, filename_wo_path = os.path.split(self.filename)
+            # Path stripped, there should be no security implications.
+            process = subprocess.run(
+                [
+                    self.bibtex_executable,  # nosec
+                    os.path.splitext(filename_wo_path)[0],
                 ],
                 check=False,
                 capture_output=True,

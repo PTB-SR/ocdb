@@ -202,10 +202,10 @@ class CollectionCreator:
             )
             # noinspection PyTypeChecker
             version_metadata = ocdb.io.Metadata(filename=metadata_file)
-            version_metadata.file[
-                "name"
-            ] = self._replace_filename_with_resource(
-                version_metadata.file["name"]
+            version_metadata.file["name"] = (
+                self._replace_filename_with_resource(
+                    version_metadata.file["name"]
+                )
             )
             dataset_version = ocdb.material.Version()
             dataset_version.material = self._import_material(version_metadata)

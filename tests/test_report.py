@@ -129,6 +129,7 @@ class TestLaTeXReporter(unittest.TestCase):
         self.filename = "test_report.tex"
         self.result = "test_report.pdf"
         self.include = "include.tex"
+        self.bibtex_file = "literature.bib"
 
     def tearDown(self):
         if os.path.exists(self.template):
@@ -139,6 +140,8 @@ class TestLaTeXReporter(unittest.TestCase):
             os.remove(self.result)
         if os.path.exists(self.include):
             os.remove(self.include)
+        if os.path.exists(self.bibtex_file):
+            os.remove(self.bibtex_file)
 
     def test_instantiate_class(self):
         pass
@@ -151,6 +154,12 @@ class TestLaTeXReporter(unittest.TestCase):
     def test_compile_with_not_existing_latex_executable_raises(self):
         self.reporter.latex_executable = "foo"
         message = r"LaTeX executable \w* not found"
+        with self.assertRaisesRegex(FileNotFoundError, message):
+            self.reporter.compile()
+
+    def test_compile_with_not_existing_bibtex_executable_raises(self):
+        self.reporter.bibtex_executable = "foo"
+        message = r"BibTeX executable \w* not found"
         with self.assertRaisesRegex(FileNotFoundError, message):
             self.reporter.compile()
 
@@ -217,3 +226,37 @@ class TestLaTeXReporter(unittest.TestCase):
         self.reporter.context = {}
         self.reporter.filename = self.filename
         self.reporter.create()
+
+    @unittest.skip  # Skipped, as it takes pretty long
+    def test_compile_with_bibtex_creates_bibliography(self):
+        include_name, _ = os.path.splitext(self.include)
+        template_content = (
+            "\\documentclass{article}"
+            "\\usepackage{biblatex}"
+            "\\addbibresource{literature.bib}"
+            "\\begin{document}"
+            "\\cite{ocdb}"
+            "\\printbibliography"
+            "\\end{document}"
+        )
+        with open(self.template, "w+") as f:
+            f.write(template_content)
+        bibtex_content = (
+            "@software{ocdb,"
+            "   author = {Till Biskup},"
+            "   title = {ocdb Python package},"
+            "   url = {https://pypi.org/project/ocdb/},"
+            "   doi = {10.5281/zenodo.1233456789}"
+            "}"
+        )
+        with open(self.bibtex_file, "w+") as f:
+            f.write(bibtex_content)
+        self.reporter.bibtex_executable = "biber"
+        self.reporter.includes.append(self.bibtex_file)
+        self.reporter.template = self.template
+        self.reporter.filename = self.filename
+        self.reporter.render()
+        self.reporter.save()
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.reporter.compile()
+        self.assertTrue(os.path.exists(self.result))
