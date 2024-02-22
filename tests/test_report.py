@@ -316,8 +316,7 @@ class TestMaterialReporter(unittest.TestCase):
         if os.path.exists(self.report_filename):
             os.remove(self.report_filename)
         if os.path.exists(self.report_pdf):
-            # os.remove(self.report_pdf)
-            pass
+            os.remove(self.report_pdf)
 
     def test_instantiate_class(self):
         pass
