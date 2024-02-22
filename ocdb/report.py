@@ -142,6 +142,8 @@ Module documentation
 """
 
 import contextlib
+import datetime
+import importlib.metadata
 import os
 import shutil
 import subprocess  # nosec
@@ -250,7 +252,17 @@ class Reporter:
         if not self.template:
             raise ValueError("No template provided")
         self._jinja_template = self._environment.get_template(self.template)
+        self._add_to_context()
         self._render()
+
+    def _add_to_context(self):
+        self.context["template_dir"] = os.path.split(self.template)[0]
+        if self.context["template_dir"]:
+            self.context["template_dir"] += os.path.sep
+        # noinspection PyTypeChecker
+        self.context["timestamp"] = datetime.datetime.now().strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
 
     def _render(self):
         self.report = self._jinja_template.render(self.context)
@@ -512,16 +524,7 @@ class LaTeXReporter(Reporter):
             Raised if the BibTeX executable could not be found
 
         """
-        if not shutil.which(self.latex_executable):
-            raise FileNotFoundError(
-                f"LaTeX executable {self.latex_executable} not found"
-            )
-        if self.bibtex_executable and not shutil.which(
-            self.bibtex_executable
-        ):
-            raise FileNotFoundError(
-                f"BibTeX executable {self.bibtex_executable} not found"
-            )
+        self._check_for_prerequisites()
         self._copy_files_to_temp_dir()
         self._compile_latex()
         if self.bibtex_executable:
@@ -533,6 +536,18 @@ class LaTeXReporter(Reporter):
         self._compile_latex()
         self._copy_files_from_temp_dir()
         self._remove_temp_dir()
+
+    def _check_for_prerequisites(self):
+        if not shutil.which(self.latex_executable):
+            raise FileNotFoundError(
+                f"LaTeX executable {self.latex_executable} not found"
+            )
+        if self.bibtex_executable and not shutil.which(
+            self.bibtex_executable
+        ):
+            raise FileNotFoundError(
+                f"BibTeX executable {self.bibtex_executable} not found"
+            )
 
     def _copy_files_to_temp_dir(self):
         """Copy all necessary files to compile the LaTeX report to temp_dir
@@ -670,3 +685,123 @@ def change_working_dir(path=""):
         yield
     finally:
         os.chdir(old_pwd)
+
+
+class MaterialReporter:
+    """
+    Report generator for materials.
+
+    The idea behind this reporter is to create an overview of the data and
+    metadata available for each individual material.
+
+    By default, the reporter uses LaTeX, hence instances of the
+    :class:`LaTeXReporter` class, and it compiles the rendered LaTeX report
+    automatically. Furthermore, the reporter generates a graphical
+    representation of the data.
+
+
+    Attributes
+    ----------
+    material : :class:`ocdb.material.Material`
+        Material the report should be generated for.
+
+    reporter : :class:`Reporter`
+        Reporter used for generating the report.
+
+    output_format : :class:`str`
+        Identifier of the output format.
+
+        Currently, only "latex" is supported.
+
+        Note that output formats are case-insensitive.
+
+    Examples
+    --------
+    Creating a report for a given material is fairly straight-forward. All it
+    requires is the :mod:`ocdb` package and the :mod:`ocdb.report` module
+    loaded:
+
+    .. code-block::
+
+        import ocdb
+        import ocdb.report
+
+        reporter = MaterialReporter()
+        reporter.material = ocdb.elements.Co
+        reporter.create()
+
+    This would create the report for Cobalt. To this end, four files will be
+    created: ``Co.pdf`` containing the figure with the data, ``Co.bib``
+    containing the references as BibTeX bibliography, and ``Co-report.tex``
+    and ``Co-report.pdf`` as LaTeX source and compiled PDF of the report.
+
+    """
+
+    def __init__(self):
+        self.material = None
+        self.reporter = None
+        self.output_format = "latex"
+
+        # Note: the values are the corresponding classes
+        self._output_formats = {
+            "latex": LaTeXReporter,
+        }
+        self._includes = []
+
+    def create(self):
+        if not self.material:
+            raise ValueError("No material to report on")
+        if self.output_format.lower() not in self._output_formats.keys():
+            raise ValueError(f"Output format {self.output_format} unknown")
+        self.reporter = self._output_formats[self.output_format]()
+        self._create_figure()
+        self._create_bibliography()
+        self._create_report()
+
+    def _create_figure(self):
+        plotter = self.material.plot(uncertainties=True, values="both")
+        figure_filename = ".".join([self.material.symbol, "pdf"])
+        plotter.figure.savefig(figure_filename)
+        self._includes.append(figure_filename)
+
+    def _create_bibliography(self):
+        reporter = LaTeXReporter()
+        reporter.template = "literature.bib"
+        reporter.filename = f"{self.material.symbol}.bib"
+        references = [
+            reference.to_bib() for reference in self.material.references
+        ]
+        reporter.context["references"] = "\n\n".join(references)
+        reporter.create()
+        self._includes.append(reporter.filename)
+
+    def _create_report(self):
+        reporter = LaTeXReporter()
+        reporter.bibtex_executable = "biber"
+        reporter.template = "material.tex"
+        reporter.filename = f"{self.material.symbol}-report.tex"
+        reporter.includes = self._includes
+        references = ",".join(
+            [reference.key for reference in self.material.references]
+        )
+        versions = [
+            {
+                "date": version.material.metadata.date,
+                "description": version.description,
+            }
+            for version in self.material.versions
+        ]
+        reporter.context["material"] = {
+            "symbol": self.material.symbol,
+            "name": self.material.name,
+            "date": self.material.metadata.date,
+            "uncertainties": self.material.metadata.uncertainties.confidence_interval,
+            "comment": self.material.metadata.comment,
+            "references": references,
+            "versions": versions,
+        }
+        reporter.context["ocdb"] = {
+            "version": importlib.metadata.version(__package__)
+        }
+        reporter.create()
+        reporter.compile()

@@ -1,10 +1,14 @@
 import contextlib
+import datetime
 import io
 import os
 import unittest
 
 import jinja2
+import numpy as np
 
+import ocdb.material
+import ocdb.management
 from ocdb import report
 
 
@@ -12,11 +16,14 @@ class TestReporter(unittest.TestCase):
     def setUp(self):
         self.reporter = report.Reporter()
         self.template = "test_template.j2"
+        self.template2 = os.path.abspath(self.template)
         self.filename = "test_report.txt"
 
     def tearDown(self):
         if os.path.exists(self.template):
             os.remove(self.template)
+        if os.path.exists(self.template2):
+            os.remove(self.template2)
         if os.path.exists(self.filename):
             os.remove(self.filename)
 
@@ -70,8 +77,28 @@ class TestReporter(unittest.TestCase):
         self.reporter.create()
         self.assertTrue(os.path.exists(self.filename))
         with open(self.filename, "r", encoding="utf8") as file:
-            report = file.read()
-        self.assertEqual("bla foobar", report)
+            report_content = file.read()
+        self.assertEqual("bla foobar", report_content)
+
+    def test_render_sets_template_dir_in_context(self):
+        with open(self.template2, "w+") as f:
+            f.write("")
+        self.reporter.template = self.template2
+        self.reporter.render()
+        self.assertEqual(
+            os.path.split(self.reporter.template)[0] + os.path.sep,
+            self.reporter.context["template_dir"],
+        )
+
+    def test_render_sets_timestamp_in_context(self):
+        with open(self.template, "w+") as f:
+            f.write("")
+        self.reporter.template = self.template
+        self.reporter.render()
+        self.assertEqual(
+            datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            self.reporter.context["timestamp"],
+        )
 
 
 class TestGenericEnvironment(unittest.TestCase):
@@ -82,10 +109,12 @@ class TestGenericEnvironment(unittest.TestCase):
         pass
 
     def test_has_filesystem_and_package_loader(self):
+        # noinspection PyUnresolvedReferences
         self.assertIsInstance(
             self.environment.loader.loaders[0],
             jinja2.FileSystemLoader,
         )
+        # noinspection PyUnresolvedReferences
         self.assertIsInstance(
             self.environment.loader.loaders[1],
             jinja2.PackageLoader,
@@ -93,6 +122,7 @@ class TestGenericEnvironment(unittest.TestCase):
 
     def test_has_correct_loader_path(self):
         path = "templates/report"
+        # noinspection PyUnresolvedReferences
         self.assertEqual(
             path, self.environment.loader.loaders[-1].package_path
         )
@@ -106,10 +136,12 @@ class TestLaTeXEnvironment(unittest.TestCase):
         pass
 
     def test_has_filesystem_and_package_loader(self):
+        # noinspection PyUnresolvedReferences
         self.assertIsInstance(
             self.environment.loader.loaders[0],
             jinja2.FileSystemLoader,
         )
+        # noinspection PyUnresolvedReferences
         self.assertIsInstance(
             self.environment.loader.loaders[1],
             jinja2.PackageLoader,
@@ -117,6 +149,7 @@ class TestLaTeXEnvironment(unittest.TestCase):
 
     def test_has_correct_loader_path(self):
         path = "templates/report/latex"
+        # noinspection PyUnresolvedReferences
         self.assertEqual(
             path, self.environment.loader.loaders[-1].package_path
         )
@@ -227,7 +260,7 @@ class TestLaTeXReporter(unittest.TestCase):
         self.reporter.filename = self.filename
         self.reporter.create()
 
-    @unittest.skip  # Skipped, as it takes pretty long
+    @unittest.skip("LaTeX runs take too long...")
     def test_compile_with_bibtex_creates_bibliography(self):
         include_name, _ = os.path.splitext(self.include)
         template_content = (
@@ -260,3 +293,79 @@ class TestLaTeXReporter(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             self.reporter.compile()
         self.assertTrue(os.path.exists(self.result))
+
+
+# @unittest.skip("LaTeX runs take too long...")
+class TestMaterialReporter(unittest.TestCase):
+    def setUp(self):
+        self.reporter = report.MaterialReporter()
+        collection = ocdb.management.CollectionCreator().create(
+            name="elements"
+        )
+        self.material = collection.Ni
+        self.figure_filename = f"{self.material.symbol}.pdf"
+        self.bibliography_filename = f"{self.material.symbol}.bib"
+        self.report_filename = f"{self.material.symbol}-report.tex"
+        self.report_pdf = f"{self.material.symbol}-report.pdf"
+
+    def tearDown(self):
+        if os.path.exists(self.figure_filename):
+            os.remove(self.figure_filename)
+        if os.path.exists(self.bibliography_filename):
+            os.remove(self.bibliography_filename)
+        if os.path.exists(self.report_filename):
+            os.remove(self.report_filename)
+        if os.path.exists(self.report_pdf):
+            # os.remove(self.report_pdf)
+            pass
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_create_sets_reporter(self):
+        self.reporter.material = self.material
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.reporter.create()
+        self.assertTrue(self.reporter.reporter)
+
+    def test_create_with_unknown_output_format_raises(self):
+        self.reporter.material = self.material
+        self.reporter.output_format = "unknown"
+        with self.assertRaisesRegex(ValueError, r"Output format \w+ unknown"):
+            self.reporter.create()
+
+    def test_create_without_material_raises(self):
+        with self.assertRaisesRegex(ValueError, "No material to report on"):
+            self.reporter.create()
+
+    def test_create_creates_plot(self):
+        self.reporter.material = self.material
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.reporter.create()
+        self.assertTrue(os.path.exists(self.figure_filename))
+
+    def test_create_creates_bibliography(self):
+        self.reporter.material = self.material
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.reporter.create()
+        self.assertTrue(os.path.exists(self.bibliography_filename))
+
+    def test_create_fills_bibliography(self):
+        self.reporter.material = self.material
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.reporter.create()
+        with open(self.bibliography_filename) as file:
+            bibliography = file.read()
+        self.assertIn(self.material.references[0].key, bibliography)
+
+    def test_create_creates_report(self):
+        self.reporter.material = self.material
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.reporter.create()
+        self.assertTrue(os.path.exists(self.report_filename))
+
+    def test_create_compiles_report(self):
+        self.reporter.material = self.material
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.reporter.create()
+        self.assertTrue(os.path.exists(self.report_pdf))

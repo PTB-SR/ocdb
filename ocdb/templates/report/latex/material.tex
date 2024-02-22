@@ -1,0 +1,63 @@
+%{ extends template_dir + 'base.tex' }%
+
+%{ block preamble }%
+\usepackage[sorting=none]{biblatex}
+\addbibresource{literature.bib}
+\DeclareBibliographyCategory{software}
+\BiblatexSplitbibDefernumbersWarningOff
+%{ endblock }%
+
+%{ block title }%
+%{ endblock }%
+
+%{ block body }%
+\thispagestyle{empty}
+
+\rule[1ex]{\textwidth}{1pt}
+\\[1.25ex]
+\textbf{\Large OCDB dataset for {@ material.symbol }}
+\\[.25ex]
+\rule{\textwidth}{1pt}
+
+\hfill {\small ocdb package version: {@ ocdb.version }, report created: {@ timestamp }}
+
+\vspace*{1em}
+
+This page provides a summary of the optical constants for {@ material.symbol } available from the Optical Constants Database (OCDB), \url{https://www.ocdb.ptb.de/}, as they can be accessed by the \ocdb{} Python package. If you use these data, please cite them appropriately: \cite{{@ material.references }}.
+
+\begin{center}
+\includegraphics[width=.7\textwidth]{{@ material.symbol }.pdf}
+\end{center}
+
+\begin{multicols}{2}
+\begin{description}
+\item[Name] {@ material.name }
+\item[Symbol] {@ material.symbol }
+\item[Date] {@ material.date }
+\item[Uncertainties] {@ material.uncertainties }
+\end{description}
+\end{multicols}
+
+%{ if material.comment }%
+\paragraph{Comment}
+
+{@ material.comment }
+%{ endif }%
+
+\section*{Other versions}
+
+%{ if material.versions }%
+\begin{enumerate}
+%{ for version in material.versions }%
+\item \textbf{Date:} {@ version.date }\\ \textbf{Description:} {@ version.description }
+%{ endfor }%
+\end{enumerate}
+%{ else }%
+There are no other versions of this dataset available.
+%{ endif }%
+
+
+\printbibliography[notcategory=software]
+
+%{ include template_dir + "colophon.tex" }%
+%{ endblock }%

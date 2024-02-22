@@ -135,6 +135,16 @@ class TestDataImporter(unittest.TestCase):
             material_.metadata.uncertainties.confidence_interval,
         )
 
+    def test_import_maps_date(self):
+        self.create_data_file()
+        self.metadata.date = datetime.date.fromisoformat("2022-04-01")
+        self.importer.metadata = self.metadata
+        material_ = self.importer.import_data()
+        self.assertEqual(
+            self.metadata.date,
+            material_.metadata.date,
+        )
+
     def test_import_with_reference_adds_reference(self):
         self.create_data_file()
         self.metadata.references.append("ciesielski-zenodo-5602719")

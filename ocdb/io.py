@@ -575,6 +575,7 @@ class DataImporter:
         self.material.metadata.uncertainties.confidence_interval = (
             self.metadata.uncertainties["confidence_interval"]
         )
+        self.material.metadata.date = self.metadata.date
 
     def _load_references(self):
         for reference in self.metadata.references:
