@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'Ru_2019.txt'
+  format: 'text'
+material:
+  name: 'Ruthenium'
+  symbol: 'Ru'
+uncertainties:
+  confidence_interval: ''
+references:
+- 'ciesielski-ao-61-2060'
+date: '2024-02-23'
+versions: []
+comment: 'A newer dataset is available'

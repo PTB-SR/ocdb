@@ -1,0 +1,19 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'Ru.txt'
+  format: 'text'
+material:
+  name: 'Ruthenium'
+  symbol: 'Ru'
+uncertainties:
+  confidence_interval: '3 sigma'
+references:
+- 'saadeh-optex-25-40993'
+date: '2020-12-01'
+versions:
+- identifier: 'Ru_2019'
+  description: 'wavelength range 10-20 nm'
+  metadata: 'Ru_2019.yaml'
+comment: ''

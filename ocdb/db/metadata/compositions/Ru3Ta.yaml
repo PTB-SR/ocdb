@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'Ru3Ta.txt'
+  format: 'text'
+material:
+  name: ''
+  symbol: 'Ru3Ta'
+uncertainties:
+  confidence_interval: ''
+references:
+- 'ciesielski-ao-61-2060'
+date: '2019-04-01'
+versions: []
+comment: ''

@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'Ta2Co.txt'
+  format: 'text'
+material:
+  name: ''
+  symbol: 'Ta2Co'
+uncertainties:
+  confidence_interval: '3 sigma'
+references:
+- 'ciesielski-ao-61-2060'
+date: '2020-07-01'
+versions: []
+comment: ''

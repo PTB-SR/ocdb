@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'TaBN.txt'
+  format: 'text'
+material:
+  name: 'Tantalum boron nitride'
+  symbol: 'TaBN'
+uncertainties:
+  confidence_interval: ''
+references:
+- 'ciesielski-ao-61-2060'
+date: '2018-05-01'
+versions: []
+comment: ''

@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'PtMo.txt'
+  format: 'text'
+material:
+  name: ''
+  symbol: 'PtMo'
+uncertainties:
+  confidence_interval: ''
+references:
+- 'ciesielski-ao-61-2060'
+date: '2020-12-01'
+versions: []
+comment: ''

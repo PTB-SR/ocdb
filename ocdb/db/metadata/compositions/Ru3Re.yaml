@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'Ru3Re.txt'
+  format: 'text'
+material:
+  name: ''
+  symbol: 'Ru3Re'
+uncertainties:
+  confidence_interval: ''
+references:
+- 'ciesielski-ao-61-2060'
+date: '2018-05-01'
+versions: []
+comment: ''

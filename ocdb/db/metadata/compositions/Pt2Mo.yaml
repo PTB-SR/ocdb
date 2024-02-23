@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'Pt2Mo.txt'
+  format: 'text'
+material:
+  name: ''
+  symbol: 'Pt2Mo'
+uncertainties:
+  confidence_interval: ''
+references:
+- 'ciesielski-ao-61-2060'
+date: '2020-12-01'
+versions: []
+comment: ''

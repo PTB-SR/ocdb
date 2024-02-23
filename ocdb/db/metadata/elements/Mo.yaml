@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'Mo.txt'
+  format: 'text'
+material:
+  name: 'Molybdenum'
+  symbol: 'Mo'
+uncertainties:
+  confidence_interval: ''
+references:
+- 'ciesielski-ao-61-2060'
+date: '2020-04-01'
+versions: []
+comment: ''
