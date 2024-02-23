@@ -16,6 +16,7 @@ For version 0.2
 * Data from SiO2
 
 * Consolidate structure for relevant metadata
+* Plotting with range and different *x* axis unit?
 
 
 For later versions
