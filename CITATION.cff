@@ -9,14 +9,13 @@ authors:
     orcid: "https://orcid.org/0000-0003-2913-0004"
 type: software
 license: GPL-3.0
-repository-code: "https://github.com/tillbiskup/ocdb"
+repository-code: "https://github.com/PTB-SR/ocdb"
 keywords:
   - "optical constants"
   - "EUV"
   - "VUV"
   - "reflectometry"
-# Highly recommended starting with the first release: DOI via Zenodo
-#identifiers:
-#  - description: "The concept DOI of the work."
-#    type: doi
-#    value: 10.5281/zenodo.########
+identifiers:
+  - description: "The concept DOI of the work."
+    type: doi
+    value: 10.5281/zenodo.10697496

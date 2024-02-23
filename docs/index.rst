@@ -1,6 +1,10 @@
 
 .. _OCDB: https://www.ocdb.ptb.de/
 
+.. image:: images/zenodo.10697496.svg
+   :target: https://doi.org/10.5281/zenodo.10697496
+   :align: right
+
 ====
 ocdb
 ====
@@ -74,7 +78,7 @@ How to cite
 
 The Python ocdb package is free software. However, if you use it for your own research, please consider to cite it appropriately:
 
-  * Till Biskup. The ocdb Python package (2024). `doi:10.5281/zenodo.######## <https://doi.org/10.5281/zenodo.########>`_
+  * Till Biskup. The ocdb Python package (2024). `doi:10.5281/zenodo.10697496 <https://doi.org/10.5281/zenodo.10697496>`_
 
 Furthermore, if you use the data the ocdb package provides access to for your own research, use the appropriate references for each individual dataset, as available from its metadata. Have a look at the documentation of the :class:`ocdb.material.Material` class for details how to conveniently obtain the relevant bibliographic data, either as string or as BibTeX record.
 
