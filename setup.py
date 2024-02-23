@@ -20,7 +20,7 @@ setuptools.setup(
     url="https://www.ocdb.ptb.de/",
     project_urls={
         "Documentation": "https://ocdb-data.readthedocs.io/",
-        "Source": "https://github.com/ptb-sr/ocdb",
+        "Source": "https://github.com/PTB-SR/ocdb",
     },
     packages=setuptools.find_packages(exclude=("tests", "docs")),
     license="GPLv3",
