@@ -42,7 +42,7 @@ setuptools.setup(
         "Development Status :: 4 - Beta",
     ],
     install_requires=[
-        "bibrecord>=0.2.1",
+        "bibrecord>=0.2.2",
         "numpy",
         "oyaml",
     ],
