@@ -17,7 +17,9 @@ Not yet released
 
 * First public release
 
-* ...
+* Package available via PyPI, code via `GitHub <GITHUB_REPO_>`_
+
+* DOI via Zenodo: https://doi.org/10.5281/zenodo.10697496
 
 
 Version 0.1.0.rc-1
