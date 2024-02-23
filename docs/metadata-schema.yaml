@@ -1,6 +1,6 @@
 format:
   type: OCDB metadata
-  version: 1.0.rc-1
+  version: '1.0'
 file:
   name: ''
   format: ''
@@ -11,7 +11,7 @@ uncertainties:
   confidence_interval: ''
 references:
 - ''
-date: 2024-02-20
+date: '2024-02-23'
 versions:
 - identifier: ''
   description: ''

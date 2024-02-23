@@ -8,13 +8,13 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.1.rc-1
 ====================
 
-* Examples section, including Jupyter notebooks?
+* Finalise metadata schema and remove "rc-1" suffix in version number in metadata files
+
+* Add remaining data from OCDB
 
 
 For version 0.1
 ===============
-
-* Finalise metadata schema and remove "rc-1" suffix in version number in metadata files
 
 * DOI via Zenodo
 
@@ -25,6 +25,8 @@ For version 0.1
 
 For later versions
 ==================
+
+* Examples section, including Jupyter notebooks?
 
 * Integration with ``periodictable`` package
 

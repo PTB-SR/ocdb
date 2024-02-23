@@ -109,7 +109,7 @@ the former should be more authoritative.
 
     format:
       type: OCDB metadata
-      version: 1.0.rc-1
+      version: 1.0
     file:
       name: Ta.txt
       format: text
@@ -772,7 +772,7 @@ class Metadata:
 
         self._format = {
             "type": "OCDB metadata",
-            "version": "1.0.rc-1",
+            "version": "1.0",
         }
         if filename:
             self.from_file(filename=filename)
