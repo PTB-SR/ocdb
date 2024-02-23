@@ -23,7 +23,7 @@ Not yet released
 Version 0.1.0.rc-1
 ==================
 
-Not yet released
+Released 2024-02-23
 
 * First public pre-release
 
