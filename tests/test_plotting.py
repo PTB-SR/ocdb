@@ -11,6 +11,12 @@ from ocdb import material, plotting
 class TestPlotterFactory(unittest.TestCase):
     def setUp(self):
         self.factory = plotting.PlotterFactory()
+        self.material = material.Material()
+        self.material.n_data.data = np.ones(10)
+        self.material.n_data.axes[0].values = np.linspace(10, 12, 10)
+        self.material.k_data.data = np.ones(10)
+        self.material.k_data.axes[0].values = np.linspace(10, 12, 10)
+        self.factory.material = self.material
 
     def test_instantiate_class(self):
         pass
@@ -50,12 +56,20 @@ class TestPlotterFactory(unittest.TestCase):
         )
 
     def test_get_plotter_without_values_with_uncertainties(self):
+        self.material.n_data.lower_bounds = np.zeros(10)
+        self.material.n_data.upper_bounds = np.zeros(10)
+        self.material.k_data.lower_bounds = np.zeros(10)
+        self.material.k_data.upper_bounds = np.zeros(10)
         self.assertIsInstance(
             self.factory.get_plotter(uncertainties=True),
             plotting.SingleUncertaintiesPlotter,
         )
 
     def test_get_plotter_with_values_n_with_uncertainties(self):
+        self.material.n_data.lower_bounds = np.zeros(10)
+        self.material.n_data.upper_bounds = np.zeros(10)
+        self.material.k_data.lower_bounds = np.zeros(10)
+        self.material.k_data.upper_bounds = np.zeros(10)
         plotter = self.factory.get_plotter(values="n", uncertainties=True)
         self.assertIsInstance(
             plotter,
@@ -64,6 +78,10 @@ class TestPlotterFactory(unittest.TestCase):
         self.assertEqual(plotter.parameters["values"], "n")
 
     def test_get_plotter_with_values_k_with_uncertainties(self):
+        self.material.n_data.lower_bounds = np.zeros(10)
+        self.material.n_data.upper_bounds = np.zeros(10)
+        self.material.k_data.lower_bounds = np.zeros(10)
+        self.material.k_data.upper_bounds = np.zeros(10)
         plotter = self.factory.get_plotter(values="k", uncertainties=True)
         self.assertIsInstance(
             plotter,
@@ -72,7 +90,57 @@ class TestPlotterFactory(unittest.TestCase):
         self.assertEqual(plotter.parameters["values"], "k")
 
     def test_get_plotter_with_values_both_with_uncertainties(self):
+        self.material.n_data.lower_bounds = np.zeros(10)
+        self.material.n_data.upper_bounds = np.zeros(10)
+        self.material.k_data.lower_bounds = np.zeros(10)
+        self.material.k_data.upper_bounds = np.zeros(10)
         self.assertIsInstance(
+            self.factory.get_plotter(values="both", uncertainties=True),
+            plotting.TwinUncertaintiesPlotter,
+        )
+
+    def test_without_values_with_na_uncertainties_returns_single_plotter(
+        self,
+    ):
+        self.assertIsInstance(
+            self.factory.get_plotter(uncertainties=True),
+            plotting.SinglePlotter,
+        )
+        self.assertNotIsInstance(
+            self.factory.get_plotter(uncertainties=True),
+            plotting.SingleUncertaintiesPlotter,
+        )
+
+    def test_n_with_na_uncertainties_returns_single_plotter(self):
+        plotter = self.factory.get_plotter(values="n", uncertainties=True)
+        self.assertIsInstance(
+            plotter,
+            plotting.SinglePlotter,
+        )
+        self.assertNotIsInstance(
+            plotter,
+            plotting.SingleUncertaintiesPlotter,
+        )
+        self.assertEqual(plotter.parameters["values"], "n")
+
+    def test_k_with_na_uncertainties_returns_single_plotter(self):
+        plotter = self.factory.get_plotter(values="k", uncertainties=True)
+        self.assertIsInstance(
+            plotter,
+            plotting.SinglePlotter,
+        )
+        self.assertNotIsInstance(
+            plotter,
+            plotting.SingleUncertaintiesPlotter,
+        )
+        self.assertEqual(plotter.parameters["values"], "k")
+
+    def test_plot_both_with_na_uncertainties_returns_twin_plotter(self):
+        self.assertIsInstance(
+            self.factory.get_plotter(values="both", uncertainties=True),
+            plotting.TwinPlotter,
+        )
+        self.assertNotIsInstance(
             self.factory.get_plotter(values="both", uncertainties=True),
             plotting.TwinUncertaintiesPlotter,
         )

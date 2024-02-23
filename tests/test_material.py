@@ -130,6 +130,11 @@ class TestMaterial(unittest.TestCase):
             plotter = self.material.plot()
         self.assertIs(plotter.dataset, self.material)
 
+    def test_plot_sets_material_in_plotter_factory(self):
+        with warnings.catch_warnings(record=True):
+            plotter = self.material.plot()
+        self.assertIs(self.material.plotter_factory.material, self.material)
+
     def test_plot_calls_plotter_factory_with_kwargs(self):
         class PlotterFactory(material.AbstractPlotterFactory):
             def __init__(self):
@@ -602,6 +607,13 @@ class TestAbstractPlotterFactory(unittest.TestCase):
 
     def test_instantiate_class(self):
         pass
+
+    def test_has_attributes(self):
+        attributes = [
+            "material",
+        ]
+        for attribute in attributes:
+            self.assertTrue(hasattr(self.factory, attribute))
 
     def test_get_plotter_returns_plotter(self):
         self.assertIsInstance(

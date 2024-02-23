@@ -8,8 +8,6 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.1.rc-1
 ====================
 
-* Implement reporting?
-
 * Examples section, including Jupyter notebooks?
 
 

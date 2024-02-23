@@ -543,6 +543,7 @@ class Material:
             Plotter used for plotting the data.
 
         """
+        self.plotter_factory.material = self
         plotter = self.plotter_factory.get_plotter(**kwargs)
         plotter.dataset = self
         plotter.plot()
@@ -1110,6 +1111,20 @@ class AbstractPlotterFactory:
     you need to have a plotting framework (Matplotlib) installed.
 
 
+    Attributes
+    ----------
+    material : :class:`Material`
+        Material the plotter should be found for.
+
+        Sometimes, which plotter to return depends on the settings of the
+        material: Uncertainties can only be plotted if data for uncertainties
+        are present in the material. However, this shall not be the
+        responsibility of the uncertainties-aware plotter, but of the factory
+        to return the fitting plotter in the first place.
+
+        The material will be set from within the material.
+
+
     Examples
     --------
     A factory usually has exactly one duty: Given a list of criteria,
@@ -1139,6 +1154,9 @@ class AbstractPlotterFactory:
     will take care of the rest.
 
     """
+
+    def __init__(self):
+        self.material = None
 
     # noinspection PyMethodMayBeStatic
     # pylint: disable=unused-argument

@@ -165,18 +165,30 @@ class PlotterFactory(material.AbstractPlotterFactory):
         plotter = BasePlotter()
         if "values" in kwargs:
             if kwargs["values"] in ("n", "k"):
-                if "uncertainties" in kwargs and kwargs["uncertainties"]:
+                if (
+                    "uncertainties" in kwargs
+                    and kwargs["uncertainties"]
+                    and self.material.has_uncertainties()
+                ):
                     plotter = SingleUncertaintiesPlotter()
                 else:
                     plotter = SinglePlotter()
                 plotter.parameters["values"] = kwargs["values"]
             elif kwargs["values"] == "both":
-                if "uncertainties" in kwargs and kwargs["uncertainties"]:
+                if (
+                    "uncertainties" in kwargs
+                    and kwargs["uncertainties"]
+                    and self.material.has_uncertainties()
+                ):
                     plotter = TwinUncertaintiesPlotter()
                 else:
                     plotter = TwinPlotter()
         else:
-            if "uncertainties" in kwargs and kwargs["uncertainties"]:
+            if (
+                "uncertainties" in kwargs
+                and kwargs["uncertainties"]
+                and self.material.has_uncertainties()
+            ):
                 plotter = SingleUncertaintiesPlotter()
             else:
                 plotter = SinglePlotter()
