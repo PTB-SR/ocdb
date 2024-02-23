@@ -19,7 +19,7 @@ setuptools.setup(
     author_email="till.biskup@ptb.de",
     url="https://www.ocdb.ptb.de/",
     project_urls={
-        "Documentation": "https://ocdb.docs.till-biskup.de/",
+        "Documentation": "https://ocdb-data.readthedocs.io/",
         "Source": "https://github.com/ptb-sr/ocdb",
     },
     packages=setuptools.find_packages(exclude=("tests", "docs")),
