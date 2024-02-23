@@ -10,20 +10,10 @@ Changelog
 This page contains a summary of changes between the official ocdb releases. Only the biggest changes are listed here. A complete and detailed log of all changes is available through the `GitHub Repository Browser <GITHUB_REPO_>`_.
 
 
-Version 0.1.0
-=============
-
-Not yet released
-
-* First public release
-
-* ...
-
-
 Version 0.1.0.rc-1
 ==================
 
-Not yet released
+Released 2024-02-23
 
 * First public pre-release
 
