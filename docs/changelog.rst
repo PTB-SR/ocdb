@@ -13,7 +13,7 @@ This page contains a summary of changes between the official ocdb releases. Only
 Version 0.1.0
 =============
 
-Not yet released
+Released 2024-02-23
 
 * First public release
 
