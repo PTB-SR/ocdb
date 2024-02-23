@@ -1,4 +1,4 @@
-"""
+r"""
 Textual description of the data and metadata contained in the ocdb package.
 
 Although not the primary concern of the ocdb package, getting an overview
@@ -46,6 +46,26 @@ subdirectories (``latex``) for each of the formats. This makes it easy to add
 additional formats and to shorten the template paths when using the reporters.
 
 
+Dedicated reporters
+===================
+
+Besides the general reporters as described above that can be used in general
+for any template, there are dedicated reporters for special tasks. The
+difference between these reporters and the general reporters described above:
+The dedicated reporters usually perform additional and specific tasks,
+such as creating a graphical representation of data to be included into the
+report. Furthermore, these dedicated reporters create a specific context that
+is accessed from within the accompanying template.
+
+Currently, the ocdb package contains the following dedicated reporters:
+
+  * :class:`MaterialReporter`
+
+    Report generator for materials.
+
+
+
+
 Organisation of templates
 =========================
 
@@ -66,6 +86,68 @@ Currently, the ocdb template organisation looks similar to the following:
                 ...
 
 The templates are supposed to be in English language.
+
+
+A note on LaTeX templates
+-------------------------
+
+The LaTeX templates make extensive use of the Jinja machinery supporting to
+define blocks in templates as well as a template to extend another template.
+In other words, there is one base template ``base.tex`` containing the
+overall LaTeX scaffold with ``documentclass`` declaration, header, and body:
+
+.. literalinclude:: ../../ocdb/templates/report/latex/base.tex
+    :language: latex
+
+
+A typical template used for generating reports may hence look similar to what
+is shown below. For further details, have a look at the available templates
+in the respective folder in the source code:
+
+.. code-block:: latex
+
+    %{ extends template_dir + 'base.tex' }%
+
+    %{ block preamble }%
+    \usepackage[sorting=none]{biblatex}
+    \addbibresource{{@ material.symbol }.bib}
+    \DeclareBibliographyCategory{software}
+    \BiblatexSplitbibDefernumbersWarningOff
+    %{ endblock }%
+
+    %{ block title }%
+    %{ endblock }%
+
+    %{ block body }%
+    \thispagestyle{empty}
+    ...
+    %{ endblock }%
+
+
+Here, you can see a few crucial aspects:
+
+* The first line ``%{ extends template_dir + 'base.tex' }%`` states which
+  template will be used to extend. The reporter will always provide the
+  ``template_dir`` key in the context. Hence, nothing to do here.
+
+* The only necessary block is the ``body`` block, as otherwise, your document
+  will not have any content.
+
+* You can extend the LaTeX header providing details in the block ``preamble``.
+
+* Use the block ``title`` if you intend to set the usual title commands known
+  from LaTeX.
+
+
+Sometimes, it is quite helpful to include other templates as well. This can
+be done with a line similar to the following:
+
+.. code-block:: text
+
+    %{ include template_dir + "colophon.tex" }%
+
+Again, it is crucial to provide the ``template_dir`` variable here, in order
+to get templates residing in the package data included.
 
 
 Background: Jinja
@@ -699,6 +781,17 @@ class MaterialReporter:
     automatically. Furthermore, the reporter generates a graphical
     representation of the data.
 
+    The reporter does a few things:
+
+    * Create a figure with a graphical representation of the data,
+      and save this figure to a file.
+
+    * Create the actual report from a template.
+
+    * Create the bibliography with the references.
+
+    * Compile the created report.
+
 
     Attributes
     ----------
@@ -735,6 +828,21 @@ class MaterialReporter:
     containing the references as BibTeX bibliography, and ``Co-report.tex``
     and ``Co-report.pdf`` as LaTeX source and compiled PDF of the report.
 
+    .. important::
+
+        As the :meth:`create` method does do the (pdf)LaTeX compiling for
+        you, and due to the fact that a bibliography is included, generating
+        the final PDF file of the report will take some time (at least a few
+        seconds). The steps are basically: pdflatex, biber, pdflatex, pdflatex.
+
+    .. note::
+
+        For developers: Currently, despite the generic name, this reporter is
+        rather tied to LaTeX as output format, partly due to handling the
+        bibliography in this way. Hence, if other formats should be supported
+        in the future, a bit of code reorganisation will necessarily need to
+        take place, perhaps subclassing the reporter.
+
     """
 
     def __init__(self):
@@ -749,14 +857,48 @@ class MaterialReporter:
         self._includes = []
 
     def create(self):
-        if not self.material:
-            raise ValueError("No material to report on")
-        if self.output_format.lower() not in self._output_formats.keys():
-            raise ValueError(f"Output format {self.output_format} unknown")
+        """
+        Render the template and save the result to a file.
+
+        As currently, only LaTeX is supported, these are the steps performed:
+
+        * Create a figure with a graphical representation of the data,
+          and save this figure to the file ``<material-symbol>.pdf``.
+
+        * Create the actual report from a template.
+
+          The template file used is ``material.tex``. The resulting report is
+          named ``<material-symbol>-report.tex``.
+
+        * Create the bibliography with the references.
+
+          The template file used is ``literature.bib``. The resulting
+          bibliography is named ``<material-symbol>.bib``.
+
+        * Compile the created report.
+
+          The resulting file is named ``<material-symbol>-report.pdf``.
+
+        Raises
+        ------
+        ValueError
+            Raised if no material is provided to report on.
+
+        ValueError
+            Raised if the output format is not supported/known.
+
+        """
+        self._check_prerequisits()
         self.reporter = self._output_formats[self.output_format]()
         self._create_figure()
         self._create_bibliography()
         self._create_report()
+
+    def _check_prerequisits(self):
+        if not self.material:
+            raise ValueError("No material to report on")
+        if self.output_format.lower() not in self._output_formats:
+            raise ValueError(f"Output format {self.output_format} unknown")
 
     def _create_figure(self):
         plotter = self.material.plot(uncertainties=True, values="both")
