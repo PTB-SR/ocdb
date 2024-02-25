@@ -49,7 +49,7 @@ setuptools.setup(
     extras_require={
         "presentation": [
             "matplotlib",
-            "jinja",
+            "jinja2",
         ],
         "dev": [
             "prospector",
