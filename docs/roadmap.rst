@@ -8,8 +8,6 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.1.1
 =================
 
-* Fix date in version metadata
-
 * Describe (and highlight) reporting in documentation?
 
 
@@ -36,6 +34,10 @@ For later versions
 * Integration with ``periodictable`` package
 
   * Bidirectional integration? Accessing data from CXRO via ``periodictable`` from within ``ocdb`` package if no data are available from OCDB; accessing OCDB data from within ``periodictable`` via extension mechanism provided by the latter.
+
+* Deferred loading of data
+
+  * Currently, the ocdb package imports *all* data on importing the package. With more data, this will become increasingly time-consuming.
 
 * Support for user contributions
 
