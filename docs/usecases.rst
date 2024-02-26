@@ -308,3 +308,59 @@ Similarly, we may want to provide a range and unit for the *x* axis:
 
     Plotting ranges and different units for the *x* axis are not yet implemented.
 
+
+Reports: Overview of data and metadata
+======================================
+
+Although not the primary concern of the ocdb package, getting an overview
+of the data contained in the database together with their respective metadata
+is always a good idea. Hence, :doc:`well-formatted reports <api/ocdb.report>` containing both, a
+graphical representation of the data and a summary of all the relevant
+metadata including the references come in quite handy.
+
+
+.. important::
+
+    **Report generation relies on Jinja**, and the particular report for the data and metadata both, on **Matplotlib and a working LaTeX installation**. The convenient way to install the necessary Python requirements would be to use pip with the optional requirements, such as:
+
+     .. code-block:: bash
+
+         pip install ocdb[presentation]
+
+    This will install all necessary Python dependencies for you. Note that
+    this step is only necessary if you ever want to access the
+    reporting capabilities. Using the ocdb package without Jinja
+    is entirely possible. Furthermore, for the report on materials, you need to have LaTeX installed, as mentioned above.
+
+
+If you are interested in the overview of data and metadata of just a single material, this would be the way to get a report:
+
+
+.. code-block::
+
+    import ocdb.report
+
+    material = ocdb.materials.Ta
+    report = ocdb.report.MaterialReporter()
+    report.material = material
+    report.create()
+
+
+This will create the LaTeX report as well as an overview figure for you and compile the report afterwards. See the documentation of :class:`ocdb.report.MaterialReporter` for further details. Here, we assume you to have the ocdb package imported already.
+
+Similarly, if you would like to get reports on each individual material present in the OCDB and currently available from within the ocdb package, you could simply loop over all materials. As this will create a whole bunch of files, it is usually advisable to run these Python lines from a dedicated directory. Hence, we give the full code lines necessary, including the initial package import:
+
+
+.. code-block::
+
+    import ocdb
+    import ocdb.report
+
+    for material in ocdb.materials:
+        print(material.symbol)
+        report = ocdb.report.MaterialReporter()
+        report.material = material
+        report.create()
+
+
+This will create reports for each and every material data are available in the ocdb package. For each report, four files will be generated: the graphical representation (PDF file), the bibliography (BibTeX file), the report (LaTeX file) and the compiled report (PDF file). Hence, expect 80+ files.
