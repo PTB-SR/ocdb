@@ -33,6 +33,17 @@ For starters, you should import the ocdb package for further use:
 Do not, however, import all symbols from the ocdb package (such as ``from ocdb import *``), as this messes up with your global namespace and is generally discouraged.
 
 
+.. note::
+
+    The data of the OCDB are contained in the ocdb package. Hence, they are available *offline* and do not require a working internet connection. At the same time, updates of the data (and metadata) of the OCDB will be reflected in new releases of the ocdb package. You may want to check from time to time that you have the newest version of the ocdb package installed. This can be done using ``pip``:
+
+    .. code-block:: bash
+
+        pip install --upgrade ocdb
+
+    You can use the option ``-U`` as a shorthand for ``--upgrade``, although the latter is more explicit.
+
+
 Exploring the database contents
 ===============================
 

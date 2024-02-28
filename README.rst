@@ -24,6 +24,8 @@ A list of (planned) features:
 
 * FAIR and linked data: citable, reliable, and reproducible
 
+* Offline access: data contained in package
+
 * Community-driven: easy to contribute
 
 
