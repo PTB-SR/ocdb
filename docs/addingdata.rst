@@ -84,6 +84,29 @@ To give you an idea how such a data file looks like, below are the first few lin
 
 As you can see, there is a series of header lines marked with ``#`` and describing in some detail the following data, and the actual data appear in seven columns, separated by tabulators. Uncertainties are provided as lower and upper bound for both, *n* and *k*. Hence, if no uncertainties are contained in the dataset, the data file will consist of only three columns.
 
+While this text format may not be the final format of the data in the OCDB and in the ocdb package, it is the format for the time being. Hence, a few more details will be given below. Plain text formats have one clear advantage over any binary format: they are generally and even human readable without need for any special program. The biggest disadvantage in the given context is their potentially limited accuracy of the numeric values.
+
+
+Header
+------
+
+Generally, header lines start with ``#``. This makes it simple to read the files with many generic programs and routines. The header should contain minimal information on the material, who (institution) measured it when (date accurate to a month) and how (reflection, absorption, ...), how the optical constants are defined, what the data columns mean, and if present, how to interpret the values for the uncertainties. The overall aim of the header is to provide all relevant context for a person having only this data file to make reasonable sense of it.
+
+Details of a given sample, as can be seen in the example above, are purely optional and will probably be removed in the future, as datasets will span a broad range of wavelengths/energies measured at different setups with (slightly) different samples.
+
+
+.. note::
+
+    A more formal definition of the header contents and its structure will probably come together with implementing a data exporter.
+
+
+Data
+----
+
+While the primary axis of datasets can be both, wavelength (in nm) and energy (in eV), datasets contained in the OCDB will always have wavelength as their primary axis, to an accuracy of 0.01 nm. In case data were recorded with a primary energy axis (in eV), they will be converted to a wavelength axis with the given accuracy of 0.01 nm. This is justified by the given energy range and instrument resolution.
+
+Data columns are separated by tabulators (``\t``), the accuracy of the numeric values may differ for different datasets, but should be reasonable.
+
 
 Versions of datasets
 ====================

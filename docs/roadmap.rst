@@ -8,14 +8,19 @@ A few ideas how to develop the project further, currently a list as a reminder f
 For version 0.2
 ===============
 
+* Data from SiO2
+
+  * Requires converting data to different format
+
+* TxtExporter for data
+
+  * Can be used to reformat the SiO2 data
+  * Formalises the header/format of the text data files
+
 * Plotting
 
   * Range and different *x* axis unit
   * Semilog and loglog plots
-
-* Data from SiO2
-
-  * Requires converting data to different format
 
 * Consolidate structure for relevant metadata
 
