@@ -23,6 +23,35 @@ Versioning and git branches
 The ocdb package is maintained in a `GitHub repository <GITHUB_REPO_>`_. Development takes place in the ``master`` branch, releases are set as tags with the version number (and additionally, for each minor version an additional tag in the form ``MAJOR.MINOR``) in the ``stable`` branch. Upon creating a release within GitHub (by the package maintainers), the package will be automatically be built and uploaded to the `Python Package Index (PyPI) <PYPI_>`_. For details, see below.
 
 
+When to increment which version number part
+===========================================
+
+Different to other software packages, the ocdb package has at least *two* reasons to change, hence for incrementing version numbers: changes in the code, and changes to the data it provides. Given that it follows Semantic Versioning (SemVer, see above), below are criteria when to increment which part of the version number.
+
+
+PATCH: Bug fixes
+----------------
+
+Bug fixes can be either fixes in the code that do *not* introduce qualitatively new functionality (in the public API), or it could be fixes to metadata of datasets. Every bug fix release increments the PATCH part of the version number.
+
+
+MINOR: New functionality or data
+--------------------------------
+
+As soon as there is new functionality in the public API of the code that is backwards-compatible, the MINOR part of the version number gets incremented. The same is true for new data, be it a new material or a new version of an existing dataset. Releasing a new MINOR version means to reset the PATCH part of the version number to zero.
+
+
+MAJOR: Breaking changes
+-----------------------
+
+Backwards-incompatible changes in the public API of the code require a release incrementing the MAJOR part of the version number. These changes should be usually rare. In terms of data, it is not straight-forward to see what would trigger a MAJOR release.
+
+
+.. note::
+
+    Technically speaking, as long as the MAJOR part of the version number is still zero, everything would be allowed. Furthermore, the criteria when to start with version 1.0.0 are not strict. In any case, the public API should be reasonably stable for this step.
+
+
 Creating a release
 ==================
 
