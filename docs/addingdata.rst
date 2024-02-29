@@ -100,6 +100,69 @@ Details of a given sample, as can be seen in the example above, are purely optio
     A more formal definition of the header contents and its structure will probably come together with implementing a data exporter.
 
 
+Restructuring the header
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The current header of the text files contained in the OCDB is not really specified, and it contains information that is obsolete given the scope of the OCDB (datasets that will soon span more than one individual sample and measurement, hence sample and measurement-specific information), while missing other relevant information (such as a link to the OCDB, to the PTB, and the reference).
+
+Hence, for the time being this section will discuss and present ideas how to restructure the header. Once this converges, the result will be documented, probably on this page and in the exporter to be written. Furthermore, once we arrive at a reasonable header format, we can reexport all available data of the OCDB from within the ocdb package.
+
+Necessary information in the header:
+
+* Reference to the OCDB and perhaps the PTB
+
+* Version identifier of the file format
+
+* Material the optical constants are provided for
+
+* Date (at least accurate to a month) the dataset has been created (the dataset, *not* the measurements)
+
+* Definition of the complex refractive index, and accordingly *n* and *k* as provided
+
+* Definition of the uncertainties if present
+
+* Reference that shall be cited when using the data (yes, people will usually use the ocdb package, but as the data will be provided as text files via the OCDB webpage, this independent information is relevant and should be contained *in* the actual data file)
+
+* License
+
+  Whether we can apply licenses to data at all is highly debated, but as soon as you submit something to Zenodo, it will need a license, and this is usually CC-By 4.0. This is what is currently stated in the ocdb package as license for the data, and it is in line with good scientific practice to cite appropriately (and it does *not* matter that people don't do that -- too many scientists do not adhere to the standards of good scientific practice).
+
+* Header of the data columns
+
+How could all that look like? Here is a first example. Values in brackets ``[]`` are optional, values in angle brackets ``<>`` need to be replaced by actual values:
+
+.. code-block:: text
+
+    # OCDB data - format: 2.0
+    #
+    # Optical Constants Database (OCDB) - https://www.ocdb.ptb.de/
+    # operated by the Physikalisch-Technische Bundesanstalt (PTB),
+    # the German National Metrology Institute: https://www.ptb.de/
+    #
+    # For easy access to these data, check out the Python ocdb package:
+    # https://pypi.org/project/ocdb/
+    #
+    # Optical constants for <material>.
+    # Reconstructed from reflection measurements in the wavelength range X-Y nm
+    #
+    # Created: [DD/]MM/YYYY
+    # License: CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
+    # Reference: https://doi.org/<DOI>
+    #
+    # Complex refractive index defined as: n = (1-delta) - (i*beta)
+    #
+    # [The values are provided with their 3-sigma uncertainty bounds.]
+    # [LB: lower bound, UB: upper bound.]
+    #
+    # Columns are separated by tabulator (\t).
+    #
+    # wavelength/nm	1-delta	beta	1-delta_LB	1-delta_UB	beta_LB	beta_UB
+    # ------------------------
+    8.00	0.96788	0.02267	0.96772	0.96804	0.02253	0.0228
+
+The line ``Reconstructed from reflection measurements in the wavelength range X-Y nm`` may be changed/debated. Do we always have reflection measurements for an entire dataset? Do we need to be more precise in the future? Do we want to leave this out, as it is described in the reference, anyway? Do we need the information on the wavelength in the header? If automatically created, it would always be consistent and perhaps convenient for somebody browsing the text files. That these optical constants have been obtained from reconstructions (*i.e.*, not directly from measurements) seems crucial at least.
+
+
 Data
 ----
 
