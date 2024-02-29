@@ -145,4 +145,4 @@ bump the version number (typically resetting ``PATCH`` and setting ``dev#`` to `
 
     git checkout stable docs/changelog.rst
 
-and commit the changes. Typically, a generic commit message such as "Post-commit" will be used.
+and commit the changes. Typically, a generic commit message such as "Post-release" will be used.

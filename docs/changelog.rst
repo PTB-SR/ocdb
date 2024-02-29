@@ -21,7 +21,7 @@ Not yet released
 Version 0.1.1
 =============
 
-Not yet released
+Released 2024-02-29
 
 
 Fixes
