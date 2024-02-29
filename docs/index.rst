@@ -44,6 +44,8 @@ A list of features:
 
 * FAIR and linked data: **citable**, reliable, and reproducible
 
+* Offline access: data contained in package
+
 * Community-driven: easy to contribute
 
 
@@ -130,8 +132,9 @@ The copyright of the logo of the `Optical Constants Database (OCDB) <OCDB_>`_ us
    :hidden:
 
    people
-   contributing
    addingdata
+   contributing
+   deploying
    architecture
    changelog
    roadmap

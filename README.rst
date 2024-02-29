@@ -2,7 +2,7 @@
 ocdb
 ====
 
-.. image:: docs/images/zenodo.10697496.svg
+.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.10697496.svg
    :target: https://doi.org/10.5281/zenodo.10697496
    :align: right
 
@@ -23,6 +23,8 @@ A list of (planned) features:
 * Provides data *and* uncertainties
 
 * FAIR and linked data: citable, reliable, and reproducible
+
+* Offline access: data contained in package
 
 * Community-driven: easy to contribute
 
