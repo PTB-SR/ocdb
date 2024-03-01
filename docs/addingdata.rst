@@ -142,8 +142,8 @@ How could all that look like? Here is a first example. Values in brackets ``[]``
     # For easy access to these data, check out the Python ocdb package:
     # https://pypi.org/project/ocdb/
     #
-    # Optical constants for <material>.
-    # Reconstructed from reflection measurements in the wavelength range X-Y nm
+    # Optical constants for <material>
+    # Determined from reflection measurements
     #
     # Created: [DD/]MM/YYYY
     # License: CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
@@ -160,7 +160,7 @@ How could all that look like? Here is a first example. Values in brackets ``[]``
     # ------------------------
     8.00	0.96788	0.02267	0.96772	0.96804	0.02253	0.0228
 
-The line ``Reconstructed from reflection measurements in the wavelength range X-Y nm`` may be changed/debated. Do we always have reflection measurements for an entire dataset? Do we need to be more precise in the future? Do we want to leave this out, as it is described in the reference, anyway? Do we need the information on the wavelength in the header? If automatically created, it would always be consistent and perhaps convenient for somebody browsing the text files. That these optical constants have been obtained from reconstructions (*i.e.*, not directly from measurements) seems crucial at least.
+For the time being, all *n* and *k* values will be determined from reflection measurements. Do we need to be more explicit about the fact that these optical constants have been obtained from calculations (*i.e.*, not directly from measurements)? One could change the line ``Determined from reflection measurements`` to something like ``Determined from reflection measurements (not directly measured)``.
 
 
 Data
