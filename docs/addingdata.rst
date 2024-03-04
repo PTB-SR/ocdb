@@ -133,7 +133,7 @@ How could all that look like? Here is a first example. Values in brackets ``[]``
 
 .. code-block:: text
 
-    # OCDB data - format: 2.0
+    # OCDB data - format: 1.1
     #
     # Optical Constants Database (OCDB) - https://www.ocdb.ptb.de/
     # operated by the Physikalisch-Technische Bundesanstalt (PTB),
@@ -160,7 +160,7 @@ How could all that look like? Here is a first example. Values in brackets ``[]``
     # ------------------------
     8.00	0.96788	0.02267	0.96772	0.96804	0.02253	0.0228
 
-For the time being, all *n* and *k* values will be determined from reflection measurements. Do we need to be more explicit about the fact that these optical constants have been obtained from calculations (*i.e.*, not directly from measurements)? One could change the line ``Determined from reflection measurements`` to something like ``Determined from reflection measurements (not directly measured)``.
+For the time being, all *n* and *k* values will be determined from reflection measurements.
 
 
 Data

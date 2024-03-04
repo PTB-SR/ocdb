@@ -146,7 +146,8 @@ file
         Only the file name without path. Due to the "convention over
         configuration" approach of the ocdb package, all data reside in one
         location. Furthermore, data are accessed as package data, not via
-        the file system, due to the way Python packages are handled internally.
+        the file system, due to the way Python packages are handled
+        internally.
 
     format:
         Identifier of the file format the data are provided in.
