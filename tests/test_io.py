@@ -1,11 +1,13 @@
+import copy
 import datetime
 import os
 import unittest
 
 import bibrecord.record
+import numpy as np
 import yaml
 
-import ocdb.material
+import ocdb
 from ocdb import io, material
 
 
@@ -492,18 +494,18 @@ class TestDataExporter(unittest.TestCase):
             self.exporter.export()
 
     def test_export_without_material_symbol_raises(self):
-        self.exporter.material = ocdb.material.Material()
+        self.exporter.material = material.Material()
         with self.assertRaisesRegex(ValueError, "No symbol for material"):
             self.exporter.export()
 
     def test_export_without_material_reference_raises(self):
-        self.exporter.material = ocdb.material.Material()
+        self.exporter.material = material.Material()
         self.exporter.material.symbol = "Co"
         with self.assertRaisesRegex(ValueError, "No reference for material"):
             self.exporter.export()
 
     def test_export_with_sufficient_metadata(self):
-        self.exporter.material = ocdb.material.Material()
+        self.exporter.material = material.Material()
         self.exporter.material.symbol = "Co"
         reference = bibrecord.record.Article()
         reference.doi = "10.1234/foobar"
@@ -520,10 +522,120 @@ class TestDataExporter(unittest.TestCase):
                 self.method_called = True
 
         exporter = DataExporter()
-        exporter.material = ocdb.material.Material()
+        exporter.material = material.Material()
         exporter.material.symbol = "Co"
         reference = bibrecord.record.Article()
         reference.doi = "10.1234/foobar"
         exporter.material.references.append(reference)
         exporter.export()
         self.assertTrue(exporter.method_called)
+
+    def test_export_checks_for_prerequisites(self):
+        self.exporter.material = material.Material()
+        self.exporter.material.symbol = "Co"
+        self.exporter.prerequisites.append("pandas")
+        reference = bibrecord.record.Article()
+        reference.doi = "10.1234/foobar"
+        self.exporter.material.references.append(reference)
+        with self.assertRaisesRegex(ImportError, "Module .* not found"):
+            self.exporter.export()
+
+
+class TestTxtDataExporter(unittest.TestCase):
+    def setUp(self):
+        self.exporter = io.TxtDataExporter()
+        # noinspection PyUnresolvedReferences
+        self.material = ocdb.elements.Co
+        self.filename = "Co.txt"
+
+    def tearDown(self):
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_exporter_depends_on_jinja2_package(self):
+        self.assertIn("jinja2", self.exporter.prerequisites)
+
+    def test_export_creates_file(self):
+        self.exporter.material = self.material
+        self.exporter.export()
+        self.assertTrue(os.path.exists(self.filename))
+
+    def test_exported_file_starts_with_format_identifier(self):
+        self.exporter.material = self.material
+        self.exporter.export()
+        with open(self.filename, "r", encoding="utf8") as file:
+            content = file.readline()
+        self.assertIn("# OCDB data - format:", content)
+
+    def test_exported_file_contains_material_symbol(self):
+        self.exporter.material = self.material
+        self.exporter.export()
+        with open(self.filename, "r", encoding="utf8") as file:
+            content = file.read()
+        self.assertIn("# Optical constants for Co", content)
+
+    def test_exported_file_contains_material_date(self):
+        self.exporter.material = self.material
+        self.exporter.export()
+        with open(self.filename, "r", encoding="utf8") as file:
+            content = file.read()
+        self.assertIn(
+            f"# Created: {str(self.material.metadata.date)}", content
+        )
+
+    def test_exported_file_contains_material_reference_doi(self):
+        self.exporter.material = self.material
+        self.exporter.export()
+        with open(self.filename, "r", encoding="utf8") as file:
+            content = file.read()
+        self.assertIn(
+            f"# Reference: https://doi.org/"
+            f"{self.material.references[0].doi}",
+            content,
+        )
+
+    def test_exported_file_contains_material_data(self):
+        self.exporter.material = self.material
+        self.exporter.export()
+        with open(self.filename, "r", encoding="utf8") as file:
+            content = file.read()
+        self.assertIn(
+            f"{self.material.n_data.axes[0].values[0]:.02f}\t"
+            f"{self.material.n_data.data[0]:.05f}\t"
+            f"{self.material.k_data.data[0]:.05f}\t"
+            f"{self.material.n_data.lower_bounds[0]:.05f}\t"
+            f"{self.material.n_data.upper_bounds[0]:.05f}\t"
+            f"{self.material.k_data.lower_bounds[0]:.05f}\t"
+            f"{self.material.k_data.upper_bounds[0]:.05f}",
+            content,
+        )
+
+    def test_exported_file_contains_uncertainties_definition(self):
+        self.exporter.material = self.material
+        self.exporter.export()
+        with open(self.filename, "r", encoding="utf8") as file:
+            content = file.read()
+        self.assertIn(
+            f"# The values are provided with their "
+            f"{self.material.metadata.uncertainties.confidence_interval} "
+            f"uncertainty bounds.",
+            content,
+        )
+
+    def test_exported_file_does_not_contain_uncertainties_if_not_present(
+        self,
+    ):
+        self.exporter.material = copy.deepcopy(self.material)
+        self.exporter.material.n_data.lower_bounds = np.ndarray(0)
+        self.exporter.export()
+        with open(self.filename, "r", encoding="utf8") as file:
+            content = file.read()
+        self.assertIn(
+            f"{self.material.n_data.axes[0].values[0]:.02f}\t"
+            f"{self.material.n_data.data[0]:.05f}\t"
+            f"{self.material.k_data.data[0]:.05f}",
+            content,
+        )

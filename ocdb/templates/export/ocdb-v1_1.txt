@@ -1,0 +1,36 @@
+# OCDB data - format: 1.1
+#
+# Optical Constants Database (OCDB) - https://www.ocdb.ptb.de/
+# operated by the Physikalisch-Technische Bundesanstalt (PTB),
+# the German National Metrology Institute: https://www.ptb.de/
+#
+# For easy access to these data, check out the Python ocdb package:
+# https://pypi.org/project/ocdb/
+#
+# Optical constants for {{ material.symbol }}
+# Determined from reflection measurements
+#
+# Created: {{ material.metadata.date }}
+# License: CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
+# Reference: https://doi.org/{{ material.references[0].doi }}
+#
+# Complex refractive index defined as: n = (1-delta) - (i*beta)
+{% if material.has_uncertainties() -%}
+#
+# The values are provided with their {{ material.metadata.uncertainties.confidence_interval }} uncertainty bounds.
+# LB: lower bound, UB: upper bound.
+{%- endif -%}
+#
+# Columns are separated by tabulator (\t).
+#
+# wavelength/nm	1-delta	beta{% if material.has_uncertainties() %}	1-delta_LB	1-delta_UB	beta_LB	beta_UB{% endif %}
+# ------------------------
+{% if material.has_uncertainties() -%}
+{% for wl in material.data %}
+{{- "%.02f\t%.05f\t%.05f\t%.05f\t%.05f\t%.05f\t%.05f" % (wl[0], wl[1], wl[2], wl[3], wl[4], wl[5], wl[6]) }}
+{% endfor -%}
+{% else -%}
+{% for wl in material.data %}
+{{- "%.02f\t%.05f\t%.05f" % (wl[0], wl[1], wl[2]) }}
+{% endfor -%}
+{% endif -%}

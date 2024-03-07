@@ -259,6 +259,7 @@ comment
         <http://yaml.org/spec/1.2.2/#23-scalars>`_.
 
 
+.. _sec-creating_metadata_files:
 
 Creating metadata files
 -----------------------
@@ -307,6 +308,29 @@ available from the OCDB. Those data files can be read using the
 as the ocdb package handles all this transparently and automatically for them.
 
 
+Exporting data
+==============
+
+Exporting data is not a regular task for users of the ocdb package,
+but rather something the maintainers of the OCDB are concerned with. To this
+end, there are data exporters available that all inherit from the exporter
+base class, namely :class:`DataExporter`. Currently, there is only one
+exporter available: :class:`TxtDataExporter`, writing the text data format of
+the OCDB. For details of this format, have a look at the :doc:`Adding data
+<../addingdata>` page.
+
+
+.. note::
+    Exporting data starts always with an :obj:`ocdb.material.Material` object
+    containing all the relevant data and metadata. The required metadata
+    contain, but are not limited to, a citable reference for the dataset.
+
+
+The exporter classes only create the actual data files, not the metadata
+files. For the latter, see the section
+:ref:`Creating metadata files <sec-creating_metadata_files>` above.
+
+
 Notes for developers
 ====================
 
@@ -345,6 +369,16 @@ different versions of the schema, appropriate functionality needs to be
 implemented, most probably in the :meth:`Metadata.from_dict` method.
 
 
+Adding exporters for data file formats
+--------------------------------------
+
+Currently, there is only one exporter for plain text files available. To
+implement exporters for other data file formats, create a new class that
+inherits from :class:`DataExporter` and implement the relevant private
+methods as described there. Adding output formats may require adding
+importers as well.
+
+
 Module documentation
 ====================
 
@@ -352,11 +386,18 @@ Module documentation
 import datetime
 import importlib.resources
 import os.path
+import sys
 
 import bibrecord.bibtex
 import bibrecord.database
 import numpy as np
 import oyaml as yaml
+
+try:
+    # noinspection PyUnresolvedReferences
+    import jinja2
+except ImportError:
+    pass
 
 from ocdb import material
 
@@ -1037,11 +1078,28 @@ class DataExporter:
     data, and calls a private method :meth:`_export` that does the real job
     in classed derived from this one.
 
+    Furthermore, besides the sanity check, it provides a private method
+    :meth:`_check_prerequisites` that can be implemented by derived exporters
+    to check for the relevant prerequisites, *e.g.*, a package to be present.
+    The prerequisites are checked for first, afterwards the sanity check is
+    being performed.
+
 
     Attributes
     ----------
     material : :class:`ocdb.material.Material`
         Material to export the data for
+
+    prerequisites : :class:`list`
+        Names of packages the importer depends on
+
+        These packages are automatically checked for upon calling
+        :meth:`export`, and an :class:`ImportError` raised if they do not
+        exist. Hence, if an actual data exporter depends on a certain
+        package, add it to this list. The import of these packages in the
+        :mod:`ocdb.io` module should nevertheless use a ``try...catch``
+        statement to prevent hard usually unnecessary dependencies of the
+        ocdb package.
 
     Raises
     ------
@@ -1053,6 +1111,9 @@ class DataExporter:
 
     ValueError
         Raised if material has no reference(s)
+
+    ImportError
+        Raised if a package the exporter depends on is not available.
 
 
     Examples
@@ -1082,17 +1143,22 @@ class DataExporter:
 
     def __init__(self):
         self.material = None
+        self.prerequisites = []
 
     def export(self):
         """
         Export data for a given material.
 
-        First, a sanity check will be performed, ensuring a minimum of
+        First, the prerequisites are checked for, *i.e.* the names of the
+        packages given in the :attr:`prerequisites`.
+
+        Afterwards, a sanity check will be performed, ensuring a minimum of
         metadata to be present. Afterwards, the private method
         :meth:`_export` is called. Actual exporters need only to implement
         this method.
 
         """
+        self._check_prerequisites()
         self._sanity_check()
         self._export()
 
@@ -1104,5 +1170,116 @@ class DataExporter:
         if not self.material.references:
             raise ValueError("No reference for material")
 
+    def _check_prerequisites(self):
+        for prerequisite in self.prerequisites:
+            if prerequisite not in sys.modules:
+                raise ImportError(f"Module {prerequisite} not found.")
+
     def _export(self):
         pass
+
+
+class TxtDataExporter(DataExporter):
+    """
+    Export data to (plain) text files.
+
+    The data in the OCDB are provided as text files and can be downloaded
+    online from `<https://www.ocdb.ptb.de/>`_. This exporter is used to
+    create files in exactly the format used by the OCDB and described in more
+    detail on the :doc:`adding data <../addingdata>` page.
+
+
+    .. important::
+        This exporter relies on the package ``jinja2`` to be installed. As
+        Jinja is not a hard requirement of the ``ocdb`` package and exporting
+        data is not a standard task, but rather something the maintainers of
+        the package (and the OCDB itself) are concerned with, this should
+        usually not be a problem.
+
+        The exporter will only work if the prerequisites are installed,
+        and this is checked for.
+
+
+    The template used is stored in the ``templates/export`` directory of the
+    package and accessed via package data. The actual name of the template is
+    set as private attribute in the class, and each version of the format has
+    its own template. All formatting, including accuracy of the numerical
+    values, is done within the Jinja template.
+
+
+    Attributes
+    ----------
+    filename : :class:`str`
+        Name of the file the data are exported to
+
+
+    Examples
+    --------
+    Usually, you will want to export new data not yet available within the
+    OCDB and hence the ocdb package. Hence, you first create a
+    :obj:`ocdb.material.Material` object and fill it with the correct
+    content. Afterwards, you can export it:
+
+    .. code-block::
+
+        material = ocdb.material.Material()
+        # Provide relevant content, including data and metadata
+
+        exporter = TxtDataExporter()
+        exporter.material = material
+        exporter.export()
+
+
+    This should create the appropriate text file with the symbol of the given
+    material as the file basename and ``.txt`` as file extension. The output
+    files are always created in the current directory. To get the name of the
+    created file, you may access the :attr:`filename` attribute *after*
+    calling :meth:`export`, as it will be set to the filename used.
+
+
+    .. versionadded:: 0.2
+
+
+    """
+
+    def __init__(self):
+        super().__init__()
+        self.prerequisites.append("jinja2")
+        self.filename = ""
+
+        self._template_file = "ocdb-v1_1.txt"
+        env = {
+            "loader": jinja2.PackageLoader(
+                __package__, package_path="templates/export"
+            ),
+        }
+        self._environment = jinja2.Environment(**env, autoescape=True)
+        self._jinja_template = self._environment.get_template(
+            self._template_file
+        )
+        self._context = {}
+
+    def _export(self):
+        self._context["material"] = self.material
+        self._context["material"].data = np.column_stack(
+            (
+                self.material.n_data.axes[0].values,
+                self.material.n_data.data,
+                self.material.k_data.data,
+            )
+        )
+        if self.material.has_uncertainties():
+            self._context["material"].data = np.column_stack(
+                (
+                    self._context["material"].data,
+                    self.material.n_data.lower_bounds,
+                    self.material.n_data.upper_bounds,
+                    self.material.k_data.lower_bounds,
+                    self.material.k_data.upper_bounds,
+                )
+            )
+        report = self._jinja_template.render(self._context)
+
+        self.filename = ".".join([self.material.symbol, "txt"])
+        with open(self.filename, "w", encoding="utf8") as file:
+            file.write(report)

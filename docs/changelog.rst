@@ -17,6 +17,20 @@ Version 0.2.0
 
 Not yet released
 
+New features
+------------
+
+* :class:`ocdb.io.TxtDataExporter` for data
+
+
+Changes
+-------
+
+* New header format for the data files
+
+    * Formalised header with consistent content.
+    * Header format does not impact the importer.
+
 
 Version 0.1.1
 =============

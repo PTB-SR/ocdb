@@ -15,6 +15,11 @@ While the ocdb Python package will be further developed (if you are interested i
     The ocdb package provides an interface to the data available from the `Optical Constants Database (OCDB) <OCDB_>`_. However, the package developers and maintainers are not responsible for the quality and validity of the data. For each dataset there will be references covering necessary details on how the optical constants have been determined. Nevertheless, a gap-less protocol of the data processing and analysis starting with the raw data from measurements all the way to the final *n* and *k* values is out of scope of the ocdb package. See the :ref:`discrimination between dataset and measurement <sec-dataset_vs_measurement>` for a bit more details.
 
 
+.. todo::
+
+    Add a section describing in short the necessary steps to add a new dataset, probably with references to the sections below providing more details.
+
+
 Package organisation
 ====================
 
@@ -43,6 +48,8 @@ The crucial part here is the directory ``db`` (shorthand for "database") residin
 
 That means, in short: If you add a new dataset to the ocdb package, you will add the data file to the ``ocdb/db/data`` directory, while the metadata file goes into one of the subdirectories of the ``ocdb/db/metadata/`` directory, depending on whether it is an element or not.
 
+Furthermore, in the ``db`` directory resides a BibTeX file ``literature.bib`` containing the BibTeX records for all citable references.
+
 
 Metadata
 ========
@@ -59,6 +66,14 @@ Important to note here is: You do not need to create such a metadata file by you
     ocdb.io.create_metadata_file("<name>.yaml")
 
 This will create the file ``<name>.yaml`` in the current directory. Make sure to replace ``<name>`` with a sensible string. Typically, this is the element symbol in case of an element or the molecular formula in case of compositions.
+
+
+References
+==========
+
+One key concept of the OCDB and hence the ocdb package is to provide citable references for each individual dataset. To this end, there exists a BibTeX database containing all relevant references. The BibTeX database is stored in the file ``literature.bib`` in the ``db`` directory.
+
+If you add datasets to the ocdb package, make sure to add the references to the BibTeX database as well, and adhere to the overall structure and formatting of the bibliographic records found in the file. The references are processed using the `bibrecord package <https://bibrecord.docs.till-biskup.de/>`_, and this package is currently not meant as a general BibTeX parser. Hence, not everything allowed in BibTeX is allowed in the BibTeX database used by the ocdb package.
 
 
 Data format

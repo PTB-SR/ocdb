@@ -12,11 +12,6 @@ For version 0.2
 
   * Requires converting data to different format
 
-* TxtExporter for data
-
-  * Can be used to reformat the SiO2 data
-  * Formalises the header/format of the text data files
-
 * Plotting
 
   * Range and different *x* axis unit
