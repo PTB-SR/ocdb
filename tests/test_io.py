@@ -5,6 +5,7 @@ import unittest
 import bibrecord.record
 import yaml
 
+import ocdb.material
 from ocdb import io, material
 
 
@@ -475,3 +476,54 @@ class TestReferences(unittest.TestCase):
             self.assertIsInstance(
                 self.references.records[key], bibrecord.record.Record
             )
+
+
+class TestDataExporter(unittest.TestCase):
+    def setUp(self):
+        self.exporter = io.DataExporter()
+
+    def test_instantiate_class(self):
+        pass
+
+    def test_export_without_material_raises(self):
+        with self.assertRaisesRegex(
+            ValueError, "No material to export data for"
+        ):
+            self.exporter.export()
+
+    def test_export_without_material_symbol_raises(self):
+        self.exporter.material = ocdb.material.Material()
+        with self.assertRaisesRegex(ValueError, "No symbol for material"):
+            self.exporter.export()
+
+    def test_export_without_material_reference_raises(self):
+        self.exporter.material = ocdb.material.Material()
+        self.exporter.material.symbol = "Co"
+        with self.assertRaisesRegex(ValueError, "No reference for material"):
+            self.exporter.export()
+
+    def test_export_with_sufficient_metadata(self):
+        self.exporter.material = ocdb.material.Material()
+        self.exporter.material.symbol = "Co"
+        reference = bibrecord.record.Article()
+        reference.doi = "10.1234/foobar"
+        self.exporter.material.references.append(reference)
+        self.exporter.export()
+
+    def test_export_calls_private_method(self):
+        class DataExporter(ocdb.io.DataExporter):
+            def __init__(self):
+                super().__init__()
+                self.method_called = False
+
+            def _export(self):
+                self.method_called = True
+
+        exporter = DataExporter()
+        exporter.material = ocdb.material.Material()
+        exporter.material.symbol = "Co"
+        reference = bibrecord.record.Article()
+        reference.doi = "10.1234/foobar"
+        exporter.material.references.append(reference)
+        exporter.export()
+        self.assertTrue(exporter.method_called)

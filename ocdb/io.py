@@ -1021,3 +1021,88 @@ class References:
         database = bibrecord.database.Database()
         database.from_bibliography(bibliography)
         self.records = database.records
+
+
+class DataExporter:
+    """
+    Base class for data exporter.
+
+    While the primary concern of the ocdb package is to provide convenient
+    access to the optical constants contained in tne Optical Constants
+    Database (OCDB), maintenance of the OCDB requires exporting (new) data in
+    a defined format to provide them online.
+
+    This class is the base class for all exporters. It does some general
+    sanity check, *i.e.* whether we have sufficient metadata to export the
+    data, and calls a private method :meth:`_export` that does the real job
+    in classed derived from this one.
+
+
+    Attributes
+    ----------
+    material : :class:`ocdb.material.Material`
+        Material to export the data for
+
+    Raises
+    ------
+    ValueError
+        Raised if no material is provided
+
+    ValueError
+        Raised if material has no symbol
+
+    ValueError
+        Raised if material has no reference(s)
+
+
+    Examples
+    --------
+    As mentioned above, this exporter does *not* actually perform any data
+    export, but provides the base for all "real" exporters. Nevertheless,
+    all exporters basically behave identical. Usually, you will want to
+    export new data not yet available within the OCDB and hence the ocdb
+    package. Hence, you first create a :obj:`ocdb.material.Material` object
+    and fill it with the correct content. Afterwards, you can export it:
+
+    .. code-block::
+
+        material = ocdb.material.Material()
+        # Provide relevant content, including data and metadata
+
+        exporter = DataExporter()
+        exporter.material = material
+        exporter.export()
+
+
+    This should create the appropriate file(s).
+
+    .. versionadded:: 0.2
+
+    """
+
+    def __init__(self):
+        self.material = None
+
+    def export(self):
+        """
+        Export data for a given material.
+
+        First, a sanity check will be performed, ensuring a minimum of
+        metadata to be present. Afterwards, the private method
+        :meth:`_export` is called. Actual exporters need only to implement
+        this method.
+
+        """
+        self._sanity_check()
+        self._export()
+
+    def _sanity_check(self):
+        if not self.material:
+            raise ValueError("No material to export data for")
+        if not self.material.symbol:
+            raise ValueError("No symbol for material")
+        if not self.material.references:
+            raise ValueError("No reference for material")
+
+    def _export(self):
+        pass
