@@ -20,6 +20,58 @@ While the ocdb Python package will be further developed (if you are interested i
     Add a section describing in short the necessary steps to add a new dataset, probably with references to the sections below providing more details.
 
 
+Overview: How to add data
+=========================
+
+Adding data to the ocdb package consists basically of three steps that can be separated and even be carried out by different persons:
+
+#. Obtaining the relevant information (data and metadata)
+#. Creating the relevant files
+#. Adding the files to the ocdb package
+
+This section will briefly go through each of these steps and explain the necessary details.
+
+
+.. important::
+
+    This section assumes familiarity with the ocdb package and its organisation and is only meant as a reminder for routine management tasks, and *not* as a replacement for the detailed reading of the other sections below.
+
+
+Obtaining the relevant information
+----------------------------------
+
+The OCDB contains optical constants and their uncertainties for different materials. Where these data come from is *not* the responsibility of the ocdb package maintainers and out of scope of this package. Nevertheless, the important part from the ocdb package point of view is to have the complete set of necessary information at hand, as there is:
+
+* numerical data for the optical constants (*n* and *k*)
+
+* uncertainties for *n* and *k* (if available)
+
+* citable reference(s) for the data
+
+  * all information necessary for a full bibliographic record eventually stored in BibTeX format
+
+* metadata
+
+  * date the dataset has been created
+  * details on the uncertainties (if uncertainties are available)
+
+Once all this information is available, you can proceed to the next step.
+
+
+Creating the relevant files
+---------------------------
+
+TBD
+
+
+Adding the files to the ocdb package
+------------------------------------
+
+TBD
+
+This should usually only be done by the package maintainers.
+
+
 Package organisation
 ====================
 
