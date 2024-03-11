@@ -202,6 +202,46 @@ One key concept of the OCDB and hence the ocdb package is to provide citable ref
 
 If you add datasets to the ocdb package, make sure to add the references to the BibTeX database as well, and adhere to the overall structure and formatting of the bibliographic records found in the file. The references are processed using the `bibrecord package <https://bibrecord.docs.till-biskup.de/>`_, and this package is currently not meant as a general BibTeX parser. Hence, not everything allowed in BibTeX is allowed in the BibTeX database used by the ocdb package.
 
+A few notes on the current organisation of the BibTeX bibliography and conventions used:
+
+* Journal names are *not* abbreviated, but the full (official) journal names.
+* Titles are not in title case, but only the first word capitalised.
+* DOIs are provided wherever possible.
+* BibTeX keys follow a simple schema, always starting with the name of the first author:
+
+  * Articles: <authorname>-<journal abbreviation>-<volume>-<startpage>
+  * Zenodo: <authorname>-zenodo-<Zenodo-ID>
+
+* Page ranges are separated by ``--`` for typographic correctness.
+
+To make it a bit easier, in the following two examples are shown, one for a Zenodo record, one for a usual journal article:
+
+
+.. code-block:: bibtex
+
+    @dataset{ciesielski-zenodo-5602719,
+      author       = {Ciesielski, Richard and Saadeh, Qais and Philipsen, Vicky and Opsomer, Karl and Soulié, Jean-Philippe and Wu, Meiyi and Naujok, Philipp and van de Kruijs, Robbert W.E. and Detavernier, Christophe and Kolbe, Michael and Scholze, Frank and Soltwisch, Victor},
+      title        = {{EUV} optical constants data set},
+      year         = {2021},
+      publisher    = {Zenodo},
+      version      = {2021-10-28},
+      doi          = {10.5281/zenodo.5602719}
+    }
+
+    @article{ciesielski-ao-61-2060,
+        author = {Richard Ciesielski and Qais Saadeh and Vicky Philipsen and Karl Opsomer and Jean-Philippe Souli\'{e} and Meiyi Wu and Philipp Naujok and van de Kruijs, Robbert W. E. and Christophe Detavernier and Michael Kolbe and Frank Scholze and Victor Soltwisch},
+        title = {Determination of optical constants of thin films in the EUV},
+        journal = {Applied Optics},
+        volume = {61},
+        pages = {2060--2078},
+        year = {2022},
+        doi = {10.1364/AO.447152}
+    }
+
+
+
+For more examples, have a look at the ``literature.bib`` file.
+
 
 Data format
 ===========
@@ -235,11 +275,6 @@ Header
 Generally, header lines start with ``#``. This makes it simple to read the files with many generic programs and routines. The header should contain minimal information on the material, who (institution) measured it when (date accurate to a month) and how (reflection, absorption, ...), how the optical constants are defined, what the data columns mean, and if present, how to interpret the values for the uncertainties. The overall aim of the header is to provide all relevant context for a person having only this data file to make reasonable sense of it.
 
 Details of a given sample, as can be seen in the example above, are purely optional and will probably be removed in the future, as datasets will span a broad range of wavelengths/energies measured at different setups with (slightly) different samples.
-
-
-.. note::
-
-    A more formal definition of the header contents and its structure will probably come together with implementing a data exporter.
 
 
 Restructuring the header
@@ -300,7 +335,7 @@ How could all that look like? Here is a first example. Values in brackets ``[]``
     #
     # wavelength/nm	1-delta	beta	1-delta_LB	1-delta_UB	beta_LB	beta_UB
     # ------------------------
-    8.00	0.96788	0.02267	0.96772	0.96804	0.02253	0.0228
+    8.00	0.96788	0.02267	0.96772	0.96804	0.02253	0.02280
 
 For the time being, all *n* and *k* values will be determined from reflection measurements.
 
