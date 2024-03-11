@@ -15,18 +15,13 @@ While the ocdb Python package will be further developed (if you are interested i
     The ocdb package provides an interface to the data available from the `Optical Constants Database (OCDB) <OCDB_>`_. However, the package developers and maintainers are not responsible for the quality and validity of the data. For each dataset there will be references covering necessary details on how the optical constants have been determined. Nevertheless, a gap-less protocol of the data processing and analysis starting with the raw data from measurements all the way to the final *n* and *k* values is out of scope of the ocdb package. See the :ref:`discrimination between dataset and measurement <sec-dataset_vs_measurement>` for a bit more details.
 
 
-.. todo::
-
-    Add a section describing in short the necessary steps to add a new dataset, probably with references to the sections below providing more details.
-
-
 Overview: How to add data
 =========================
 
 Adding data to the ocdb package consists basically of three steps that can be separated and even be carried out by different persons:
 
 #. Obtaining the relevant information (data and metadata)
-#. Creating the relevant files
+#. Creating the relevant files (for data and metadata)
 #. Adding the files to the ocdb package
 
 This section will briefly go through each of these steps and explain the necessary details.
@@ -52,7 +47,7 @@ The OCDB contains optical constants and their uncertainties for different materi
 
 * metadata
 
-  * date the dataset has been created
+  * date the dataset has been created (*not* necessarily the date of measurement)
   * details on the uncertainties (if uncertainties are available)
 
 Once all this information is available, you can proceed to the next step.
@@ -61,16 +56,96 @@ Once all this information is available, you can proceed to the next step.
 Creating the relevant files
 ---------------------------
 
-TBD
+Two files need to be created:
+
+#. the metadata file in YAML format, and
+#. the data file (currently in text format).
+
+
+Creating the metadata file
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Creating the scaffold for the metadata file in YAML format is straight-forward, and assuming the ocdb package installed effectively a two-liner:
+
+
+.. code-block::
+
+    import ocdb.io
+    ocdb.io.create_metadata_file("<name>.yaml")
+
+
+This will create the file ``<name>.yaml`` in the current directory. Make sure to replace ``<name>`` with a sensible string. Typically, this is the element symbol in case of an element or the molecular formula in case of compositions. Use the text editor of your liking afterwards to add the relevant metadata to this file.
+
+
+Creating the data file
+~~~~~~~~~~~~~~~~~~~~~~
+
+Creating the data file is similarly straight-forward once you have an :obj:`ocdb.material.Material` object with all its fields set appropriately:
+
+#. Create an exporter
+#. Set its ``material`` attribute to the material created
+#. Call the ``export`` method
+
+In code, this looks like:
+
+
+.. code-block::
+
+    import ocdb.io
+    import ocdb.material
+
+    material = ocdb.material.Material()
+    # Provide relevant content, including data and metadata
+
+    exporter = ocdb.io.TxtDataExporter()
+    exporter.material = material
+    exporter.export()
+
+This will create the appropriate text file with the symbol of the given
+material as the file basename and ``.txt`` as file extension in the current directory.
+
+The crucial part, however, is to set all the relevant attributes in the :obj:`ocdb.material.Material` object. For *n* and *k* values and their uncertainties, this should be rather straight-forward, assuming a basic familiarity with the organisation of the :class:`ocdb.material.Material` class and its attributes. Adding the reference(s) is slightly more involved.
+
+
+Adding reference(s)
+~~~~~~~~~~~~~~~~~~~
+
+References are eventually stored in a BibTeX file in the ocdb package data. As adding data to the package requires the source code of the package to be available, you will find the BibTeX file as ``ocdb/db/literature.bib``. Make sure the reference you need for your new dataset is already contained in this BibTeX database and has an appropriate unique key. You need to know this BibTeX key in the next step. If the BibTeX entry for the reference for your new dataset exists in the BibTeX database file, things are comparably straight-forward:
+
+#. Create an :obj:`ocdb.io.References` object, and
+#. add the approriate reference to your :obj:`ocdb.material.Material` object.
+
+In code, this looks like:
+
+
+.. code-block::
+
+    import ocdb.io
+    import ocdb.material
+
+    material = ocdb.material.Material()
+    # Provide relevant content, including data and metadata
+
+    references = ocdb.io.References()
+    material.references.append(references.records[<BibTeX-key>])
+
+
+Assuming again, as above, that you have added all the other data and metadata to your :obj:`ocdb.material.Material` object, this will add the relevant citable reference to your material. Of course, if there is more than one reference, you can add multiple references as well. Just make sure that the number and sequence of references you set manually in this step is identical to the metadata (*i.e.* BibTeX keys) provided in the metadata file you've created as discussed above.
 
 
 Adding the files to the ocdb package
 ------------------------------------
 
-TBD
+.. note::
 
-This should usually only be done by the package maintainers.
+    This should usually only be done by the package maintainers, as adding data involves, *i.a.*, making a new release. You are, however, welcome to fork the official repository, add the data to your local fork, and create a pull request.
 
+
+Once you have both, data and metadata files, created and with correct content, it is time to add the files (and hence the data) to the ocdb package. Again, this requires the source code of the ocdb package to be available. The data file goes into the ``ocdb/db/data`` directory, and the metadata file in either of the subdirectories of ``ocdb/db/metadata``, depending on whether your newly created dataset describes an element or a composition. For details, see the (next) section on :ref:`package organisation <sec-package_organisation>`. If you want to add a *new version* of an existing dataset, things get a bit more complicated. For details, see the respective section on :ref:`versions of datasets <sec-versions_of_datasets>` below.
+
+
+
+.. _sec-package_organisation:
 
 Package organisation
 ====================
@@ -237,6 +312,8 @@ While the primary axis of datasets can be both, wavelength (in nm) and energy (i
 
 Data columns are separated by tabulators (``\t``), the accuracy of the numeric values may differ for different datasets, but should be reasonable.
 
+
+.. _sec-versions_of_datasets:
 
 Versions of datasets
 ====================
