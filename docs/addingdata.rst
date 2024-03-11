@@ -127,6 +127,7 @@ In code, this looks like:
     # Provide relevant content, including data and metadata
 
     references = ocdb.io.References()
+    references.load()
     material.references.append(references.records[<BibTeX-key>])
 
 
@@ -335,7 +336,7 @@ How could all that look like? Here is a first example. Values in brackets ``[]``
     #
     # wavelength/nm	1-delta	beta	1-delta_LB	1-delta_UB	beta_LB	beta_UB
     # ------------------------
-    8.00	0.96788	0.02267	0.96772	0.96804	0.02253	0.02280
+    8.0000	0.96788	0.02267	0.96772	0.96804	0.02253	0.02280
 
 For the time being, all *n* and *k* values will be determined from reflection measurements.
 
@@ -343,7 +344,7 @@ For the time being, all *n* and *k* values will be determined from reflection me
 Data
 ----
 
-While the primary axis of datasets can be both, wavelength (in nm) and energy (in eV), datasets contained in the OCDB will always have wavelength as their primary axis, to an accuracy of 0.01 nm. In case data were recorded with a primary energy axis (in eV), they will be converted to a wavelength axis with the given accuracy of 0.01 nm. This is justified by the given energy range and instrument resolution.
+While the primary axis of datasets can be both, wavelength (in nm) and energy (in eV), datasets contained in the OCDB will always have wavelength as their primary axis, to an accuracy of 0.0001 nm. In case data were recorded with a primary energy axis (in eV), they will be converted to a wavelength axis with the given accuracy of 0.0001 nm. This is justified by the given energy range and instrument resolution.
 
 Data columns are separated by tabulators (``\t``), the accuracy of the numeric values may differ for different datasets, but should be reasonable.
 

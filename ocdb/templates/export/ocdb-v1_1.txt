@@ -27,10 +27,10 @@
 # ------------------------
 {% if material.has_uncertainties() -%}
 {% for wl in material.data %}
-{{- "%.02f\t%.05f\t%.05f\t%.05f\t%.05f\t%.05f\t%.05f" % (wl[0], wl[1], wl[2], wl[3], wl[4], wl[5], wl[6]) }}
+{{- "%.04f\t%.05f\t%.05f\t%.05f\t%.05f\t%.05f\t%.05f" % (wl[0], wl[1], wl[2], wl[3], wl[4], wl[5], wl[6]) }}
 {% endfor -%}
 {% else -%}
 {% for wl in material.data %}
-{{- "%.02f\t%.05f\t%.05f" % (wl[0], wl[1], wl[2]) }}
+{{- "%.04f\t%.05f\t%.05f" % (wl[0], wl[1], wl[2]) }}
 {% endfor -%}
 {% endif -%}

@@ -603,7 +603,7 @@ class TestTxtDataExporter(unittest.TestCase):
         with open(self.filename, "r", encoding="utf8") as file:
             content = file.read()
         self.assertIn(
-            f"{self.material.n_data.axes[0].values[0]:.02f}\t"
+            f"{self.material.n_data.axes[0].values[0]:.04f}\t"
             f"{self.material.n_data.data[0]:.05f}\t"
             f"{self.material.k_data.data[0]:.05f}\t"
             f"{self.material.n_data.lower_bounds[0]:.05f}\t"
@@ -634,7 +634,7 @@ class TestTxtDataExporter(unittest.TestCase):
         with open(self.filename, "r", encoding="utf8") as file:
             content = file.read()
         self.assertIn(
-            f"{self.material.n_data.axes[0].values[0]:.02f}\t"
+            f"{self.material.n_data.axes[0].values[0]:.04f}\t"
             f"{self.material.n_data.data[0]:.05f}\t"
             f"{self.material.k_data.data[0]:.05f}",
             content,
