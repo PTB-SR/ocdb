@@ -12,6 +12,18 @@ Changelog
 This page contains a summary of changes between the official ocdb releases. Only the biggest changes are listed here. A complete and detailed log of all changes is available through the `GitHub Repository Browser <GITHUB_REPO_>`_.
 
 
+Version 0.1.2
+=============
+
+Released 2024-06-11
+
+
+Fixes
+-----
+
+* Dependency in ``docs/requirements.txt`` to build API docs
+
+
 Version 0.1.1
 =============
 
