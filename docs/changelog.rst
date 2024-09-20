@@ -32,6 +32,18 @@ Changes
     * Header format does not impact the importer.
 
 
+Version 0.1.2
+=============
+
+Released 2024-06-11
+
+
+Fixes
+-----
+
+* Dependency in ``docs/requirements.txt`` to build API docs
+
+
 Version 0.1.1
 =============
 
@@ -43,6 +55,7 @@ Fixes
 
 * Dependency in ``setup.py``: ``jinja2`` rather than ``jinja``
 * Date in metadata of old Ru dataset
+
 
 Version 0.1.0
 =============
