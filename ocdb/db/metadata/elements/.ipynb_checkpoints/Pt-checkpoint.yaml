@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'Pt.txt'
+  format: 'text'
+material:
+  name: 'Platinum'
+  symbol: 'Pt'
+uncertainties:
+  confidence_interval: ''
+references:
+- 'ciesielski-ao-61-2060'
+date: '2018-06-01'
+versions: []
+comment: ''

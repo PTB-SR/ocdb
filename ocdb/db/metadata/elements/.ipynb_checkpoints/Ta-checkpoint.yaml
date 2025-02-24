@@ -1,0 +1,19 @@
+format:
+  type: OCDB metadata
+  version: 1.0
+file:
+  name: Ta.txt
+  format: text
+material:
+  name: Tantalum
+  symbol: Ta
+uncertainties:
+  confidence_interval: "3 sigma"
+references:
+- "saadeh-ao-33-10032"
+date: "2020-12-01"
+versions:
+- identifier: Ta_2019
+  description: "wavelength range 10-20 nm"
+  metadata: Ta_2019.yaml
+comment: ""
