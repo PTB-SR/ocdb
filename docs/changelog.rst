@@ -12,6 +12,30 @@ Changelog
 This page contains a summary of changes between the official ocdb releases. Only the biggest changes are listed here. A complete and detailed log of all changes is available through the `GitHub Repository Browser <GITHUB_REPO_>`_.
 
 
+Version 0.2.0
+=============
+
+Released 2025-02-28
+
+
+New datasets
+------------
+
+* Data for SiN, SiO2, TiN
+
+
+Version 0.1.2
+=============
+
+Released 2024-06-11
+
+
+Fixes
+-----
+
+* Dependency in ``docs/requirements.txt`` to build API docs
+
+
 Version 0.1.1
 =============
 
@@ -23,6 +47,7 @@ Fixes
 
 * Dependency in ``setup.py``: ``jinja2`` rather than ``jinja``
 * Date in metadata of old Ru dataset
+
 
 Version 0.1.0
 =============
