@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'SiO2.txt'
+  format: 'text'
+material:
+  name: 'amorphous Silicon dioxide'
+  symbol: 'SiO2'
+uncertainties:
+  confidence_interval: '3 Sigma'
+references:
+- 'saadeh-ao-63-9210'
+date: '2018-06-01'
+versions: []
+comment: 'wavelength range 5 nm - 24 nm'

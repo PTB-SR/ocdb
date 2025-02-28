@@ -1,0 +1,16 @@
+format:
+  type: OCDB metadata
+  version: '1.0'
+file:
+  name: 'TiN.txt'
+  format: 'text'
+material:
+  name: 'Titanium nitride'
+  symbol: 'TiN'
+uncertainties:
+  confidence_interval: '3 sigma'
+references:
+- 'saadeh-ao-63-9210'
+date: '2024-01-23'
+versions: []
+comment: 'wavelength range 5-24 nm'
