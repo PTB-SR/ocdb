@@ -206,7 +206,7 @@ If you add datasets to the ocdb package, make sure to add the references to the 
 A few notes on the current organisation of the BibTeX bibliography and conventions used:
 
 * Journal names are *not* abbreviated, but the full (official) journal names.
-* Titles are not in title case, but only the first word capitalised.
+* Titles are not in title case, but only the first word capitalised. Use LaTeX inline math mode for sub- and superscripts.
 * DOIs are provided wherever possible.
 * BibTeX keys follow a simple schema, always starting with the name of the first author:
 
@@ -221,12 +221,12 @@ To make it a bit easier, in the following two examples are shown, one for a Zeno
 .. code-block:: bibtex
 
     @dataset{ciesielski-zenodo-5602719,
-      author       = {Ciesielski, Richard and Saadeh, Qais and Philipsen, Vicky and Opsomer, Karl and Soulié, Jean-Philippe and Wu, Meiyi and Naujok, Philipp and van de Kruijs, Robbert W.E. and Detavernier, Christophe and Kolbe, Michael and Scholze, Frank and Soltwisch, Victor},
-      title        = {{EUV} optical constants data set},
-      year         = {2021},
-      publisher    = {Zenodo},
-      version      = {2021-10-28},
-      doi          = {10.5281/zenodo.5602719}
+        author       = {Ciesielski, Richard and Saadeh, Qais and Philipsen, Vicky and Opsomer, Karl and Soulié, Jean-Philippe and Wu, Meiyi and Naujok, Philipp and van de Kruijs, Robbert W.E. and Detavernier, Christophe and Kolbe, Michael and Scholze, Frank and Soltwisch, Victor},
+        title        = {{EUV} optical constants data set},
+        year         = {2021},
+        publisher    = {Zenodo},
+        version      = {2021-10-28},
+        doi          = {10.5281/zenodo.5602719}
     }
 
     @article{ciesielski-ao-61-2060,

@@ -20,7 +20,7 @@ The ocdb package follows `Semantic Versioning (SemVer) <https://semver.org/>`_. 
 Versioning and git branches
 ===========================
 
-The ocdb package is maintained in a `GitHub repository <GITHUB_REPO_>`_. Development takes place in the ``master`` branch, releases are set as tags with the version number (and additionally, for each minor version an additional tag in the form ``MAJOR.MINOR``) in the ``stable`` branch. Upon creating a release within GitHub (by the package maintainers), the package will be automatically be built and uploaded to the `Python Package Index (PyPI) <PYPI_>`_. For details, see below.
+The ocdb package is maintained in a `GitHub repository <GITHUB_REPO_>`_. Development takes place in the ``master`` branch, releases are set as tags with the version number (and additionally, for each minor version an additional tag in the form ``MAJOR.MINOR``) in the ``stable`` branch. Upon creating a release within GitHub (by the package maintainers), the package will automatically be built and uploaded to the `Python Package Index (PyPI) <PYPI_>`_. For details, see below.
 
 
 When to increment which version number part
