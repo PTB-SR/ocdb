@@ -914,7 +914,7 @@ class Metadata:
             File the metadata should be imported from.
 
         """
-        with open(filename, "r+", encoding="utf8") as file:
+        with open(filename, "r", encoding="utf8") as file:
             metadata = yaml.safe_load(file.read())
         self.from_dict(metadata=metadata)
 
