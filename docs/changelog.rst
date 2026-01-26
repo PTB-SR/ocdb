@@ -12,24 +12,16 @@ Changelog
 This page contains a summary of changes between the official ocdb releases. Only the biggest changes are listed here. A complete and detailed log of all changes is available through the `GitHub Repository Browser <GITHUB_REPO_>`_.
 
 
-Version 0.3.0
+Version 0.2.1
 =============
 
-Not yet released
-
-New features
-------------
-
-* :class:`ocdb.io.TxtDataExporter` for data
+Released 2026-01-26
 
 
-Changes
--------
+Fixes
+-----
 
-* New header format for the data files
-
-    * Formalised header with consistent content.
-    * Header format does not impact the importer.
+* Data files work read-only.
 
 
 Version 0.2.0
